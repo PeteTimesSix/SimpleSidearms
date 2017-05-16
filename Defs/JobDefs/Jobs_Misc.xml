@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<JobDefs>
+
+  <JobDef>
+    <defName>EquipSecondary</defName>
+    <driverClass>SimpleSidearms.rimworld.JobDriver_EquipSidearm</driverClass>
+    <reportString>equipping TargetA as sidearm.</reportString>
+  </JobDef>
+
+</JobDefs>

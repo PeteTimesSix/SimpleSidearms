@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+	<CQCAutoSwitch_title>CQC ranged switch</CQCAutoSwitch_title>
+	<CQCFistSwitch_title>CQC fist switch</CQCFistSwitch_title>
+	<CQCTargetOnly_title>CQC target only</CQCTargetOnly_title>
+	<RangedCombatAutoSwitch_title>Ranged combat autoswitch</RangedCombatAutoSwitch_title>
+	<RangedCombatAutoSwitchMaxWarmup_title>Ranged combat autoswitch max. warmup</RangedCombatAutoSwitchMaxWarmup_title>
+	<SingleshotAutoSwitch_title>Singleshot switch</SingleshotAutoSwitch_title>
+	<CQCDrop_title>Dropping mode</CQCDrop_title>
+	<MaxSingleMeleeMass_title>Max melee mass (single)</MaxSingleMeleeMass_title>
+	<MaxTotalMeleeMass_title>Max melee mass (total)</MaxTotalMeleeMass_title>
+	<MaxSingleRangedMass_title>Max ranged mass (single)</MaxSingleRangedMass_title>
+	<MaxTotalRangedMass_title>Max ranged mass (single)</MaxTotalRangedMass_title>
+	<MaxTotalMass_title>Max mass (total)</MaxTotalMass_title>
+	
+	<SidearmSpawnChance_title>Sidearm spawn chance</SidearmSpawnChance_title>
+	
+	<SpeedSelectionBiasMelee_title>Fast melee weapon bias</SpeedSelectionBiasMelee_title>
+	<SpeedSelectionBiasRanged_title>Fast ranged weapon bias</SpeedSelectionBiasRanged_title>
+	
+	<CQCAutoSwitch_desc>Pawns switch to melee sidearms when engaged in melee and using a ranged weapon.</CQCAutoSwitch_desc>
+	<CQCFistSwitch_desc>Pawns switch to melee sidearms when engaged in melee and using their firsts.</CQCFistSwitch_desc>
+	<CQCTargetOnly_desc>On = Switch if melee attacked by current target \nOff=Switch when melee attacked by anyone</CQCTargetOnly_desc>
+	<RangedCombatAutoSwitch_desc>Pawns switch to sidearms in ranged combat if they can hit their target better using them.</RangedCombatAutoSwitch_desc>
+	<RangedCombatAutoSwitchMaxWarmup_desc>Maximum weapon warmup percentage to consider switching at.</RangedCombatAutoSwitchMaxWarmup_desc>
+	<SingleshotAutoSwitch_desc>Pawns switch to sidearms after firing singleshot weapons.</SingleshotAutoSwitch_desc>
+	<CQCDrop_desc>When does drawing a sidearm require dropping the primary weapon.</CQCDrop_desc>
+	<MaxSingleMeleeMass_desc>Maximum carry weight percentage that can be occupied by a single melee sidearm.</MaxSingleMeleeMass_desc>
+	<MaxTotalMeleeMass_desc>Maximum carry weight percentage that can be occupied by melee sidearms.</MaxTotalMeleeMass_desc>
+	<MaxSingleRangedMass_desc>Maximum carry weight percentage that can be occupied by a single ranged sidearm.</MaxSingleRangedMass_desc>
+	<MaxTotalRangedMass_desc>Maximum carry weight percentage that can be occupied by ranged sidearms.</MaxTotalRangedMass_desc>
+	<MaxTotalMass_desc>Maximum carry weight percentage that can be occupied by all sidearms.</MaxTotalMass_desc>
+	
+	<SidearmSpawnChance_desc>Chance to add a sidearm when a pawn is generated.</SidearmSpawnChance_desc>
+	
+	<CQCDrop_option_Never>Never</CQCDrop_option_Never>
+	<CQCDrop_option_Panic>Panic only</CQCDrop_option_Panic>
+	<CQCDrop_option_PanicOrRange>Panic and range autospawn</CQCDrop_option_PanicOrRange>
+	<CQCDrop_option_Always>Always</CQCDrop_option_Always>
+	
+	<DrawSidearm_gizmoTitle>Draw</DrawSidearm_gizmoTitle>
+	<DrawSidearm_gizmoTooltip>Swap to {0}</DrawSidearm_gizmoTooltip>
+	
+	<SpeedSelectionBiasMelee_desc>How much will weapon warm up time affect melee weapon selection preference.</SpeedSelectionBiasMelee_desc>
+	<SpeedSelectionBiasRanged_desc>How much will weapon warm up time affect ranged weapon selection preference.</SpeedSelectionBiasRanged_desc>
+	
+</LanguageData>
