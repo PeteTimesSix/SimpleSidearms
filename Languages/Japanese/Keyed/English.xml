@@ -17,20 +17,20 @@
   <LimitCarryInfo_title>*常にポーンの運搬能力によって制限する</LimitCarryInfo_title>
 
   <LimitModeAmountMelee_desc>全ての近接格闘サイドアームに対する制限。</LimitModeAmountMelee_desc>
-  <LimitModeAmountMelee_title>全近接サイドアーム制限モード</LimitModeAmountMelee_title>
+  <LimitModeAmountMelee_title>近接サイドアーム制限モード(全て)</LimitModeAmountMelee_title>
   <LimitModeAmountRanged_desc>全ての遠隔射撃サイドアームに対する制限。</LimitModeAmountRanged_desc>
-  <LimitModeAmountRanged_title>全遠隔サイドアーム制限モード</LimitModeAmountRanged_title>
+  <LimitModeAmountRanged_title>遠隔サイドアーム制限モード(全て)</LimitModeAmountRanged_title>
   <LimitModeAmount_desc>全てのサイドアームに対する制限。</LimitModeAmount_desc>
-  <LimitModeAmount_title>全サイドアーム制限モード</LimitModeAmount_title>
+  <LimitModeAmount_title>サイドアーム制限モード(全て)</LimitModeAmount_title>
   <LimitModeSingleMelee_desc>個々の近接格闘サイドアームに対する制限。</LimitModeSingleMelee_desc>
-  <LimitModeSingleMelee_title>個別近接サイドアーム制限モード</LimitModeSingleMelee_title>
+  <LimitModeSingleMelee_title>近接サイドアーム制限モード(個別)</LimitModeSingleMelee_title>
   <LimitModeSingleRanged_desc>個々の遠隔射撃サイドアームに対する制限。</LimitModeSingleRanged_desc>
-  <LimitModeSingleRanged_title>個別遠隔サイドアーム制限モード</LimitModeSingleRanged_title>
+  <LimitModeSingleRanged_title>遠隔サイドアーム制限モード(個別)</LimitModeSingleRanged_title>
   <LimitModeSingle_desc>個々のサイドアームに対する制限。</LimitModeSingle_desc>
-  <LimitModeSingle_title>個別サイドアーム制限モード</LimitModeSingle_title>
+  <LimitModeSingle_title>サイドアーム制限モード(個別)</LimitModeSingle_title>
 
-  <LimitModeAmountTotal_title>サイドアームに対しての全ての制限状況。</LimitModeAmountTotal_title>
-  <LimitModeAmountTotal_desc>現在の制限</LimitModeAmountTotal_desc>
+  <LimitModeAmountTotal_title>全てのサイドアームに対しての制限</LimitModeAmountTotal_title>
+  <LimitModeAmountTotal_desc>全種類のサイドアームに対しての制限。</LimitModeAmountTotal_desc>
 
   <MaximumMassAmountAbsolute_desc>ポーンに許される全サイドアーム武器の最大合計重量。</MaximumMassAmountAbsolute_desc>
   <MaximumMassAmountAbsolute_title>サイドアーム最大重量 (合計)</MaximumMassAmountAbsolute_title>
@@ -80,7 +80,7 @@
   <ActiveTab_option_Presets>初期値</ActiveTab_option_Presets>
   <ActiveTab_option_Automation>トリガー</ActiveTab_option_Automation>
   <ActiveTab_option_Allowances>制限</ActiveTab_option_Allowances>
-  <ActiveTab_option_Spawning>追加</ActiveTab_option_Spawning>
+  <ActiveTab_option_Spawning>所持</ActiveTab_option_Spawning>
   <ActiveTab_option_Misc>その他</ActiveTab_option_Misc>
 
   <DropMode_option_Never>しない</DropMode_option_Never>
