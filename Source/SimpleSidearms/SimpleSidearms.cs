@@ -134,10 +134,10 @@ namespace SimpleSidearms
             };
             ActiveTab.Unsaved = true;
 
-            LimitCarryInfo = Settings.GetHandle<bool>("WIP", null, "Work in progress".Translate(), false);
-            LimitCarryInfo.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
-            LimitCarryInfo.CustomDrawer = rect => { return CustomDrawer_RighthandSideLabel(rect, "Presets are currently being implemented."); };
-            LimitCarryInfo.Unsaved = true;
+            WIP = Settings.GetHandle<bool>("WIP", null, "Work in progress".Translate(), false);
+            WIP.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
+            WIP.CustomDrawer = rect => { return CustomDrawer_RighthandSideLabel(rect, "Presets are currently being implemented."); };
+            WIP.Unsaved = true;
 
 
             ActivePreset = Settings.GetHandle<Preset>("ActivePreset", null, null, Preset.NoneApplied);
