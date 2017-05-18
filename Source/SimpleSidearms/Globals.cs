@@ -8,12 +8,17 @@ namespace SimpleSidearms
     public static class Globals
     {
         internal enum RangeCategory : byte{ Touch, Short, Medium, Long }
-
+        
 
         internal enum DroppingModeEnum { Panic, Range, UserForced, UsedUp }
         internal enum DroppingModeOptionsEnum { Never, Panic, PanicOrRange, Always }
 
         internal enum WeaponSearchType { Both, Ranged, Melee }
+
+        internal enum LimitModeSingleSidearm { None, RelativeWeight, AbsoluteWeight, Selection }
+        internal enum LimitModeAmountOfSidearms { MaximumCarryWeightOnly, RelativeWeight, AbsoluteWeight, Slots }
+
+        internal enum Preset { NoneApplied, Custom, Basic, Punishing, Simplified, LoadoutOnly };
 
         internal static readonly float ANTI_OSCILLATION_FACTOR = 0.1f;
     }

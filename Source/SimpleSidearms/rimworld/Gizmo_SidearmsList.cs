@@ -57,12 +57,16 @@ namespace SimpleSidearms.rimworld
             TooltipHandler.TipRegion(iconRect, string.Format(defaultDesc, weapon.LabelShort));
             MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
             if (Mouse.IsOver(iconRect))
-            {
-                Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconMouseOverColor);
+            { 
+                GUI.color = iconMouseOverColor;
+                GUI.DrawTexture(iconRect, TextureResources.drawPocket);
+                //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconMouseOverColor);
             }
             else
             {
-                Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconBaseColor);
+                GUI.color = iconBaseColor;
+                GUI.DrawTexture(iconRect, TextureResources.drawPocket);
+                //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconBaseColor);
             }
 
             Texture resolvedIcon;
@@ -110,37 +114,7 @@ namespace SimpleSidearms.rimworld
                 interacted |= DrawIconForWeapon(meleeWeapons[i], contentRect, iconOffset, buttonID);
                 buttonID++;
             }
-            /*if (iconTextures != null)
-            {
-                for (int i = 0; i < iconTextures.Length; i++)
-                {
-                    var iconTex = iconTextures[i];
-                    var iconOffset = new Vector2();
-                    switch (i)
-                    {
-                        case 1:
-                            iconOffset = new Vector2(IconSize, 0);
-                            break;
-                        case 2:
-                            iconOffset = new Vector2(0, IconSize);
-                            break;
-                        case 3:
-                            iconOffset = new Vector2(IconSize, IconSize);
-                            break;
-                    }
-                    
-                }
-            }
 
-            //DrawHotKeyLabel(gizmoRect);
-            if (hotKey != null && hotKey.KeyDownEvent)
-            {
-                interacted = true;
-                Event.current.button = -1;
-                Event.current.Use();
-            }
-
-            */
             DrawGizmoLabel(defaultLabel, gizmoRect);
             return interacted ? new GizmoResult(GizmoState.Interacted, Event.current) : new GizmoResult(GizmoState.Clear);
         }

@@ -20,20 +20,17 @@ namespace SimpleSidearms.intercepts
             if (SimpleSidearms.RangedCombatAutoSwitch == false)
                 return;
             Pawn pawn = __instance.stanceTracker.pawn;
-            //Log.Message("warmup stance postfix");
+            if (IsHunting(pawn))
+                return;
             if (!(__instance.verb is Verb_Shoot))
                 return;
             float statValue = pawn.GetStatValue(StatDefOf.AimingDelayFactor, true);
             int ticks = (__instance.verb.verbProps.warmupTime * statValue).SecondsToTicks();
-
-            //Log.Message("ticks "+ticks+" ticks left" + __instance.ticksLeft+ " max Percentage" + RangedCombatAutoSwitchMaxWarmup);
-            if (__instance.ticksLeft / (float)ticks < 1f - SimpleSidearms.RangedCombatAutoSwitchMaxWarmup)
+            
+            if (__instance.ticksLeft / (float)ticks < 1f - SimpleSidearms.RangedCombatAutoSwitchMaxWarmup.Value)
             {
-                //Log.Message("past max warmup time");
                 return;
             }
-            //if (__instance.Primary == null || __instance.Primary.def.IsMeleeWeapon)
-            //    return;
 
             LocalTargetInfo targ = __instance.focusTarg;
 
@@ -43,6 +40,17 @@ namespace SimpleSidearms.intercepts
                 float range = cellRect.ClosestDistSquaredTo(pawn.Position);
                 WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, MiscUtils.shouldDrop(DroppingModeEnum.Range), range, pawn.IsColonistPlayerControlled);
             }
+        }
+
+        private static bool IsHunting(Pawn pawn)
+        {
+            if (pawn.CurJob == null)
+            {
+                return false;
+            }
+            JobDriver_Hunt jobDriver_Hunt = pawn.jobs.curDriver as JobDriver_Hunt;
+            JobDriver_PredatorHunt jobDriver_PredatorHunt = pawn.jobs.curDriver as JobDriver_PredatorHunt;
+            return jobDriver_Hunt != null | jobDriver_PredatorHunt != null;
         }
     }
 }

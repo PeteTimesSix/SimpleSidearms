@@ -16,6 +16,15 @@ namespace SimpleSidearms.rimworld
 
         private static bool hasBeenReset = false;
 
+
+        internal static List<ThingStuffPair> getWeaponsList()
+        {
+            if (!hasBeenReset)
+                Reset();
+
+            return allWeaponPairs;
+        }
+
         public static void Reset()
         {
             //Log.Message("reset called");
@@ -41,18 +50,17 @@ namespace SimpleSidearms.rimworld
                 }
             }
         }
-        
 
         public static void TryGenerateSidearmsFor(Pawn pawn)
         {
-            if (SimpleSidearms.SidearmSpawnChance < 0.01f)
+            if (SimpleSidearms.SidearmSpawnChance.Value < 0.01f)
                 return;
 
             if (!hasBeenReset)
                 Reset();
 
 
-            if (Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) >= SimpleSidearms.SidearmSpawnChance)
+            if (Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) >= SimpleSidearms.SidearmSpawnChance.Value)
             {
                 return;
             }
@@ -77,6 +85,17 @@ namespace SimpleSidearms.rimworld
                 return;
             }
 
+            bool meleeOnly = pawn.equipment.Primary.def.IsMeleeWeapon | (pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler));
+            bool neolithic = true;
+            foreach(string wepTag in pawn.kindDef.weaponTags)
+            {
+                if(wepTag.Contains("Neolithic"))
+                {
+                    neolithic = false;
+                    break;
+                }
+            }
+
             List<string> sidearmTags = GettersFilters.weaponTagsToSidearmTags(pawn.kindDef.weaponTags);
 
             float money = pawn.kindDef.weaponMoney.min;
@@ -85,16 +104,50 @@ namespace SimpleSidearms.rimworld
             for (int i = 0; i < allWeaponPairs.Count; i++)
             {
                 ThingStuffPair w = allWeaponPairs[i];
-                if (w.Price <= money)
+
+                if (!StatCalculator.canCarrySidearm(w.thing, pawn))
+                    continue;
+                if (w.Price > money)
+                    continue;
+                if (meleeOnly && w.thing.IsRangedWeapon)
+                    continue;
+                if (neolithic)
                 {
-                    if (sidearmTags.Any((string tag) => w.thing.weaponTags.Contains(tag)))
+                    bool isNeolithic = true;
+                    #region nestedMonstrosity
+                    foreach (string wepTag in pawn.kindDef.weaponTags)
                     {
-                        if (w.thing.generateAllowChance >= 1f || Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) <= w.thing.generateAllowChance)
+                        if (!wepTag.Contains("Neolithic"))
                         {
-                            workingWeapons.Add(w);
+                            //check if the weapon is allowed despite not being neolithic
+                            bool getsAPass = false;
+                            foreach (string weapon in SimpleSidearms.SidearmsNeolithicExtension.Value.InnerList)
+                            {
+                                if (weapon.Equals(w.thing.defName))
+                                {
+                                    getsAPass = true;
+                                    break;
+                                }
+                            }
+                            if (!getsAPass)
+                                isNeolithic = false;
                         }
+                        if (!isNeolithic)
+                            break;
+                    }
+                    #endregion
+                    if (!isNeolithic)
+                        continue;
+                }
+                
+                if (sidearmTags.Any((string tag) => w.thing.weaponTags.Contains(tag)))
+                {
+                    if (w.thing.generateAllowChance >= 1f || Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) <= w.thing.generateAllowChance)
+                    {
+                        workingWeapons.Add(w);
                     }
                 }
+
             }
             if (workingWeapons.Count == 0)
             {

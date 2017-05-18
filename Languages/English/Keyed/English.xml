@@ -1,48 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
-	<CQCAutoSwitch_title>CQC ranged switch</CQCAutoSwitch_title>
-	<CQCFistSwitch_title>CQC fist switch</CQCFistSwitch_title>
-	<CQCTargetOnly_title>CQC target only</CQCTargetOnly_title>
-	<RangedCombatAutoSwitch_title>Ranged combat autoswitch</RangedCombatAutoSwitch_title>
-	<RangedCombatAutoSwitchMaxWarmup_title>Ranged combat autoswitch max. warmup</RangedCombatAutoSwitchMaxWarmup_title>
-	<SingleshotAutoSwitch_title>Singleshot switch</SingleshotAutoSwitch_title>
-	<CQCDrop_title>Dropping mode</CQCDrop_title>
-	<MaxSingleMeleeMass_title>Max melee mass (single)</MaxSingleMeleeMass_title>
-	<MaxTotalMeleeMass_title>Max melee mass (total)</MaxTotalMeleeMass_title>
-	<MaxSingleRangedMass_title>Max ranged mass (single)</MaxSingleRangedMass_title>
-	<MaxTotalRangedMass_title>Max ranged mass (single)</MaxTotalRangedMass_title>
-	<MaxTotalMass_title>Max mass (total)</MaxTotalMass_title>
+<ActiveTab_desc></ActiveTab_desc>
+<ActiveTab_title>Configuration tabs</ActiveTab_title>
+<CQCAutoSwitch_desc>Should pawns switch to their melee sidearms when attacked in melee?</CQCAutoSwitch_desc>
+<CQCAutoSwitch_title>Melee combat autoswitch</CQCAutoSwitch_title>
+<CQCFistSwitch_desc>Should pawns switch even when they are not using a weapon?</CQCFistSwitch_desc>
+<CQCFistSwitch_title>Unarmed combat autoswitch</CQCFistSwitch_title>
+<CQCTargetOnly_desc>Should pawns only react to attacks from their current target?</CQCTargetOnly_desc>
+<CQCTargetOnly_title>Switch only on attacks from target</CQCTargetOnly_title>
+
+<DropMode_desc>In which situations are pawns forced to drop their weapon instead of moving it to their inventory?</DropMode_desc>
+<DropMode_title>Weapon dropping criteria</DropMode_title>
+
+<LimitCarryInfo_desc></LimitCarryInfo_desc>
+<LimitCarryInfo_title>*Always limited by pawn's carry capacity</LimitCarryInfo_title>
+
+<LimitModeAmountMelee_desc>What restrictions are there on all melee sidearms.</LimitModeAmountMelee_desc>
+<LimitModeAmountMelee_title>Total melee sidearms limit mode</LimitModeAmountMelee_title>
+<LimitModeAmountRanged_desc>What restrictions are there on all ranged sidearms.</LimitModeAmountRanged_desc>
+<LimitModeAmountRanged_title>Total ranged sidearms limit mode</LimitModeAmountRanged_title>
+<LimitModeAmount_desc>What restrictions are there on all sidearms.</LimitModeAmount_desc>
+<LimitModeAmount_title>Total sidearms limit mode</LimitModeAmount_title>
+<LimitModeSingleMelee_desc>What restrictions are there on individual melee sidearms.</LimitModeSingleMelee_desc>
+<LimitModeSingleMelee_title>Single melee sidearm limit mode</LimitModeSingleMelee_title>
+<LimitModeSingleRanged_desc>What restrictions are there on individual ranged sidearms.</LimitModeSingleRanged_desc>
+<LimitModeSingleRanged_title>Single ranged sidearm limit mode</LimitModeSingleRanged_title>
+<LimitModeSingle_desc>What restrictions are there on individual sidearms.</LimitModeSingle_desc>
+<LimitModeSingle_title>Single sidearm limit mode</LimitModeSingle_title>
+
+<LimitModeAmountTotal_title>What restrictions are there on all sidearms.</LimitModeAmountTotal_title>
+<LimitModeAmountTotal_desc>Total</LimitModeAmountTotal_desc>
+
+<MaximumMassAmountAbsolute_desc>Maximum total mass of sidearms a pawn can carry.</MaximumMassAmountAbsolute_desc>
+<MaximumMassAmountAbsolute_title>Max. mass of sidearms</MaximumMassAmountAbsolute_title>
+<MaximumMassAmountRelative_desc>Maximum total mass percentage of sidearms a pawn can carry relative to their carry capacity.</MaximumMassAmountRelative_desc>
+<MaximumMassAmountRelative_title>Max. mass percentage of sidearms</MaximumMassAmountRelative_title>
+<MaximumMassSingleAbsolute_desc>Maximum mass of a single sidearm a pawn can carry.</MaximumMassSingleAbsolute_desc>
+<MaximumMassSingleAbsolute_title>Max. mass per sidearm</MaximumMassSingleAbsolute_title>
+<MaximumMassSingleRelative_desc>Maximum mass percentage of a single sidearm a pawn can carry relative to their carry capacity.</MaximumMassSingleRelative_desc>
+<MaximumMassSingleRelative_title>Max. mass percentage per sidearm</MaximumMassSingleRelative_title>
+<MaximumSlots_desc>How many sidearms can a pawn carry.</MaximumSlots_desc>
+<MaximumSlots_title>Slots</MaximumSlots_title>
+<RangedCombatAutoSwitchMaxWarmup_desc>What is the threshold after which a pawn will refuse to interrupt their attack to switch to a sidearm?</RangedCombatAutoSwitchMaxWarmup_desc>
+<RangedCombatAutoSwitchMaxWarmup_title>Maximum warmup percentage</RangedCombatAutoSwitchMaxWarmup_title>
+<RangedCombatAutoSwitch_desc>Should pawns switch to range-appropriate ranged sidearms when attacking at range?</RangedCombatAutoSwitch_desc>
+<RangedCombatAutoSwitch_title>Ranged autoswitch</RangedCombatAutoSwitch_title>
+<SeparateModes_desc>Should melee and ranged weapons have shared or separate restrictions?</SeparateModes_desc>
+<SeparateModes_title>Split melee/ranged</SeparateModes_title>
+<SidearmSelection_desc></SidearmSelection_desc>
+<SidearmSelection_title>Sidearm selection</SidearmSelection_title>
+<SidearmSpawnChance_desc>The chance for any pawn that spawns with a weapon to also have a sidearm.</SidearmSpawnChance_desc>
+<SidearmSpawnChance_title>Sidearm spawn chance</SidearmSpawnChance_title>
+<SingleshotAutoSwitch_desc>Should pawns switch to sidearms after expending single-use weapons?</SingleshotAutoSwitch_desc>
+<SingleshotAutoSwitch_title>Singleshot autoswitch</SingleshotAutoSwitch_title>
+<SpeedSelectionBiasMelee_desc>Pawn bias towards selecting weapons with faster attack speed.</SpeedSelectionBiasMelee_desc>
+<SpeedSelectionBiasMelee_title>Speed bias (melee)</SpeedSelectionBiasMelee_title>
+<SpeedSelectionBiasRanged_desc>Pawn bias towards selecting weapons with faster warmup.</SpeedSelectionBiasRanged_desc>
+<SpeedSelectionBiasRanged_title>Speed bias (ranged)</SpeedSelectionBiasRanged_title>
+<WeaponMatch_desc>These are the weapons that match the given criteria.</WeaponMatch_desc>
+<WeaponMatch_title></WeaponMatch_title>
+
+<SidearmsEnableNeolithicExtension_desc>Allow more weapons to be used as sidearms by tribals.</SidearmsEnableNeolithicExtension_desc>
+<SidearmsEnableNeolithicExtension_title>Extend neolithic sidearms</SidearmsEnableNeolithicExtension_title>
+<SidearmsNeolithicExtension_desc></SidearmsNeolithicExtension_desc>
+<SidearmsNeolithicExtension_title>Sidearms considered neolithic</SidearmsNeolithicExtension_title>
 	
-	<SidearmSpawnChance_title>Sidearm spawn chance</SidearmSpawnChance_title>
-	
-	<SpeedSelectionBiasMelee_title>Fast melee weapon bias</SpeedSelectionBiasMelee_title>
-	<SpeedSelectionBiasRanged_title>Fast ranged weapon bias</SpeedSelectionBiasRanged_title>
-	
-	<CQCAutoSwitch_desc>Pawns switch to melee sidearms when engaged in melee and using a ranged weapon.</CQCAutoSwitch_desc>
-	<CQCFistSwitch_desc>Pawns switch to melee sidearms when engaged in melee and using their firsts.</CQCFistSwitch_desc>
-	<CQCTargetOnly_desc>On = Switch if melee attacked by current target \nOff=Switch when melee attacked by anyone</CQCTargetOnly_desc>
-	<RangedCombatAutoSwitch_desc>Pawns switch to sidearms in ranged combat if they can hit their target better using them.</RangedCombatAutoSwitch_desc>
-	<RangedCombatAutoSwitchMaxWarmup_desc>Maximum weapon warmup percentage to consider switching at.</RangedCombatAutoSwitchMaxWarmup_desc>
-	<SingleshotAutoSwitch_desc>Pawns switch to sidearms after firing singleshot weapons.</SingleshotAutoSwitch_desc>
-	<CQCDrop_desc>When does drawing a sidearm require dropping the primary weapon.</CQCDrop_desc>
-	<MaxSingleMeleeMass_desc>Maximum carry weight percentage that can be occupied by a single melee sidearm.</MaxSingleMeleeMass_desc>
-	<MaxTotalMeleeMass_desc>Maximum carry weight percentage that can be occupied by melee sidearms.</MaxTotalMeleeMass_desc>
-	<MaxSingleRangedMass_desc>Maximum carry weight percentage that can be occupied by a single ranged sidearm.</MaxSingleRangedMass_desc>
-	<MaxTotalRangedMass_desc>Maximum carry weight percentage that can be occupied by ranged sidearms.</MaxTotalRangedMass_desc>
-	<MaxTotalMass_desc>Maximum carry weight percentage that can be occupied by all sidearms.</MaxTotalMass_desc>
-	
-	<SidearmSpawnChance_desc>Chance to add a sidearm when a pawn is generated.</SidearmSpawnChance_desc>
-	
-	<CQCDrop_option_Never>Never</CQCDrop_option_Never>
-	<CQCDrop_option_Panic>Panic only</CQCDrop_option_Panic>
-	<CQCDrop_option_PanicOrRange>Panic and range autospawn</CQCDrop_option_PanicOrRange>
-	<CQCDrop_option_Always>Always</CQCDrop_option_Always>
-	
-	<DrawSidearm_gizmoTitle>Draw</DrawSidearm_gizmoTitle>
-	<DrawSidearm_gizmoTooltip>Swap to {0}</DrawSidearm_gizmoTooltip>
-	
-	<SpeedSelectionBiasMelee_desc>How much will weapon warm up time affect melee weapon selection preference.</SpeedSelectionBiasMelee_desc>
-	<SpeedSelectionBiasRanged_desc>How much will weapon warm up time affect ranged weapon selection preference.</SpeedSelectionBiasRanged_desc>
-	
+<LimitModeSingle_option_None>No limit</LimitModeSingle_option_None>
+<LimitModeSingle_option_RelativeWeight>Mass fraction</LimitModeSingle_option_RelativeWeight>
+<LimitModeSingle_option_AbsoluteWeight>Mass absolute</LimitModeSingle_option_AbsoluteWeight>
+<LimitModeSingle_option_Selection>Specific weapons</LimitModeSingle_option_Selection>
+
+<LimitModeAmount_option_MaximumCarryWeightOnly>No limit</LimitModeAmount_option_MaximumCarryWeightOnly>
+<LimitModeAmount_option_RelativeWeight>Mass fraction</LimitModeAmount_option_RelativeWeight>
+<LimitModeAmount_option_AbsoluteWeight>Mass absolute</LimitModeAmount_option_AbsoluteWeight>
+<LimitModeAmount_option_Slots>Slots</LimitModeAmount_option_Slots>
+
+<ActiveTab_option_Folded>&lt;</ActiveTab_option_Folded>
+<ActiveTab_option_Presets>Presets</ActiveTab_option_Presets>
+<ActiveTab_option_Automation>Triggers</ActiveTab_option_Automation>
+<ActiveTab_option_Allowances>Limits</ActiveTab_option_Allowances>
+<ActiveTab_option_Spawning>Spawning</ActiveTab_option_Spawning>
+<ActiveTab_option_Misc>Misc.</ActiveTab_option_Misc>
+
+<DropMode_option_Never>Never</DropMode_option_Never>
+<DropMode_option_Panic>Close combat</DropMode_option_Panic>
+<DropMode_option_PanicOrRange>Combat</DropMode_option_PanicOrRange>
+<DropMode_option_Always>Always</DropMode_option_Always>
+
+<DrawSidearm_gizmoTitle>Draw</DrawSidearm_gizmoTitle>
+<DrawSidearm_gizmoTooltip>Draw {0}.</DrawSidearm_gizmoTooltip>
+
 </LanguageData>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RimWorld;
 using Verse;
 using static SimpleSidearms.Globals;
 using static SimpleSidearms.SimpleSidearms;
@@ -10,6 +11,28 @@ namespace SimpleSidearms.utilities
 {
     public static class GettersFilters
     {
+        internal static void getHeaviestWeapons(List<ThingStuffPair> list, out float weightMelee, out float weightRanged)
+        {
+            weightMelee = float.MinValue;
+            weightRanged = float.MinValue;
+            foreach (ThingStuffPair weapon in list)
+            {
+                if (!weapon.thing.PlayerAcquirable)
+                    continue;
+                float mass = weapon.thing.GetStatValueAbstract(StatDefOf.Mass);
+                if (weapon.thing.IsRangedWeapon)
+                {
+                    if (mass > weightRanged)
+                        weightRanged = mass;
+                }
+                else if (weapon.thing.IsMeleeWeapon)
+                {
+                    if (mass > weightMelee)
+                        weightMelee = mass;
+                }
+            }
+        }
+
         internal static void getWeaponLists(out List<ThingWithComps> ranged, out List<ThingWithComps> melee, Pawn_InventoryTracker inventory)
         {
             ranged = new List<ThingWithComps>();
@@ -21,6 +44,55 @@ namespace SimpleSidearms.utilities
                     ranged.Add(item);
                 else if (item.def.IsMeleeWeapon)
                     melee.Add(item);
+            }
+        }
+
+        internal static List<ThingStuffPair> filterForType(List<ThingStuffPair> list, WeaponSearchType type, bool allowThingDuplicates)
+        {
+            List<ThingStuffPair> returnList = new List<ThingStuffPair>();
+            List<ThingDef> things = new List<ThingDef>();
+            foreach(ThingStuffPair weapon in list)
+            {
+                if (!weapon.thing.PlayerAcquirable)
+                    continue;
+                switch (type)
+                {
+                    case WeaponSearchType.Melee:
+                        if (weapon.thing.IsMeleeWeapon & (allowThingDuplicates | !things.Contains(weapon.thing)))
+                        {
+                            returnList.Add(weapon);
+                            things.Add(weapon.thing);
+                        }
+                        break;
+                    case WeaponSearchType.Ranged:
+                        if (weapon.thing.IsRangedWeapon & (allowThingDuplicates | !things.Contains(weapon.thing)))
+                        {
+                            returnList.Add(weapon);
+                            things.Add(weapon.thing);
+                        }
+                        break;
+                    case WeaponSearchType.Both:
+                    default:
+                        if ((allowThingDuplicates | !things.Contains(weapon.thing)))
+                        {
+                            returnList.Add(weapon);
+                            things.Add(weapon.thing);
+                        }
+                        break;
+                }
+            }
+            return returnList;
+        }
+
+        internal static void excludeNeolithic(List<ThingStuffPair> list)
+        {
+            for (int i = list.Count - 1; i>= 0; i--)
+            {
+                ThingStuffPair weapon = list[i];
+                if (weapon.thing.weaponTags.Contains("NeolithicMelee") | weapon.thing.weaponTags.Contains("NeolithicRanged") | weapon.thing.weaponTags.Contains("Neolithic"))
+                {
+                    list.RemoveAt(i);
+                }
             }
         }
 
@@ -102,13 +174,20 @@ namespace SimpleSidearms.utilities
         internal static List<string> weaponTagsToSidearmTags(List<string> weaponTags)
         {
             HashSet<string> sidearmTags = new HashSet<string>();
-            foreach(string tag in weaponTags)
+
+            sidearmTags.Add("Gun");
+            sidearmTags.Add("Melee");
+            sidearmTags.Add("NeolithicMelee");
+            //because bowmen bringing pilas makes sense... machine gunners, not so much
+            if (weaponTags.Contains("NeolithicRanged"))
+                sidearmTags.Add("NeolithicRanged");
+
+            /*
+            foreach (string tag in weaponTags)
             {
                 switch (tag)
                 {
                     case "Gun":
-                        sidearmTags.Add("Gun");
-                        sidearmTags.Add("Melee");
                         break;
                     case "EliteGun":    //assault rifle, LMG
                         sidearmTags.Add("Gun");
@@ -140,7 +219,7 @@ namespace SimpleSidearms.utilities
                     case "GrenadeEMP":
                         break;
                 }
-            }
+            }*/
             return sidearmTags.ToList();
         }
 

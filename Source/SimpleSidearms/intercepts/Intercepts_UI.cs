@@ -31,7 +31,7 @@ namespace SimpleSidearms.intercepts
                 //Log.Message("pawn uncontrolled");
             }
             else
-            {
+            { 
                 if (selected.inventory != null)
                 {
                     List<ThingWithComps> rangedWeapons;
@@ -91,20 +91,12 @@ namespace SimpleSidearms.intercepts
                     else if (!equipment.def.IsWeapon)
                     {
                     }
-                    else if (!StatCalculator.fitsInCarryCapacity(equipment, pawn, out errStr))
+                    else if (!StatCalculator.canCarrySidearm(equipment.def, pawn, out errStr))
                     {
                         item3 = new FloatMenuOption("CannotEquip".Translate(new object[]
                         {
                                 labelShort
                         }) + " (" + errStr + ")", null, MenuOptionPriority.Default, null, null, 0f, null, null);
-                        opts.Add(item3);
-                    }
-                    else if (equipment.def.BaseMass > MassUtility.FreeSpace(pawn))
-                    {
-                        item3 = new FloatMenuOption("CannotEquip".Translate(new object[]
-                        {
-                                labelShort
-                        }) + " (" + "Too heavy" + ")", null, MenuOptionPriority.Default, null, null, 0f, null, null);
                         opts.Add(item3);
                     }
                     else
