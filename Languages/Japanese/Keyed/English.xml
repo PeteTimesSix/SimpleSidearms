@@ -34,15 +34,15 @@
 
   <MaximumMassAmountAbsolute_desc>ポーンに許される全サイドアーム武器の最大合計重量。</MaximumMassAmountAbsolute_desc>
   <MaximumMassAmountAbsolute_title>サイドアーム最大重量 (合計)</MaximumMassAmountAbsolute_title>
-  <MaximumMassAmountRelative_desc>全サイドアーム武器の合計重量 を ポーンに許される最大運搬重量 で割ったパーセンテージ。1.0=100% 0.5=50%</MaximumMassAmountRelative_desc>
+  <MaximumMassAmountRelative_desc>全サイドアーム武器の合計重量 を ポーンに許される最大運搬重量 で割ったパーセンテージ。</MaximumMassAmountRelative_desc>
   <MaximumMassAmountRelative_title>サイドアーム最大重量 (合計)％</MaximumMassAmountRelative_title>
   <MaximumMassSingleAbsolute_desc>ポーンが運ぶことができるサイドアーム１つあたりの最大重量。</MaximumMassSingleAbsolute_desc>
   <MaximumMassSingleAbsolute_title>サイドアーム最大重量 (単品)</MaximumMassSingleAbsolute_title>
-  <MaximumMassSingleRelative_desc>サイドアーム武器１つあたりに許される重量 を ポーンに許される最大運搬重量 で割ったパーセンテージ。1.0=100% 0.5=50%</MaximumMassSingleRelative_desc>
+  <MaximumMassSingleRelative_desc>サイドアーム武器１つあたりに許される重量 を ポーンに許される最大運搬重量 で割ったパーセンテージ。</MaximumMassSingleRelative_desc>
   <MaximumMassSingleRelative_title>サイドアーム最大重量 (単品)</MaximumMassSingleRelative_title>
   <MaximumSlots_desc>ポーンに何個サイドアームを持たせますか？</MaximumSlots_desc>
   <MaximumSlots_title>スロット</MaximumSlots_title>
-  <RangedCombatAutoSwitchMaxWarmup_desc>ポーンが攻撃を中断してサイドアームに切り替えることを拒否する閾値はいくつですか？1.0=100% 0.5=50% </RangedCombatAutoSwitchMaxWarmup_desc>
+  <RangedCombatAutoSwitchMaxWarmup_desc>ポーンが攻撃を中断してサイドアームに切り替えることを拒否する閾値はいくつですか？</RangedCombatAutoSwitchMaxWarmup_desc>
   <RangedCombatAutoSwitchMaxWarmup_title>遠隔戦時 自動切換: 最大武器準備率</RangedCombatAutoSwitchMaxWarmup_title>
   <RangedCombatAutoSwitch_desc>遠隔戦闘する際、ポーンは射程に応じた遠隔武器のサイドアームに切り替えますか？</RangedCombatAutoSwitch_desc>
   <RangedCombatAutoSwitch_title>遠隔戦時 自動切換</RangedCombatAutoSwitch_title>
