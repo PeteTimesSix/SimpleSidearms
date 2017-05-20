@@ -18,7 +18,7 @@ namespace SimpleSidearms
         internal enum LimitModeSingleSidearm { None, RelativeWeight, AbsoluteWeight, Selection }
         internal enum LimitModeAmountOfSidearms { MaximumCarryWeightOnly, RelativeWeight, AbsoluteWeight, Slots }
 
-        internal enum Preset { NoneApplied, Custom, Basic, Punishing, Simplified, LoadoutOnly };
+        internal enum Preset { NoneApplied, Custom, Disabled, LoadoutOnly, Basic, Advanced, Excessive, Brawler };
 
         internal static readonly float ANTI_OSCILLATION_FACTOR = 0.1f;
     }

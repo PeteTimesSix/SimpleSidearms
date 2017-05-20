@@ -88,7 +88,63 @@
 <DropMode_option_PanicOrRange>Combat</DropMode_option_PanicOrRange>
 <DropMode_option_Always>Always</DropMode_option_Always>
 
+<PresetExport_title></PresetExport_title>
+<PresetExport_desc></PresetExport_desc>
+<PresetExport_label>Copy active config to clipboard</PresetExport_label>
+
+
+<PresetCustom_title>Custom</PresetCustom_title>
+<PresetCustom_desc>Custom settings. Automatically selected upon making a change.</PresetCustom_desc>
+<PresetCustom_label></PresetCustom_label>
+<Preset0_title>Disabled</Preset0_title>
+<Preset0_desc>All options disabled. Good base for configurations that use only a small portion of the mod's features.</Preset0_desc>
+<Preset0_label></Preset0_label>
+<Preset1_title>Loadout only</Preset1_title>
+<Preset1_desc>Allows equipping sidearms, but nothing else. Essentially a convenient inventory extension.</Preset1_desc>
+<Preset1_label></Preset1_label>
+<Preset2_title>Basic</Preset2_title>
+<Preset2_desc>A simple setup. Pawns can use a few light weapons and will attempt to use them in appropriate situations.</Preset2_desc>
+<Preset2_label></Preset2_label>
+<Preset3_title>Advanced</Preset3_title>
+<Preset3_desc>Pawns get more creative with their weapon selection, but still remain within what one would expect possible from regular people trying to survive on a dangerous rimworld.</Preset3_desc>
+<Preset3_label></Preset3_label>
+<Preset4_title>Excessive</Preset4_title>
+<Preset4_desc>Bring all of it! Minigun? Bring two! Spears? I've got a whole collection in my backpack!</Preset4_desc>
+<Preset4_label></Preset4_label>
+<Preset5_title>Brawler mode</Preset5_title>
+<Preset5_desc>Melee sidearms for everyone.</Preset5_desc>
+<Preset5_label></Preset5_label>
+
 <DrawSidearm_gizmoTitle>Draw</DrawSidearm_gizmoTitle>
 <DrawSidearm_gizmoTooltip>Draw {0}.</DrawSidearm_gizmoTooltip>
+
+<SidearmPickupFail_NoFreeSpace>No free space</SidearmPickupFail_NoFreeSpace>
+<SidearmPickupFail_TooHeavyForSidearm>Loadout too heavy</SidearmPickupFail_TooHeavyForSidearm>
+<SidearmPickupFail_TooHeavyForSidearmMelee>Melee loadout too heavy</SidearmPickupFail_TooHeavyForSidearmMelee>
+<SidearmPickupFail_TooHeavyForSidearmRanged>Ranged loadout too heavy</SidearmPickupFail_TooHeavyForSidearmRanged>
+<SidearmPickupFail_SidearmsTooHeavy>Too heavy for a sidearm</SidearmPickupFail_SidearmsTooHeavy>
+<SidearmPickupFail_SidearmsTooHeavyMelee>Too heavy for a melee sidearm</SidearmPickupFail_SidearmsTooHeavyMelee>
+<SidearmPickupFail_SidearmsTooHeavyRanged>Too heavy for a ranged sidearm</SidearmPickupFail_SidearmsTooHeavyRanged>
+<SidearmPickupFail_SidearmsTooHeavyInTotal>Too heavy for a sidearm</SidearmPickupFail_SidearmsTooHeavyInTotal>
+<SidearmPickupFail_NotASidearm>Not a sidearm</SidearmPickupFail_NotASidearm>
+<SidearmPickupFail_NotASidearmMelee>Not a sidearm</SidearmPickupFail_NotASidearmMelee>
+<SidearmPickupFail_NotASidearmRanged>Not a sidearm</SidearmPickupFail_NotASidearmRanged>
+<SidearmPickupFail_AllSlotsFull>Slots full</SidearmPickupFail_AllSlotsFull>
+<SidearmPickupFail_MeleeSlotsFull>Melee slots full</SidearmPickupFail_MeleeSlotsFull>
+<SidearmPickupFail_RangedSlotsFull>Ranged slots full</SidearmPickupFail_RangedSlotsFull>
+<SidearmPickupPass>No issue</SidearmPickupPass>
+
+<Preset_option_NoneApplied>None</Preset_option_NoneApplied>
+<Preset_option_Custom>Custom</Preset_option_Custom>
+<Preset_option_Disabled>Disabled</Preset_option_Disabled>
+<Preset_option_LoadoutOnly>Loadout only</Preset_option_LoadoutOnly>
+<Preset_option_Basic>Basic</Preset_option_Basic>
+<Preset_option_Advanced>Advanced</Preset_option_Advanced>
+<Preset_option_Excessive>Excessive</Preset_option_Excessive>
+<Preset_option_Brawler>Brawler</Preset_option_Brawler>
+
+<WeaponListKind_option_Both>Both</WeaponListKind_option_Both>
+<WeaponListKind_option_Melee>Melee</WeaponListKind_option_Melee>
+<WeaponListKind_option_Ranged>Ranged</WeaponListKind_option_Ranged>
 
 </LanguageData>

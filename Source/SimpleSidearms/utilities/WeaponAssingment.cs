@@ -79,7 +79,7 @@ namespace SimpleSidearms.utilities
                 if (pawn.equipment.Primary.def.IsMeleeWeapon)
                     return false;
             }
-            return tryWeaponSwap(pawn, false, MiscUtils.shouldDrop(DroppingModeEnum.Panic), pawn.IsColonistPlayerControlled);
+            return tryMeleeWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.Panic), true, pawn.IsColonistPlayerControlled);
         }
 
         internal static void weaponSwapSpecific(Pawn pawn, ThingWithComps toSwapTo, bool dropCurrent)
@@ -115,29 +115,19 @@ namespace SimpleSidearms.utilities
             }
         }
 
-        internal static bool tryWeaponSwap(Pawn pawn, bool ranged, bool dropCurrent, bool skipDangerous)
+        internal static bool tryRangedWeaponSwap(Pawn pawn, bool dropCurrent, bool skipDangerous)
         {
             if (pawn.Dead)
                 return false;
             Thing best = null;
-            if (ranged)
+
+            //Log.Message("looking for ranged weapon in inventory");
+            if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsRangedWeapon))
             {
-                //Log.Message("looking for ranged weapon in inventory");
-                if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsRangedWeapon))
-                {
-                    //Log.Message("found ranged weapon in inventory");
-                    best =  GettersFilters.findBestWeapon(pawn, ranged, skipDangerous/*, RangedSelectionMode*/);
-                }
+                //Log.Message("found ranged weapon in inventory");
+                best = GettersFilters.findBestRangedWeapon(pawn, skipDangerous/*, RangedSelectionMode*/);
             }
-            else
-            {
-                //Log.Message("looking for melee weapon in inventory");
-                if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsMeleeWeapon))
-                {
-                    //Log.Message("found melee weapon in inventory");
-                    best = GettersFilters.findBestWeapon(pawn, ranged, skipDangerous/*, MeleeSelectionMode*/);
-                }
-            }
+
             if (best == null)
                 return false;
 
@@ -177,6 +167,84 @@ namespace SimpleSidearms.utilities
                 }
                 return true;
             }
+            return false;
+        }
+
+        internal static bool tryMeleeWeaponSwap(Pawn pawn, bool dropCurrent, bool dropEvenToUnarmed, bool skipDangerous)
+        {
+            if (pawn.Dead)
+                return false;
+            Thing best = null;
+
+            bool unarmedIsBest;
+
+            //Log.Message("looking for melee weapon in inventory");
+            if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsMeleeWeapon))
+            {
+                //Log.Message("found melee weapon in inventory");
+                best = GettersFilters.findBestMeleeWeapon(pawn, skipDangerous, out unarmedIsBest/*, MeleeSelectionMode*/);
+            }
+            else
+            {
+                unarmedIsBest = true;
+            }
+
+            if (best == null | unarmedIsBest)
+            {
+                if (dropEvenToUnarmed)
+                {
+                    if (pawn.equipment.Primary != null)
+                    {
+                        if (dropCurrent)
+                        {
+                            ThingWithComps oldPrimary;
+                            pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out oldPrimary, pawn.Position, true);
+                        }
+                        else
+                        {
+                            ThingWithComps oldPrimary = pawn.equipment.Primary;
+                            pawn.equipment.Remove(pawn.equipment.Primary);
+                            pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (best is ThingWithComps)
+                {
+                    if (best.stackCount > 1)
+                    {
+                        best = best.SplitOff(1);
+                    }
+
+                    ThingWithComps bestThing = (ThingWithComps)best;
+
+                    if (pawn.inventory.Contains(bestThing))
+                        pawn.inventory.innerContainer.Remove(bestThing);
+
+                    if (dropCurrent)
+                    {
+                        pawn.equipment.MakeRoomFor(bestThing);
+                    }
+                    else
+                    {
+                        if (pawn.equipment.Primary != null)
+                        {
+                            ThingWithComps oldPrimary = pawn.equipment.Primary;
+                            pawn.equipment.Remove(pawn.equipment.Primary);
+                            pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
+                        }
+                    }
+                    pawn.equipment.AddEquipment(bestThing);
+                    if (best.def.soundInteract != null)
+                    {
+                        best.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
+                    }
+                    return true;
+                }
+            }
+            
             return false;
         }
         

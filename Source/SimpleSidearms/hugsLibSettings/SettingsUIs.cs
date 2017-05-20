@@ -28,15 +28,106 @@ namespace SimpleSidearms.hugsLibSettings
         private static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
 
 
-        private static readonly Color SelectedOptionColor = new Color(0.6f, 1f, 0.6f, 1f);
+        private static readonly Color SelectedOptionColor = new Color(0.5f, 1f, 0.5f, 1f);
         private static readonly Color constGrey = new Color(0.8f, 0.8f, 0.8f, 1f);
 
         private static float averageCarryCapacity = 35f;
 
         internal enum ExpansionMode { None, Vertical, Horizontal};
+        
+        //Copied these here since the default ones seem to not allow changing through code (probably for a sensible reason of some description).
 
-        public static bool CustomDrawer_FloatSlider(Rect rect, SettingHandle<float> setting, bool def_isPercentage, float def_min, float def_max)
+        private static void drawBackground(Rect rect, Color background)
         {
+            Color save = GUI.color;
+            GUI.color = background;
+            GUI.DrawTexture(rect, TexUI.FastFillTex);
+            GUI.color = save;
+        }
+
+        public static bool HugsDrawerRebuild_FloatEntry(SettingHandle <float> handle, Rect controlRect, Color background)
+        {
+            drawBackground(controlRect, background);
+            string valText = Widgets.TextField(controlRect, handle.Value.ToString());
+            if (handle.Validator == null || handle.Validator.Invoke(valText))
+            {
+                handle.StringValue = valText;
+                return true;
+            }
+            else
+            {
+                DrawBadTextValueOutline(controlRect);
+                return false;
+            }
+        }
+
+        public static bool HugsDrawerRebuild_IntEntry(SettingHandle<int> handle, Rect controlRect)
+        {
+            string valText = Widgets.TextField(controlRect, handle.Value.ToString());
+            if (handle.Validator == null || handle.Validator.Invoke(valText))
+            {
+                handle.StringValue = valText;
+                return true;
+            }
+            else
+            {
+                DrawBadTextValueOutline(controlRect);
+                return false;
+            }
+        }
+
+        private static readonly Color BadValueOutlineColor = new Color(.9f, .1f, .1f, 1f);
+
+        private static void DrawBadTextValueOutline(Rect rect)
+        {
+            var prevColor = GUI.color;
+            GUI.color = BadValueOutlineColor;
+            Widgets.DrawBox(rect);
+            GUI.color = prevColor;
+        }
+
+        public static bool HugsDrawerRebuild_Spinner(SettingHandle <int> handle, Rect controlRect, Color background)
+        {
+            drawBackground(controlRect, background);
+            var buttonSize = controlRect.height;
+            var leftButtonRect = new Rect(controlRect.x, controlRect.y, buttonSize, buttonSize);
+            var rightButtonRect = new Rect(controlRect.x + controlRect.width - buttonSize, controlRect.y, buttonSize, buttonSize);
+            var changed = false;
+            if (Widgets.ButtonText(leftButtonRect, "-"))
+            {
+                handle.Value -= handle.SpinnerIncrement;
+                changed = true;
+            }
+            if (Widgets.ButtonText(rightButtonRect, "+"))
+            {
+                handle.Value += handle.SpinnerIncrement;
+                changed = true;
+            }
+            var textRect = new Rect(controlRect.x + buttonSize + 1, controlRect.y, controlRect.width - buttonSize * 2 - 2f, controlRect.height);
+            if (HugsDrawerRebuild_IntEntry(handle, textRect))
+            {
+                changed = true;
+            }
+            return changed;
+        }
+        
+        public static bool HugsDrawerRebuild_Checkbox(SettingHandle <bool> handle, Rect controlRect, Color background)
+        {
+            drawBackground(controlRect, background);
+            const float defaultCheckboxHeight = 24f;
+            var checkOn = handle.Value;
+            Widgets.Checkbox(controlRect.x, controlRect.y + (controlRect.height - defaultCheckboxHeight) / 2, ref checkOn);
+            if (checkOn != handle.Value)
+            {
+                handle.Value = checkOn;
+                return true;
+            }
+            return false;
+        }
+
+        public static bool CustomDrawer_FloatSlider(Rect rect, SettingHandle<float> setting, bool def_isPercentage, float def_min, float def_max, Color background)
+        {
+            drawBackground(rect, background);
             /*if (setting.Value == null)
                 setting.Value = new IntervalSliderHandler(def_isPercentage, def_value, def_min, def_max);
             if (setting.Value.setup == false)
@@ -67,13 +158,14 @@ namespace SimpleSidearms.hugsLibSettings
             return change;
         }
 
-        public static bool CustomDrawer_FloatSlider(Rect rect, SettingHandle<float> setting, bool def_isPercentage)
+        public static bool CustomDrawer_FloatSlider(Rect rect, SettingHandle<float> setting, bool def_isPercentage, Color background)
         {
-            return CustomDrawer_FloatSlider(rect, setting, def_isPercentage, 0, 1);
+            return CustomDrawer_FloatSlider(rect, setting, def_isPercentage, 0, 1, background);
         }
 
-        internal static bool CustomDrawer_Enumlist(SettingHandle handle, Rect controlRect, string[] enumNames, float[] forcedWidths, ExpansionMode expansionMode)
+        internal static bool CustomDrawer_Enumlist(SettingHandle handle, Rect controlRect, string[] enumNames, float[] forcedWidths, ExpansionMode expansionMode, Color background)
         {
+            drawBackground(controlRect, background);
             if (enumNames == null) return false;
             if (enumNames.Length != forcedWidths.Length) return false;
 
@@ -137,31 +229,48 @@ namespace SimpleSidearms.hugsLibSettings
             return changed;
         }
         
-        internal static bool CustomDrawer_Button(Rect rect, SettingHandle<Preset> setting, string label)
+        internal static bool CustomDrawer_ButtonExportConfig(Rect rect, string label, SimpleSidearms instance, Color background)
         {
+            drawBackground(rect, background);
             Rect buttonRect = new Rect(rect);
-            buttonRect.width = 120;
+            buttonRect.position = new Vector2(buttonRect.position.x + buttonRect.width - 200, buttonRect.position.y);
+            buttonRect.width = 200;
             Color keptColor = GUI.color;
-            if (SimpleSidearms.ActivePreset.Value == setting.Value)
-                GUI.color = SelectedOptionColor;
-            bool clicked = Widgets.ButtonText(rect, label.Translate());
+            GUI.color = Color.cyan;
+            bool clicked = Widgets.ButtonText(buttonRect, label.Translate());
             if (clicked)
             {
-                SimpleSidearms.ResetSettings();
-                SimpleSidearms.ActivePreset.Value = setting.Value;
-                Presets.presetChanged(setting.Value);
+                UnsafeUtilities.ExportConfigViaReflection(instance);
             }
             GUI.color = keptColor;
             return false; 
         }
 
-        internal static bool CustomDrawer_RighthandSideLine(Rect wholeRect, SettingHandle setting)
+        internal static bool CustomDrawer_ButtonLoadConfig(Rect rect, SettingHandle<Preset> setting, string label, SimpleSidearms instance, Color background)
         {
-            return CustomDrawer_RighthandSideLine(wholeRect, setting, constGrey);
+            drawBackground(rect, background);
+            Rect buttonRect = new Rect(rect);
+            buttonRect.width = 50;
+            Color keptColor = GUI.color;
+            if (SimpleSidearms.ActivePreset.Value == setting.Value)
+                GUI.color = SelectedOptionColor;
+            bool clicked = Widgets.ButtonText(buttonRect, label.Translate());
+            if (clicked)
+            {
+                Presets.presetChanged(setting.Value, instance);
+            }
+            GUI.color = keptColor;
+            return clicked;
         }
 
-        internal static bool CustomDrawer_RighthandSideLine(Rect wholeRect, SettingHandle setting, Color color)
+        internal static bool CustomDrawer_RighthandSideLine(Rect wholeRect, SettingHandle setting, Color background)
         {
+            return CustomDrawer_RighthandSideLine(wholeRect, setting, constGrey, background);
+        }
+
+        internal static bool CustomDrawer_RighthandSideLine(Rect wholeRect, SettingHandle setting, Color color, Color background)
+        {
+            drawBackground(wholeRect, background);
             wholeRect.position = new Vector2(wholeRect.position.x, wholeRect.position.y + (wholeRect.height - 1f) / 2f);
             wholeRect.height = 1f;
             GUI.color = color;
@@ -170,13 +279,14 @@ namespace SimpleSidearms.hugsLibSettings
             return false;
         }
 
-        internal static bool CustomDrawer_RighthandSideLabel(Rect wholeRect, string label)
+        internal static bool CustomDrawer_RighthandSideLabel(Rect wholeRect, string label, Color background)
         {
+            drawBackground(wholeRect, background);
             DrawLabel(label, wholeRect, TextMargin);
             return false;
         }
 
-        internal static bool CustomDrawer_MatchingWeapons_passiveRelative(Rect wholeRect, SettingHandle<WeaponListKind> setting)
+        internal static bool CustomDrawer_MatchingWeapons_passiveRelative(Rect wholeRect, SettingHandle<WeaponListKind> setting, Color background)
         {
             float weightLimit = averageCarryCapacity;
             switch (setting.Value)
@@ -192,10 +302,10 @@ namespace SimpleSidearms.hugsLibSettings
                     weightLimit *= SimpleSidearms.LimitModeSingle_Relative.Value;
                     break;
             }
-            return CustomDrawer_MatchingWeapons_passive(wholeRect, setting, weightLimit, "Sidearms below avg. max. weight ("+weightLimit.ToString("F1")+"kg)");
+            return CustomDrawer_MatchingWeapons_passive(wholeRect, setting, weightLimit, "Sidearms below avg. max. weight ("+weightLimit.ToString("F1")+"kg)", background);
         }
 
-        internal static bool CustomDrawer_MatchingWeapons_passiveAbsolute(Rect wholeRect, SettingHandle<WeaponListKind> setting)
+        internal static bool CustomDrawer_MatchingWeapons_passiveAbsolute(Rect wholeRect, SettingHandle<WeaponListKind> setting, Color background)
         {
             float weightLimit = 0;
             switch (setting.Value)
@@ -211,13 +321,13 @@ namespace SimpleSidearms.hugsLibSettings
                     weightLimit = SimpleSidearms.LimitModeSingle_Absolute.Value;
                     break;
             }
-            return CustomDrawer_MatchingWeapons_passive(wholeRect, setting, weightLimit, "Sidearms below maximum weight");
+            return CustomDrawer_MatchingWeapons_passive(wholeRect, setting, weightLimit, "Sidearms below maximum weight", background);
 
         }
 
-        private static bool CustomDrawer_MatchingWeapons_passive(Rect wholeRect, SettingHandle<WeaponListKind> setting, float weightLimit , string label)
-        { 
-
+        private static bool CustomDrawer_MatchingWeapons_passive(Rect wholeRect, SettingHandle<WeaponListKind> setting, float weightLimit , string label, Color background)
+        {
+            drawBackground(wholeRect, background);
             Rect offsetRect = new Rect(wholeRect);
             offsetRect.height = wholeRect.height - TextMargin + BottomMargin;
             offsetRect.position = new Vector2(offsetRect.position.x, offsetRect.position.y);
@@ -284,8 +394,9 @@ namespace SimpleSidearms.hugsLibSettings
             GUI.color = Color.white;
         }
 
-        internal static bool CustomDrawer_MatchingWeapons_active(Rect wholeRect, SettingHandle<StringListHandler> setting, WeaponListKind kind, string yesText = "Sidearms", string noText = "Not sidearms", bool excludeNeolithic = false)
+        internal static bool CustomDrawer_MatchingWeapons_active(Rect wholeRect, SettingHandle<StringListHandler> setting, WeaponListKind kind, Color background, string yesText = "Sidearms", string noText = "Not sidearms", bool excludeNeolithic = false)
         {
+            drawBackground(wholeRect, background);
             if (setting.Value == null)
                 setting.Value = new StringListHandler();
 

@@ -72,6 +72,10 @@ namespace SimpleSidearms.rimworld
             {
                 return;
             }
+            if (!pawn.RaceProps.Humanlike)
+            {
+                return;
+            }
             if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
             {
                 return;

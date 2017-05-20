@@ -223,17 +223,9 @@ namespace SimpleSidearms.utilities
             return sidearmTags.ToList();
         }
 
-        internal static ThingWithComps findBestWeapon(Pawn pawn, bool ranged, bool skipDangerous/*, SelectionMode mode*/)
+        internal static ThingWithComps findBestRangedWeapon(Pawn pawn, bool skipDangerous/*, SelectionMode mode*/)
         {
-            List<Thing> weapons;
-            if (!ranged)
-            {
-                weapons = getWeaponsOfType(pawn, WeaponSearchType.Melee);
-            }
-            else
-            {
-                weapons = getWeaponsOfType(pawn, WeaponSearchType.Ranged);
-            }
+            List<Thing> weapons = getWeaponsOfType(pawn, WeaponSearchType.Ranged);
 
             float bestSoFar = float.MinValue;
             Thing best = null;
@@ -253,10 +245,6 @@ namespace SimpleSidearms.utilities
                 {
                     dpsAvg = StatCalculator.RangedDPSAverage(thing as ThingWithComps, SpeedSelectionBiasRanged.Value);
                 }
-                else
-                {
-                    dpsAvg = StatCalculator.MeleeDPS(thing as ThingWithComps, SpeedSelectionBiasMelee.Value);
-                }
                 if (dpsAvg > bestSoFar)
                 {
                     bestSoFar = dpsAvg;
@@ -265,7 +253,38 @@ namespace SimpleSidearms.utilities
             }
 
             return best as ThingWithComps;
+        }
 
+        internal static ThingWithComps findBestMeleeWeapon(Pawn pawn, bool skipDangerous, out bool unarmedIsBetter/*, SelectionMode mode*/)
+        {
+            List<Thing> weapons = getWeaponsOfType(pawn, WeaponSearchType.Melee);
+
+            float bestSoFar = float.MinValue;
+            Thing best = null;
+
+            foreach (Thing thing in weapons)
+            {
+                if (!(thing is ThingWithComps))
+                    continue;
+
+                if (skipDangerous)
+                    if (isDangerousWeapon(thing as ThingWithComps))
+                        continue;
+
+                float dpsAvg = -1f;
+
+                dpsAvg = StatCalculator.MeleeDPS(pawn, thing as ThingWithComps, SpeedSelectionBiasMelee.Value);
+
+                if (dpsAvg > bestSoFar)
+                {
+                    bestSoFar = dpsAvg;
+                    best = thing;
+                }
+            }
+
+            unarmedIsBetter = StatCalculator.UnarmedDPS(pawn, SpeedSelectionBiasMelee.Value) > bestSoFar;
+
+            return best as ThingWithComps;
         }
 
         internal static bool isDangerousWeapon(ThingWithComps weapon)

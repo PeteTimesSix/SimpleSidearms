@@ -25,12 +25,12 @@ namespace SimpleSidearms.intercepts
                     Pawn pawn = (__instance.caster as Pawn);
                     if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsRangedWeapon))
                     {
-                        WeaponAssingment.tryWeaponSwap(pawn, true, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), pawn.IsColonistPlayerControlled);
+                        WeaponAssingment.tryRangedWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), pawn.IsColonistPlayerControlled);
                     }
 
                     else if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsMeleeWeapon))
                     {
-                        WeaponAssingment.tryWeaponSwap(pawn, false, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), pawn.IsColonistPlayerControlled);
+                        WeaponAssingment.tryMeleeWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), false, pawn.IsColonistPlayerControlled);
                     }
                 }
             }

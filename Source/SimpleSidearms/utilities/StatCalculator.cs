@@ -81,21 +81,21 @@ namespace SimpleSidearms.utilities
                     case LimitModeSingleSidearm.AbsoluteWeight:
                         if(sidearmWeight >= SimpleSidearms.LimitModeSingle_Absolute.Value)
                         {
-                            errString = "SidearmPickupFail_TooHeavyForSidearm";
+                            errString = "SidearmPickupFail_TooHeavyForSidearm".Translate();
                             return false;
                         }
                         break;
                     case LimitModeSingleSidearm.RelativeWeight:
                         if(sidearmWeight >= SimpleSidearms.LimitModeSingle_Relative.Value * maxCapacity)
                         {
-                            errString = "SidearmPickupFail_TooHeavyForSidearm";
+                            errString = "SidearmPickupFail_TooHeavyForSidearm".Translate();
                             return false;
                         }
                         break;
                     case LimitModeSingleSidearm.Selection:
                         if(!SimpleSidearms.LimitModeSingle_Selection.Value.InnerList.Contains<string>(sidearm.defName))
                         {
-                            errString = "SidearmPickupFail_NotASidearm";
+                            errString = "SidearmPickupFail_NotASidearm".Translate();
                             return false;
                         }
                         break;
@@ -107,21 +107,21 @@ namespace SimpleSidearms.utilities
                     case LimitModeAmountOfSidearms.AbsoluteWeight:
                         if (sidearmWeight >= (SimpleSidearms.LimitModeAmount_Absolute.Value - weightForType(pawn, WeaponSearchType.Both)))
                         {
-                            errString = "SidearmPickupFail_SidearmsTooHeavyInTotal";
+                            errString = "SidearmPickupFail_SidearmsTooHeavyInTotal".Translate();
                             return false;
                         }
                         break;
                     case LimitModeAmountOfSidearms.RelativeWeight:
                         if (sidearmWeight >= ((SimpleSidearms.LimitModeAmount_Relative.Value * maxCapacity) - weightForType(pawn, WeaponSearchType.Both)))
                         {
-                            errString = "SidearmPickupFail_SidearmsTooHeavyInTotal";
+                            errString = "SidearmPickupFail_SidearmsTooHeavyInTotal".Translate();
                             return false;
                         }
                         break;
                     case LimitModeAmountOfSidearms.Slots:
                         if (SimpleSidearms.LimitModeAmount_Slots.Value <= countForType(pawn, WeaponSearchType.Both))
                         {
-                            errString = "SidearmPickupFail_AllSlotsFull";
+                            errString = "SidearmPickupFail_AllSlotsFull".Translate();
                             return false;
                         }
                         break;
@@ -136,21 +136,21 @@ namespace SimpleSidearms.utilities
                     case LimitModeAmountOfSidearms.AbsoluteWeight:
                         if (sidearmWeight >= (SimpleSidearms.LimitModeAmountTotal_Absolute.Value - weightForType(pawn, WeaponSearchType.Both)))
                         {
-                            errString = "SidearmPickupFail_SidearmsTooHeavyInTotal";
+                            errString = "SidearmPickupFail_SidearmsTooHeavyInTotal".Translate();
                             return false;
                         }
                         break;
                     case LimitModeAmountOfSidearms.RelativeWeight:
                         if (sidearmWeight >= ((SimpleSidearms.LimitModeAmountTotal_Relative.Value * maxCapacity) - weightForType(pawn, WeaponSearchType.Both)))
                         {
-                            errString = "SidearmPickupFail_SidearmsTooHeavyInTotal";
+                            errString = "SidearmPickupFail_SidearmsTooHeavyInTotal".Translate();
                             return false;
                         }
                         break;
                     case LimitModeAmountOfSidearms.Slots:
                         if (SimpleSidearms.LimitModeAmountTotal_Slots.Value <= countForType(pawn, WeaponSearchType.Both))
                         {
-                            errString = "SidearmPickupFail_AllSlotsFull";
+                            errString = "SidearmPickupFail_AllSlotsFull".Translate();
                             return false;
                         }
                         break;
@@ -164,21 +164,21 @@ namespace SimpleSidearms.utilities
                         case LimitModeSingleSidearm.AbsoluteWeight:
                             if (sidearmWeight >= SimpleSidearms.LimitModeSingleMelee_Absolute.Value)
                             {
-                                errString = "SidearmPickupFail_TooHeavyForSidearmMelee";
+                                errString = "SidearmPickupFail_TooHeavyForSidearmMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.RelativeWeight:
                             if (sidearmWeight >= SimpleSidearms.LimitModeSingleMelee_Relative.Value * maxCapacity)
                             {
-                                errString = "SidearmPickupFail_TooHeavyForSidearmMelee";
+                                errString = "SidearmPickupFail_TooHeavyForSidearmMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.Selection:
                             if (!SimpleSidearms.LimitModeSingleMelee_Selection.Value.InnerList.Contains<string>(sidearm.defName))
                             {
-                                errString = "SidearmPickupFail_NotASidearmMelee";
+                                errString = "SidearmPickupFail_NotASidearmMelee".Translate();
                                 return false;
                             }
                             break;
@@ -190,21 +190,21 @@ namespace SimpleSidearms.utilities
                         case LimitModeAmountOfSidearms.AbsoluteWeight:
                             if (sidearmWeight >= (SimpleSidearms.LimitModeAmountMelee_Absolute.Value - weightForType(pawn, WeaponSearchType.Melee)))
                             {
-                                errString = "SidearmPickupFail_SidearmsTooHeavyMelee";
+                                errString = "SidearmPickupFail_SidearmsTooHeavyMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeAmountOfSidearms.RelativeWeight:
                             if (sidearmWeight >= ((SimpleSidearms.LimitModeAmountMelee_Relative.Value * maxCapacity) - weightForType(pawn, WeaponSearchType.Melee)))
                             {
-                                errString = "SidearmPickupFail_SidearmsTooHeavyMelee";
+                                errString = "SidearmPickupFail_SidearmsTooHeavyMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeAmountOfSidearms.Slots:
                             if (SimpleSidearms.LimitModeAmountMelee_Slots.Value <= countForType(pawn, WeaponSearchType.Melee))
                             {
-                                errString = "SidearmPickupFail_MeleeSlotsFull";
+                                errString = "SidearmPickupFail_MeleeSlotsFull".Translate();
                                 return false;
                             }
                             break;
@@ -219,21 +219,21 @@ namespace SimpleSidearms.utilities
                         case LimitModeSingleSidearm.AbsoluteWeight:
                             if (sidearmWeight >= SimpleSidearms.LimitModeSingleRanged_Absolute.Value)
                             {
-                                errString = "SidearmPickupFail_TooHeavyForSidearmRanged";
+                                errString = "SidearmPickupFail_TooHeavyForSidearmRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.RelativeWeight:
                             if (sidearmWeight >= SimpleSidearms.LimitModeSingleRanged_Relative.Value * maxCapacity)
                             {
-                                errString = "SidearmPickupFail_TooHeavyForSidearmRanged";
+                                errString = "SidearmPickupFail_TooHeavyForSidearmRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.Selection: 
                             if (!SimpleSidearms.LimitModeSingleRanged_Selection.Value.InnerList.Contains<string>(sidearm.defName))
                             {
-                                errString = "SidearmPickupFail_NotASidearmRanged";
+                                errString = "SidearmPickupFail_NotASidearmRanged".Translate();
                                 return false;
                             }
                             break;
@@ -245,21 +245,21 @@ namespace SimpleSidearms.utilities
                         case LimitModeAmountOfSidearms.AbsoluteWeight:
                             if (sidearmWeight >= (SimpleSidearms.LimitModeAmountRanged_Absolute.Value - weightForType(pawn, WeaponSearchType.Ranged)))
                             {
-                                errString = "SidearmPickupFail_SidearmsTooHeavyRanged";
+                                errString = "SidearmPickupFail_SidearmsTooHeavyRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeAmountOfSidearms.RelativeWeight:
                             if (sidearmWeight >= ((SimpleSidearms.LimitModeAmountRanged_Relative.Value * maxCapacity) - weightForType(pawn, WeaponSearchType.Ranged)))
                             {
-                                errString = "SidearmPickupFail_SidearmsTooHeavyRanged";
+                                errString = "SidearmPickupFail_SidearmsTooHeavyRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeAmountOfSidearms.Slots:
                             if (SimpleSidearms.LimitModeAmountRanged_Slots.Value <= countForType(pawn, WeaponSearchType.Ranged))
                             {
-                                errString = "SidearmPickupFail_RangedSlotsFull";
+                                errString = "SidearmPickupFail_RangedSlotsFull".Translate();
                                 return false;
                             }
                             break;
@@ -270,7 +270,7 @@ namespace SimpleSidearms.utilities
             return true;
         }
 
-    
+
         /*
         internal static bool fitsInCarryCapacity(ThingWithComps equipment, Pawn pawn, out string errString)
         {
@@ -322,9 +322,125 @@ namespace SimpleSidearms.utilities
             return true;
         }*/
 
-        internal static float MeleeDPS(ThingWithComps weapon, float speedBias)
+        private static float GetMeleeHitChance(Pawn pawn, Thing weapon)
         {
-            if (weapon == null)
+            if (weapon != null)
+            {
+                return weapon.GetStatValue(StatDefOf.MeleeHitChance, true);
+            }
+            return pawn.def.GetStatValueAbstract(StatDefOf.MeleeHitChance, null);
+        }
+
+        private static List<Verb> GetUnarmedVerbs(Pawn pawn)
+        {
+            List<Verb> meleeAtks = new List<Verb>();
+            List<Verb> allVerbs = pawn.verbTracker.AllVerbs;
+            for (int i = 0; i < allVerbs.Count; i++)
+            {
+                if (allVerbs[i] is Verb_MeleeAttack && allVerbs[i].IsStillUsableBy(pawn) && (allVerbs[i].ownerEquipment == null || allVerbs[i].ownerEquipment.def.IsMeleeWeapon))
+                {
+                    meleeAtks.Add(allVerbs[i]);
+                }
+            }
+            foreach (Verb current in pawn.health.hediffSet.GetHediffsVerbs())
+            {
+                if (current is Verb_MeleeAttack && current.IsStillUsableBy(pawn))
+                {
+                    meleeAtks.Add(current);
+                }
+            }
+            return meleeAtks;
+        }
+
+        private static float GetMeleeCooldown(Pawn pawn, ThingWithComps weapon)
+        {
+            if (pawn == null)
+            {
+                return 1f;
+            }
+            List<Verb> verbsList;
+
+            if (weapon != null)
+            {
+                verbsList = new List<Verb>();
+                verbsList.Add(weapon.GetComp<CompEquippable>().PrimaryVerb);
+            }
+            else
+            {
+                verbsList = GetUnarmedVerbs(pawn);
+            }
+
+            if (verbsList.Count == 0)
+            {
+                return 1f;
+            }
+            float num = 0f;
+            for (int i = 0; i < verbsList.Count; i++)
+            {
+                num += verbsList[i].verbProps.AdjustedSelectionWeight(verbsList[i], pawn, verbsList[i].ownerEquipment);
+            }
+            float num2 = 0f;
+            for (int j = 0; j < verbsList.Count; j++)
+            {
+                ThingWithComps ownerEquipment = verbsList[j].ownerEquipment;
+                float selectionWeight = verbsList[j].verbProps.AdjustedSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
+                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedCooldownTicks(ownerEquipment);
+            }
+            return num2 / 60f;
+        }
+
+        private static float GetMeleeDamage(Pawn pawn, ThingWithComps weapon)
+        {
+            if (pawn == null)
+            {
+                return 0f;
+            }
+
+            List<Verb> verbsList;
+            if (weapon != null)
+            {
+                verbsList = new List<Verb>();
+                verbsList.Add(weapon.GetComp<CompEquippable>().PrimaryVerb);
+            }
+            else
+            {
+                verbsList = GetUnarmedVerbs(pawn);
+            }
+
+            if (verbsList.Count == 0)
+            {
+                return 0f;
+            }
+            float num = 0f;
+            for (int i = 0; i < verbsList.Count; i++)
+            {
+                num += verbsList[i].verbProps.AdjustedSelectionWeight(verbsList[i], pawn, verbsList[i].ownerEquipment);
+            }
+            float num2 = 0f;
+            for (int j = 0; j < verbsList.Count; j++)
+            {
+                ThingWithComps ownerEquipment = verbsList[j].ownerEquipment;
+                float selectionWeight = verbsList[j].verbProps.AdjustedSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
+                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedMeleeDamageAmount(verbsList[j], pawn, ownerEquipment);
+            }
+            return num2;
+        }
+
+        internal static float UnarmedDPS(Pawn pawn, float speedBias)
+        {
+            if (pawn == null)
+                return 0;
+            float dps = GetMeleeDamage(pawn, null) * GetMeleeHitChance(pawn, null) / GetMeleeCooldown(pawn, null);
+            return dps;
+        }
+
+        internal static float MeleeDPS(Pawn pawn, ThingWithComps weapon, float speedBias)
+        {
+            if (pawn == null)
+                return 0;
+            float dps = GetMeleeDamage(pawn, weapon) * GetMeleeHitChance(pawn, weapon) / GetMeleeCooldown(pawn, weapon);
+            return dps;
+            /*if (weapon == null)
                 return 0;
 
             Verb atkVerb = (weapon.GetComp<CompEquippable>()).PrimaryVerb;
@@ -336,7 +452,7 @@ namespace SimpleSidearms.utilities
             float warmup = atkProps.warmupTime;
             float cooldown = atkProps.AdjustedCooldownTicks(weapon);
             float dps = damage / ((warmup * speedBias + cooldown));
-            return dps;
+            return dps;*/
         }
 
         internal static float RangedDPSAverage(ThingWithComps weapon, float speedBias)
