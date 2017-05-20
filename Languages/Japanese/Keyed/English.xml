@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <ActiveTab_desc></ActiveTab_desc>
+  <ActiveTab_title>設定タブ</ActiveTab_title>
+  <CQCAutoSwitch_desc>近接攻撃された時に遠隔武器を使用している場合、ポーンは近接武器のサイドアームに切り替えます。</CQCAutoSwitch_desc>
+  <CQCAutoSwitch_title>近接格闘: 遠隔武器を切換</CQCAutoSwitch_title>
+  <CQCFistSwitch_desc>近接攻撃された時に拳を使用している場合、ポーンは近接武器のサイドアームに切り替えます。</CQCFistSwitch_desc>
+  <CQCFistSwitch_title>近接格闘: 拳を切換</CQCFistSwitch_title>
+  <CQCTargetOnly_desc>On=現在のターゲットから近接攻撃された場合のみ切替えます。\nOff=誰からでも近接攻撃された場合は切替えます。</CQCTargetOnly_desc>
+  <CQCTargetOnly_title>近接格闘: 目標のみ</CQCTargetOnly_title>
+
+  <DropMode_desc>ポーンは、どのような状況で武器を在庫に移動させずにその場に落としますか？</DropMode_desc>
+  <DropMode_title>ドロップモード</DropMode_title>
+
+  <LimitCarryInfo_desc></LimitCarryInfo_desc>
+  <LimitCarryInfo_title>*常にポーンの運搬能力によって制限する</LimitCarryInfo_title>
+
+  <LimitModeAmountMelee_desc>全ての近接格闘サイドアームに対する制限。</LimitModeAmountMelee_desc>
+  <LimitModeAmountMelee_title>近接サイドアーム制限モード(全て)</LimitModeAmountMelee_title>
+  <LimitModeAmountRanged_desc>全ての遠隔射撃サイドアームに対する制限。</LimitModeAmountRanged_desc>
+  <LimitModeAmountRanged_title>遠隔サイドアーム制限モード(全て)</LimitModeAmountRanged_title>
+  <LimitModeAmount_desc>全てのサイドアームに対する制限。</LimitModeAmount_desc>
+  <LimitModeAmount_title>サイドアーム制限モード(全て)</LimitModeAmount_title>
+  <LimitModeSingleMelee_desc>個々の近接格闘サイドアームに対する制限。</LimitModeSingleMelee_desc>
+  <LimitModeSingleMelee_title>近接サイドアーム制限モード(個別)</LimitModeSingleMelee_title>
+  <LimitModeSingleRanged_desc>個々の遠隔射撃サイドアームに対する制限。</LimitModeSingleRanged_desc>
+  <LimitModeSingleRanged_title>遠隔サイドアーム制限モード(個別)</LimitModeSingleRanged_title>
+  <LimitModeSingle_desc>個々のサイドアームに対する制限。</LimitModeSingle_desc>
+  <LimitModeSingle_title>サイドアーム制限モード(個別)</LimitModeSingle_title>
+
+  <LimitModeAmountTotal_title>全てのサイドアームに対しての制限</LimitModeAmountTotal_title>
+  <LimitModeAmountTotal_desc>全種類のサイドアームに対しての制限。</LimitModeAmountTotal_desc>
+
+  <MaximumMassAmountAbsolute_desc>ポーンに許される全サイドアーム武器の最大合計重量。</MaximumMassAmountAbsolute_desc>
+  <MaximumMassAmountAbsolute_title>サイドアーム最大重量 (合計)</MaximumMassAmountAbsolute_title>
+  <MaximumMassAmountRelative_desc>全サイドアーム武器の合計重量 を ポーンに許される最大運搬重量 で割ったパーセンテージ。</MaximumMassAmountRelative_desc>
+  <MaximumMassAmountRelative_title>サイドアーム最大重量 (合計)％</MaximumMassAmountRelative_title>
+  <MaximumMassSingleAbsolute_desc>ポーンが運ぶことができるサイドアーム１つあたりの最大重量。</MaximumMassSingleAbsolute_desc>
+  <MaximumMassSingleAbsolute_title>サイドアーム最大重量 (単品)</MaximumMassSingleAbsolute_title>
+  <MaximumMassSingleRelative_desc>サイドアーム武器１つあたりに許される重量 を ポーンに許される最大運搬重量 で割ったパーセンテージ。</MaximumMassSingleRelative_desc>
+  <MaximumMassSingleRelative_title>サイドアーム最大重量 (単品)</MaximumMassSingleRelative_title>
+  <MaximumSlots_desc>ポーンに何個サイドアームを持たせますか？</MaximumSlots_desc>
+  <MaximumSlots_title>スロット</MaximumSlots_title>
+  <RangedCombatAutoSwitchMaxWarmup_desc>ポーンが攻撃を中断してサイドアームに切り替えることを拒否する閾値はいくつですか？</RangedCombatAutoSwitchMaxWarmup_desc>
+  <RangedCombatAutoSwitchMaxWarmup_title>遠隔戦時 自動切換: 最大武器準備率</RangedCombatAutoSwitchMaxWarmup_title>
+  <RangedCombatAutoSwitch_desc>遠隔戦闘する際、ポーンは射程に応じた遠隔武器のサイドアームに切り替えますか？</RangedCombatAutoSwitch_desc>
+  <RangedCombatAutoSwitch_title>遠隔戦時 自動切換</RangedCombatAutoSwitch_title>
+  <SeparateModes_desc>近接武器と遠隔武器は制限を共有しますかそれとも別々にしますか？</SeparateModes_desc>
+  <SeparateModes_title>近接/遠隔 別制限</SeparateModes_title>
+  <SidearmSelection_desc></SidearmSelection_desc>
+  <SidearmSelection_title>サイドアーム選択</SidearmSelection_title>
+  <SidearmSpawnChance_desc>武器を持ったポーンが生成された時にサイドアームが追加される可能性。</SidearmSpawnChance_desc>
+  <SidearmSpawnChance_title>サイドアーム所持可能性</SidearmSpawnChance_title>
+  <SingleshotAutoSwitch_desc>使い捨ての単発武器を使い果たした後、ポーンはサイドアームに切り替えますか？</SingleshotAutoSwitch_desc>
+  <SingleshotAutoSwitch_title>単発射撃後 切替</SingleshotAutoSwitch_title>
+  <SpeedSelectionBiasMelee_desc>より攻撃速度が速い近接武器を選ぶ方向にバイアスをかける。</SpeedSelectionBiasMelee_desc>
+  <SpeedSelectionBiasMelee_title>攻撃速度傾向 (近接)</SpeedSelectionBiasMelee_title>
+  <SpeedSelectionBiasRanged_desc>より早い発射準備速度の遠隔武器を選ぶ方向にバイアスをかける。</SpeedSelectionBiasRanged_desc>
+  <SpeedSelectionBiasRanged_title>攻撃速度傾向 (遠隔)</SpeedSelectionBiasRanged_title>
+  <WeaponMatch_desc>これらは与えられた基準に合う武器です。</WeaponMatch_desc>
+  <WeaponMatch_title></WeaponMatch_title>
+
+  <SidearmsEnableNeolithicExtension_desc>蛮族(部族)でも多くの武器をサイドアームとして使用できるようにする。</SidearmsEnableNeolithicExtension_desc>
+  <SidearmsEnableNeolithicExtension_title>新石器時代サイドアーム拡張</SidearmsEnableNeolithicExtension_title>
+  <SidearmsNeolithicExtension_desc></SidearmsNeolithicExtension_desc>
+  <SidearmsNeolithicExtension_title>サイドアーム一覧</SidearmsNeolithicExtension_title>
+
+  <LimitModeSingle_option_None>無制限</LimitModeSingle_option_None>
+  <LimitModeSingle_option_RelativeWeight>重量％</LimitModeSingle_option_RelativeWeight>
+  <LimitModeSingle_option_AbsoluteWeight>重量</LimitModeSingle_option_AbsoluteWeight>
+  <LimitModeSingle_option_Selection>武器別</LimitModeSingle_option_Selection>
+
+  <LimitModeAmount_option_MaximumCarryWeightOnly>無制限</LimitModeAmount_option_MaximumCarryWeightOnly>
+  <LimitModeAmount_option_RelativeWeight>重量％</LimitModeAmount_option_RelativeWeight>
+  <LimitModeAmount_option_AbsoluteWeight>重量</LimitModeAmount_option_AbsoluteWeight>
+  <LimitModeAmount_option_Slots>スロット</LimitModeAmount_option_Slots>
+
+  <ActiveTab_option_Folded>&lt;</ActiveTab_option_Folded>
+  <ActiveTab_option_Presets>初期値</ActiveTab_option_Presets>
+  <ActiveTab_option_Automation>トリガー</ActiveTab_option_Automation>
+  <ActiveTab_option_Allowances>制限</ActiveTab_option_Allowances>
+  <ActiveTab_option_Spawning>所持</ActiveTab_option_Spawning>
+  <ActiveTab_option_Misc>その他</ActiveTab_option_Misc>
+
+  <DropMode_option_Never>しない</DropMode_option_Never>
+  <DropMode_option_Panic>近接時</DropMode_option_Panic>
+  <DropMode_option_PanicOrRange>戦闘時</DropMode_option_PanicOrRange>
+  <DropMode_option_Always>いつでも</DropMode_option_Always>
+
+  <DrawSidearm_gizmoTitle>サイドアームを抜く</DrawSidearm_gizmoTitle>
+  <DrawSidearm_gizmoTooltip>{0}に切替える</DrawSidearm_gizmoTooltip>
+
+</LanguageData>
