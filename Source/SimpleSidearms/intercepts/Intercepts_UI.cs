@@ -101,7 +101,10 @@ namespace SimpleSidearms.intercepts
                     }
                     else
                     {
-                        string text2 = "Equip " + labelShort + " as sidearm";
+                        string text2 = "Equip".Translate(new object[]
+                        {
+                            labelShort
+                        }) + "AsSidearm".Translate();
 
                         if (equipment.def.IsRangedWeapon && pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler))
                         {

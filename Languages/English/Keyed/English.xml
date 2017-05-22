@@ -133,6 +133,7 @@
 <SidearmPickupFail_MeleeSlotsFull>Melee slots full</SidearmPickupFail_MeleeSlotsFull>
 <SidearmPickupFail_RangedSlotsFull>Ranged slots full</SidearmPickupFail_RangedSlotsFull>
 <SidearmPickupPass>No issue</SidearmPickupPass>
+<AsSidearm> as sidearm</AsSidearm>
 
 <Preset_option_NoneApplied>None</Preset_option_NoneApplied>
 <Preset_option_Custom>Custom</Preset_option_Custom>
