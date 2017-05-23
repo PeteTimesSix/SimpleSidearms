@@ -82,22 +82,28 @@ namespace SimpleSidearms.utilities
             return tryMeleeWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.Panic), true, pawn.IsColonistPlayerControlled);
         }
 
-        internal static void weaponSwapSpecific(Pawn pawn, ThingWithComps toSwapTo, bool dropCurrent)
+        internal static void weaponSwapSpecific(Pawn pawn, Thing toSwapTo, bool dropCurrent)
         {
             if (pawn.Dead)
                 return;
 
-            if (toSwapTo.stackCount > 1)
+            if (toSwapTo as ThingWithComps == null)
             {
-                toSwapTo = (ThingWithComps)toSwapTo.SplitOff(1);
+                Log.Warning("Warning: Could not convert " + toSwapTo.LabelShort + " to ThingWithComps, aborting swap");
+                return;
             }
 
+            if (toSwapTo.stackCount > 1)
+            {
+                toSwapTo = toSwapTo.SplitOff(1);
+            }
+            
             if (pawn.inventory.Contains(toSwapTo))
                 pawn.inventory.innerContainer.Remove(toSwapTo);
 
             if (dropCurrent)
             {
-                pawn.equipment.MakeRoomFor(toSwapTo);
+                pawn.equipment.MakeRoomFor(toSwapTo as ThingWithComps);
             }
             else
             {
@@ -108,7 +114,7 @@ namespace SimpleSidearms.utilities
                     pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
                 }
             }
-            pawn.equipment.AddEquipment(toSwapTo);
+            pawn.equipment.AddEquipment(toSwapTo as ThingWithComps);
             if (toSwapTo.def.soundInteract != null)
             {
                 toSwapTo.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));

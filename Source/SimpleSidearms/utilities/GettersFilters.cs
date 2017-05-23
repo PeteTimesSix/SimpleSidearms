@@ -33,12 +33,12 @@ namespace SimpleSidearms.utilities
             }
         }
 
-        internal static void getWeaponLists(out List<ThingWithComps> ranged, out List<ThingWithComps> melee, Pawn_InventoryTracker inventory)
+        internal static void getWeaponLists(out List<Thing> ranged, out List<Thing> melee, Pawn_InventoryTracker inventory)
         {
-            ranged = new List<ThingWithComps>();
-            melee = new List<ThingWithComps>();
+            ranged = new List<Thing>();
+            melee = new List<Thing>();
 
-            foreach (ThingWithComps item in inventory.innerContainer)
+            foreach (Thing item in inventory.innerContainer)
             {
                 if (item.def.IsRangedWeapon)
                     ranged.Add(item);

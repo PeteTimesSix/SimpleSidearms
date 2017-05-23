@@ -1,6 +1,7 @@
 ﻿using Harmony;
 using HugsLib;
 using HugsLib.Settings;
+using HugsLib.Utils;
 using RimWorld;
 using SimpleSidearms.hugsLibSettings;
 using SimpleSidearms.rimworld;
@@ -24,12 +25,13 @@ namespace SimpleSidearms
     {
         public override string ModIdentifier { get { return "SimpleSidearms"; } }
 
+        public static SimpleSidearmsData saveData;
+
         internal enum OptionsTab { Folded, Presets, Automation, Allowances, Spawning, Misc}
         private float TabsNegativeOffset = 100f;
         
         internal static SettingHandle<OptionsTab> ActiveTab;
-
-        internal static SettingHandle<bool> WIP;
+        
         internal static SettingHandle<Preset> ActivePreset;
 
         internal static SettingHandle<Preset> PresetCustom;
@@ -71,7 +73,7 @@ namespace SimpleSidearms
         internal static SettingHandle<WeaponListKind> LimitModeSingle_RelativeMatches;
         internal static SettingHandle<float> LimitModeSingle_Absolute;
         internal static SettingHandle<WeaponListKind> LimitModeSingle_AbsoluteMatches;
-        internal static SettingHandle<StringListHandler> LimitModeSingle_Selection;
+        internal static SettingHandle<StringHashSetHandler> LimitModeSingle_Selection;
         #endregion
         #region LimitModeAmount
         internal static SettingHandle<float> LimitModeAmount_Relative;
@@ -84,7 +86,7 @@ namespace SimpleSidearms
         internal static SettingHandle<WeaponListKind> LimitModeSingleMelee_RelativeMatches;
         internal static SettingHandle<float> LimitModeSingleMelee_Absolute;
         internal static SettingHandle<WeaponListKind> LimitModeSingleMelee_AbsoluteMatches;
-        internal static SettingHandle<StringListHandler> LimitModeSingleMelee_Selection;
+        internal static SettingHandle<StringHashSetHandler> LimitModeSingleMelee_Selection;
         #endregion
         #region LimitModeAmountMelee
         internal static SettingHandle<float> LimitModeAmountMelee_Relative;
@@ -96,7 +98,7 @@ namespace SimpleSidearms
         internal static SettingHandle<WeaponListKind> LimitModeSingleRanged_RelativeMatches;
         internal static SettingHandle<float> LimitModeSingleRanged_Absolute;
         internal static SettingHandle<WeaponListKind> LimitModeSingleRanged_AbsoluteMatches;
-        internal static SettingHandle<StringListHandler> LimitModeSingleRanged_Selection;
+        internal static SettingHandle<StringHashSetHandler> LimitModeSingleRanged_Selection;
         #endregion
         #region LimitModeAmountRanged
         internal static SettingHandle<float> LimitModeAmountRanged_Relative;
@@ -111,7 +113,7 @@ namespace SimpleSidearms
         
         internal static SettingHandle<float> SidearmSpawnChance;
         internal static SettingHandle<bool> SidearmsEnableNeolithicExtension;
-        internal static SettingHandle<StringListHandler> SidearmsNeolithicExtension;
+        internal static SettingHandle<StringHashSetHandler> SidearmsNeolithicExtension;
 
         internal static SettingHandle<DroppingModeOptionsEnum> DropMode;
 
@@ -145,15 +147,10 @@ namespace SimpleSidearms
                 return CustomDrawer_Enumlist(ActiveTab, rect, names, forcedWidths, ExpansionMode.Vertical, noHighlight);
             };
             ActiveTab.Unsaved = true;
-
-            WIP = Settings.GetHandle<bool>("WIP", null, "Work in progress".Translate(), false);
-            WIP.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
-            WIP.CustomDrawer = rect => { return CustomDrawer_RighthandSideLabel(rect, "Presets are currently being implemented.", noHighlight); };
-            WIP.Unsaved = true;
-
-
-            ActivePreset = Settings.GetHandle<Preset>("ActivePreset", null, null, Preset.NoneApplied);
-            ActivePreset.NeverVisible = true;
+            
+            ActivePreset = Settings.GetHandle<Preset>("ActivePreset", null, null, Preset.NoneApplied, null, "Preset_option_");
+            ActivePreset.CustomDrawer = rect => { return false; };
+            //ActivePreset.NeverVisible = true; //so for some reason, when I set this the default preset doesnt get assinged on resetToDefaults. u wot mate
 
             PresetCustom = Settings.GetHandle<Preset>("PresetCustom", "PresetCustom_title".Translate(), "PresetCustom_desc".Translate(), Preset.Custom, null, "Preset_option_");
             PresetCustom.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
@@ -229,7 +226,7 @@ namespace SimpleSidearms
             LimitModeSingle_RelativeMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingle_RelativeMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Both, null, "WeaponListKind_option_");
             LimitModeSingle_Absolute = Settings.GetHandle<float>("LimitModeSingle_Absolute", "MaximumMassSingleAbsolute_title".Translate(), "MaximumMassSingleAbsolute_desc".Translate(), 0f);
             LimitModeSingle_AbsoluteMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingle_AbsoluteMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Both, null, "WeaponListKind_option_");
-            LimitModeSingle_Selection = Settings.GetHandle<StringListHandler>("LimitModeSingle_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
+            LimitModeSingle_Selection = Settings.GetHandle<StringHashSetHandler>("LimitModeSingle_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
             LimitModeSingle_Relative.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingle_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingle_Relative, true, highlight1); };
             LimitModeSingle_RelativeMatches.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
@@ -241,7 +238,7 @@ namespace SimpleSidearms
             LimitModeSingle_AbsoluteMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveAbsolute(rect, LimitModeSingle_AbsoluteMatches, highlight1); };
             LimitModeSingle_AbsoluteMatches.Unsaved = true;
             LimitModeSingle_Selection.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
-            LimitModeSingle_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingle_Selection, WeaponListKind.Both, background: highlight1); };
+            LimitModeSingle_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingle_Selection, WeaponListKind.Both, highlight1, "ConsideredSidearms".Translate(), "NotConsideredSidearms".Translate()); };
             #endregion
             LimitModeAmount = Settings.GetHandle<LimitModeAmountOfSidearms>("LimitModeAmount", "LimitModeAmount_title".Translate(), "LimitModeAmount_desc".Translate(), LimitModeAmountOfSidearms.MaximumCarryWeightOnly, null, "LimitModeAmount_option_");
             LimitModeAmount.CustomDrawer = rect => { string[] names = Enum.GetNames(LimitModeAmount.Value.GetType()); float[] forcedWidths = new float[names.Length]; return CustomDrawer_Enumlist(LimitModeAmount, rect, names, forcedWidths, ExpansionMode.Vertical, highlight2); };
@@ -263,7 +260,7 @@ namespace SimpleSidearms
             LimitModeSingleMelee_RelativeMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingleMelee_RelativeMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Melee, null, "WeaponListKind_option_");
             LimitModeSingleMelee_Absolute = Settings.GetHandle<float>("LimitModeSingleMelee_Absolute", "MaximumMassSingleAbsolute_title".Translate(), "MaximumMassSingleAbsolute_desc".Translate(), 0f);
             LimitModeSingleMelee_AbsoluteMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingleMelee_AbsoluteMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Melee, null, "WeaponListKind_option_");
-            LimitModeSingleMelee_Selection = Settings.GetHandle<StringListHandler>("LimitModeSingleMelee_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
+            LimitModeSingleMelee_Selection = Settings.GetHandle<StringHashSetHandler>("LimitModeSingleMelee_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
             LimitModeSingleMelee_Relative.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleMelee_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingleMelee_Relative, true, highlight1); };
             LimitModeSingleMelee_RelativeMatches.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
@@ -275,7 +272,7 @@ namespace SimpleSidearms
             LimitModeSingleMelee_AbsoluteMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveAbsolute(rect, LimitModeSingleMelee_AbsoluteMatches, highlight1); };
             LimitModeSingleMelee_AbsoluteMatches.Unsaved = true;
             LimitModeSingleMelee_Selection.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
-            LimitModeSingleMelee_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingleMelee_Selection, WeaponListKind.Melee, background: highlight1); };
+            LimitModeSingleMelee_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingleMelee_Selection, WeaponListKind.Melee, highlight1, "ConsideredSidearms".Translate(), "NotConsideredSidearms".Translate()); };
             #endregion
             LimitModeAmountMelee = Settings.GetHandle<LimitModeAmountOfSidearms>("LimitModeAmountMelee", "LimitModeAmountMelee_title".Translate(), "LimitModeAmountMelee_desc".Translate(), LimitModeAmountOfSidearms.MaximumCarryWeightOnly, null, "LimitModeAmount_option_");
             LimitModeAmountMelee.CustomDrawer = rect => { string[] names = Enum.GetNames(LimitModeAmountMelee.Value.GetType()); float[] forcedWidths = new float[names.Length]; return CustomDrawer_Enumlist(LimitModeAmountMelee, rect, names, forcedWidths, ExpansionMode.Vertical, highlight2); };
@@ -304,7 +301,7 @@ namespace SimpleSidearms
             LimitModeSingleRanged_RelativeMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingleRanged_RelativeMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Ranged, null, "WeaponListKind_option_");
             LimitModeSingleRanged_Absolute = Settings.GetHandle<float>("LimitModeSingleRanged_Absolute", "MaximumMassSingleAbsolute_title".Translate(), "MaximumMassSingleAbsolute_desc".Translate(), 0f);
             LimitModeSingleRanged_AbsoluteMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingleRanged_AbsoluteMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Ranged, null, "WeaponListKind_option_");
-            LimitModeSingleRanged_Selection = Settings.GetHandle<StringListHandler>("LimitModeSingleRanged_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
+            LimitModeSingleRanged_Selection = Settings.GetHandle<StringHashSetHandler>("LimitModeSingleRanged_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
             LimitModeSingleRanged_Relative.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleRanged_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingleRanged_Relative, true, highlight3); };
             LimitModeSingleRanged_RelativeMatches.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
@@ -316,7 +313,7 @@ namespace SimpleSidearms
             LimitModeSingleRanged_AbsoluteMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveAbsolute(rect, LimitModeSingleRanged_AbsoluteMatches, highlight3); };
             LimitModeSingleRanged_AbsoluteMatches.Unsaved = true;
             LimitModeSingleRanged_Selection.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
-            LimitModeSingleRanged_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingleRanged_Selection, WeaponListKind.Ranged, background: highlight3); };
+            LimitModeSingleRanged_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingleRanged_Selection, WeaponListKind.Ranged, highlight3, "ConsideredSidearms".Translate(), "NotConsideredSidearms".Translate()); };
             #endregion
             LimitModeAmountRanged = Settings.GetHandle<LimitModeAmountOfSidearms>("LimitModeAmountRanged", "LimitModeAmountRanged_title".Translate(), "LimitModeAmountRanged_desc".Translate(), LimitModeAmountOfSidearms.MaximumCarryWeightOnly, null, "LimitModeAmount_option_");
             LimitModeAmountRanged.CustomDrawer = rect => { string[] names = Enum.GetNames(LimitModeAmountRanged.Value.GetType()); float[] forcedWidths = new float[names.Length]; return CustomDrawer_Enumlist(LimitModeAmountRanged, rect, names, forcedWidths, ExpansionMode.Vertical, highlight4); };
@@ -373,9 +370,9 @@ namespace SimpleSidearms
             SidearmsEnableNeolithicExtension = Settings.GetHandle<bool>("SidearmsEnableNeolithicExtension", "SidearmsEnableNeolithicExtension_title".Translate(), "SidearmsEnableNeolithicExtension_desc".Translate(), false);
             SidearmsEnableNeolithicExtension.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(SidearmsEnableNeolithicExtension, rect, noHighlight); };
             SidearmsEnableNeolithicExtension.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Spawning; };
-            SidearmsNeolithicExtension = Settings.GetHandle<StringListHandler>("SidearmsNeolithicExtension", "SidearmsNeolithicExtension_title".Translate(), "SidearmsNeolithicExtension_desc".Translate(), null);
+            SidearmsNeolithicExtension = Settings.GetHandle<StringHashSetHandler>("SidearmsNeolithicExtension", "SidearmsNeolithicExtension_title".Translate(), "SidearmsNeolithicExtension_desc".Translate(), null);
             SidearmsNeolithicExtension.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Spawning && SidearmsEnableNeolithicExtension.Value == true; };
-            SidearmsNeolithicExtension.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, SidearmsNeolithicExtension, WeaponListKind.Both, noHighlight, "Tribal","Not tribal", true); };
+            SidearmsNeolithicExtension.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, SidearmsNeolithicExtension, WeaponListKind.Both, noHighlight, "TribalWeapons".Translate(),"NonTribalWeapons".Translate(), true); };
 
             DropMode = Settings.GetHandle<DroppingModeOptionsEnum>("DropMode", "DropMode_title".Translate(), "DropMode_desc".Translate(), DroppingModeOptionsEnum.Never, null, "DropMode_option_");
             DropMode.CustomDrawer = rect => {
@@ -385,52 +382,70 @@ namespace SimpleSidearms
             };
             DropMode.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Misc; };
 
-            CQCAutoSwitch.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            CQCFistSwitch.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            CQCTargetOnly.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            RangedCombatAutoSwitch.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            RangedCombatAutoSwitchMaxWarmup.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            SingleshotAutoSwitch.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            SpeedSelectionBiasMelee.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            SpeedSelectionBiasRanged.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            SeparateModes.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingle.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingle_Absolute.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingle_Relative.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingle_Selection.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmount.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmount_Absolute.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmount_Relative.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmount_Slots.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingleMelee.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingleMelee_Absolute.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingleMelee_Relative.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingleMelee_Selection.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingleRanged.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingleRanged_Absolute.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingleRanged_Relative.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeSingleRanged_Selection.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountMelee.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountMelee_Absolute.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountMelee_Relative.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountMelee_Slots.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountRanged.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountRanged_Absolute.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountRanged_Relative.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountRanged_Slots.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountTotal.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountTotal_Absolute.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountTotal_Relative.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            LimitModeAmountTotal_Slots.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            SidearmSpawnChance.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            SidearmsNeolithicExtension.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
-            SidearmsEnableNeolithicExtension.OnValueChanged += delegate { ActivePreset.Value = Preset.Custom; };
+            CQCAutoSwitch.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            CQCFistSwitch.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            CQCTargetOnly.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            RangedCombatAutoSwitch.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            RangedCombatAutoSwitchMaxWarmup.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            SingleshotAutoSwitch.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            SpeedSelectionBiasMelee.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            SpeedSelectionBiasRanged.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            SeparateModes.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingle.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingle_Absolute.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingle_Relative.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingle_Selection.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmount.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmount_Absolute.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmount_Relative.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmount_Slots.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingleMelee.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingleMelee_Absolute.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingleMelee_Relative.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingleMelee_Selection.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingleRanged.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingleRanged_Absolute.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingleRanged_Relative.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeSingleRanged_Selection.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountMelee.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountMelee_Absolute.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountMelee_Relative.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountMelee_Slots.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountRanged.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountRanged_Absolute.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountRanged_Relative.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountRanged_Slots.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountTotal.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountTotal_Absolute.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountTotal_Relative.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            LimitModeAmountTotal_Slots.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            SidearmSpawnChance.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            SidearmsNeolithicExtension.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
+            SidearmsEnableNeolithicExtension.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
 
-            if(ActivePreset.Value == Preset.NoneApplied)
+        }
+
+        private int delay = 0;
+        public override void Update()
+        {
+            base.Update();
+            if (ActivePreset.Value == Preset.NoneApplied)
             {
-                Presets.presetChanged(Preset.Basic, this);
+                if (delay > 5)
+                {
+                    Presets.presetChanged(Preset.Basic, this);
+                    delay = 0;
+                }
+                else
+                    delay++;
             }
         }
+
+        public override void WorldLoaded()
+        {
+            saveData = UtilityWorldObjectManager.GetUtilityWorldObject<SimpleSidearmsData>();
+        }
+
 
         public override void Initialize()
         {
@@ -461,10 +476,7 @@ namespace SimpleSidearms
                         int inti;
                         if (int.TryParse(childNode.Value, out inti))
                         {
-                            Log.Message("found it? " + childNode.Name.ToString());
-                            Log.Message("val pre is " + handle.StringValue);
                             handle.StringValue = childNode.Value;
-                            Log.Message("val post is " + handle.StringValue);
                             found = true;
                             break;
                         }

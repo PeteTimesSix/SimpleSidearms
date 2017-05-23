@@ -37,6 +37,9 @@ namespace SimpleSidearms.utilities
             }
         }
 
+        internal static void DoNothing()
+        {
+        }
     }
 
 }

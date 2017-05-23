@@ -23,7 +23,13 @@ namespace SimpleSidearms.intercepts
                 if (__instance.caster is Pawn)
                 {
                     Pawn pawn = (__instance.caster as Pawn);
-                    if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsRangedWeapon))
+                    if (pawn.inventory.innerContainer.Any((Thing x) => x.def.defName.Equals(__instance.ownerEquipment.def.defName)))
+                    {
+                        Thing replacement = pawn.inventory.innerContainer.First((Thing x) => x.def.defName.Equals(__instance.ownerEquipment.def.defName));
+                        WeaponAssingment.weaponSwapSpecific(pawn, replacement, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp));
+                    }
+
+                    else if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsRangedWeapon))
                     {
                         WeaponAssingment.tryRangedWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), pawn.IsColonistPlayerControlled);
                     }

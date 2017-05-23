@@ -18,7 +18,6 @@ namespace SimpleSidearms.hugsLibSettings
         internal enum WeaponListKind { Both, Melee, Ranged }
 
         private const float ContentPadding = 5f;
-        private const float MinGizmoSize = 75f;
         private const float IconSize = 32f;
         private const float IconGap = 1f;
         private const float TextMargin = 20f;
@@ -26,7 +25,6 @@ namespace SimpleSidearms.hugsLibSettings
 
         private static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
         private static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
-
 
         private static readonly Color SelectedOptionColor = new Color(0.5f, 1f, 0.5f, 1f);
         private static readonly Color constGrey = new Color(0.8f, 0.8f, 0.8f, 1f);
@@ -394,11 +392,11 @@ namespace SimpleSidearms.hugsLibSettings
             GUI.color = Color.white;
         }
 
-        internal static bool CustomDrawer_MatchingWeapons_active(Rect wholeRect, SettingHandle<StringListHandler> setting, WeaponListKind kind, Color background, string yesText = "Sidearms", string noText = "Not sidearms", bool excludeNeolithic = false)
+        internal static bool CustomDrawer_MatchingWeapons_active(Rect wholeRect, SettingHandle<StringHashSetHandler> setting, WeaponListKind kind, Color background, string yesText = "Sidearms", string noText = "Not sidearms", bool excludeNeolithic = false)
         {
             drawBackground(wholeRect, background);
             if (setting.Value == null)
-                setting.Value = new StringListHandler();
+                setting.Value = new StringHashSetHandler();
 
             GUI.color = Color.white;
 
@@ -419,7 +417,7 @@ namespace SimpleSidearms.hugsLibSettings
 
             int iconsPerRow = (int)(leftRect.width / (IconGap + IconSize));
 
-            List<string> selection = setting.Value.InnerList;
+            HashSet<string> selection = setting.Value.InnerList;
 
             List<ThingStuffPair> matchingSidearms;
             List<ThingStuffPair> allSidearms = GettersFilters.filterForType(PawnSidearmsGenerator.getWeaponsList(), WeaponSearchType.Both, false);
@@ -443,12 +441,13 @@ namespace SimpleSidearms.hugsLibSettings
 
             matchingSidearms.Sort(new MassComparer());
 
-            ThingDef[] selectionThingDefs = new ThingDef[selection.Count];
+            List<string> selectionAsList = selection.ToList();
+            ThingDef[] selectionThingDefs = new ThingDef[selectionAsList.Count];
             for (int i = 0; i < allSidearms.Count; i++)
             {
                 for (int j = 0; j < selectionThingDefs.Length; j++)
                 {
-                    if (selection[j].Equals(allSidearms[i].thing.defName))
+                    if (selectionAsList[j].Equals(allSidearms[i].thing.defName))
                         selectionThingDefs[j] = allSidearms[i].thing;
                 }
             }
@@ -467,7 +466,7 @@ namespace SimpleSidearms.hugsLibSettings
             int biggerRows = Math.Max((selection.Count - 1) / iconsPerRow, (unselectedSidearms.Count - 1) / iconsPerRow) + 1;
             setting.CustomDrawerHeight = (biggerRows * IconSize) + ((biggerRows) * IconGap) + TextMargin;
 
-            for (int i = 0; i < selection.Count; i++)
+            for (int i = 0; i < selectionAsList.Count; i++)
             {
                 if (selectionThingDefs[i] == null)
                 {
@@ -480,8 +479,7 @@ namespace SimpleSidearms.hugsLibSettings
                 if (interacted)
                 {
                     change = true;
-                    selection.Remove(selection[i]);
-                    i--; //to prevent skipping
+                    selection.Remove(selectionAsList[i]);
                 }
             }
 
@@ -495,7 +493,7 @@ namespace SimpleSidearms.hugsLibSettings
                     change = true;
                     selection.Add(unselectedSidearms[i].thing.defName);
                 }
-            }
+            } 
             if (change)
             {
                 setting.Value.InnerList = selection;

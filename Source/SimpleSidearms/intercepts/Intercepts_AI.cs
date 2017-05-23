@@ -7,6 +7,7 @@ using System.Text;
 using Verse;
 using static SimpleSidearms.Globals;
 using SimpleSidearms.utilities;
+using SimpleSidearms.rimworld;
 
 namespace SimpleSidearms.intercepts
 {
@@ -20,6 +21,8 @@ namespace SimpleSidearms.intercepts
             if (SimpleSidearms.RangedCombatAutoSwitch == false)
                 return;
             Pawn pawn = __instance.stanceTracker.pawn;
+            if (SwapControlsHandler.GetHandlerForPawn(pawn).currentWeaponLocked)
+                return;
             if (IsHunting(pawn))
                 return;
             if (!(__instance.verb is Verb_Shoot))

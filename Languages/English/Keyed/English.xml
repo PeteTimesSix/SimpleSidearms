@@ -148,4 +148,16 @@
 <WeaponListKind_option_Melee>Melee</WeaponListKind_option_Melee>
 <WeaponListKind_option_Ranged>Ranged</WeaponListKind_option_Ranged>
 
+<TribalWeapons>Tribal</TribalWeapons>
+<NonTribalWeapons>Not tribal</NonTribalWeapons>
+
+<ConsideredSidearms>Sidearms</ConsideredSidearms>
+<NotConsideredSidearms>Not sidearms</NotConsideredSidearms>
+
+<LockedWeaponSwitch>Cannot autoswitch (ranged)</LockedWeaponSwitch>
+<UnlockedWeaponSwitch>Can autoswitch (ranged)</UnlockedWeaponSwitch>
+
+<WeaponSwitchAutolockOn>Lock autoswitch on draw</WeaponSwitchAutolockOn>
+<WeaponSwitchAutolockOff>Off</WeaponSwitchAutolockOff>
+
 </LanguageData>

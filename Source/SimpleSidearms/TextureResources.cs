@@ -11,8 +11,10 @@ namespace SimpleSidearms
     class TextureResources
     {
 
-        public static readonly Texture2D drawRanged = ContentFinder<Texture2D>.Get("drawRanged", true);
-        public static readonly Texture2D drawMelee = ContentFinder<Texture2D>.Get("drawMelee", true);
+        public static readonly Texture2D lockOpen = ContentFinder<Texture2D>.Get("lockOpen", true);
+        public static readonly Texture2D lockClosed = ContentFinder<Texture2D>.Get("lockClosed", true);
+        public static readonly Texture2D autolockOn = ContentFinder<Texture2D>.Get("locklockOn", true);
+        public static readonly Texture2D autolockOff = ContentFinder<Texture2D>.Get("locklockOff", true);
 
         public static readonly Texture2D drawPocket = ContentFinder<Texture2D>.Get("drawPocket", true);
 

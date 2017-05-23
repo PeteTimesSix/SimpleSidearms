@@ -34,8 +34,8 @@ namespace SimpleSidearms.intercepts
             { 
                 if (selected.inventory != null)
                 {
-                    List<ThingWithComps> rangedWeapons;
-                    List<ThingWithComps> meleeWeapons;
+                    List<Thing> rangedWeapons;
+                    List<Thing> meleeWeapons;
                     GettersFilters.getWeaponLists(out rangedWeapons, out meleeWeapons, selected.inventory);
 
                     if (rangedWeapons.Count > 0 || meleeWeapons.Count > 0)

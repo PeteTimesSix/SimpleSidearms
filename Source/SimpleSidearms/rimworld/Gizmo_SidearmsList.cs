@@ -17,7 +17,9 @@ namespace SimpleSidearms.rimworld
         private const float MinGizmoSize = 75f;
         private const float IconSize = 32f;
         private const float IconGap = 1f;
-
+        private const float LockPanelWidth = 24f + ContentPadding;
+        private const float LockIconsOffset = 6f;
+        
         private static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
         private static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
 
@@ -26,9 +28,9 @@ namespace SimpleSidearms.rimworld
             get {
                 int biggerCount = Math.Max(rangedWeapons.Count, meleeWeapons.Count);
                 if (biggerCount < 2)
-                    return MinGizmoSize;
+                    return MinGizmoSize + LockPanelWidth;
                 else
-                    return ContentPadding * 2 + (IconSize * biggerCount) + IconGap * (biggerCount - 1);
+                    return ContentPadding * 2 + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + LockPanelWidth;
             }
         }
 
@@ -36,17 +38,81 @@ namespace SimpleSidearms.rimworld
         public Action hotkeyAction;
 
         private Pawn parent;
-        private List<ThingWithComps> rangedWeapons;
-        private List<ThingWithComps> meleeWeapons;
+        private List<Thing> rangedWeapons;
+        private List<Thing> meleeWeapons;
 
-        public Gizmo_SidearmsList(Pawn parent, List<ThingWithComps> rangedWeapons, List<ThingWithComps> meleeWeapons)
+        public Gizmo_SidearmsList(Pawn parent, List<Thing> rangedWeapons, List<Thing> meleeWeapons)
         {
             this.parent = parent;
             this.rangedWeapons = rangedWeapons;
-            this.meleeWeapons = meleeWeapons;
+            this.meleeWeapons = meleeWeapons; 
         }
 
-        private bool DrawIconForWeapon(ThingWithComps weapon, Rect contentRect, Vector2 iconOffset, int buttonID)
+        private bool DrawLock(SwapControlsHandler handler, Rect rect)
+        {
+            Texture2D lockTex;
+            if (handler.currentWeaponLocked)
+            {
+                lockTex = TextureResources.lockClosed;
+                TooltipHandler.TipRegion(rect, "LockedWeaponSwitch".Translate());
+            }
+            else
+            {
+                lockTex = TextureResources.lockOpen;
+                TooltipHandler.TipRegion(rect, "UnlockedWeaponSwitch".Translate());
+            }           
+            MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
+
+            if (Mouse.IsOver(rect))
+                GUI.color = iconMouseOverColor;
+            else
+                GUI.color = iconBaseColor;
+
+            GUI.DrawTexture(rect, lockTex);
+            GUI.color = Color.white;
+
+            if (Widgets.ButtonInvisible(rect, true))
+            {
+                handler.currentWeaponLocked = !handler.currentWeaponLocked;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private bool DrawLocklock(SwapControlsHandler handler, Rect rect)
+        {
+            Texture2D lockTex;
+            if (handler.autoLockOnManualSwap)
+            {
+                lockTex = TextureResources.autolockOn;
+                TooltipHandler.TipRegion(rect, "WeaponSwitchAutolockOn".Translate());
+            }
+            else
+            {
+                lockTex = TextureResources.autolockOff;
+                TooltipHandler.TipRegion(rect, "WeaponSwitchAutolockOff".Translate()); 
+            }
+            MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
+
+            if (Mouse.IsOver(rect))
+                GUI.color = iconMouseOverColor;
+            else
+                GUI.color = iconBaseColor;
+
+            GUI.DrawTexture(rect, lockTex);
+            GUI.color = Color.white;
+
+            if (Widgets.ButtonInvisible(rect, true))
+            {
+                handler.autoLockOnManualSwap = !handler.autoLockOnManualSwap;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private bool DrawIconForWeapon(Thing weapon, Rect contentRect, Vector2 iconOffset, int buttonID)
         {
             var iconTex = weapon.def.uiIcon;
             Color color = weapon.DrawColor;
@@ -103,17 +169,28 @@ namespace SimpleSidearms.rimworld
 
             for (int i = 0; i < rangedWeapons.Count; i++)
             {
-                var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1), 0);
+                var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1) + LockPanelWidth, 0);
                 interacted |= DrawIconForWeapon(rangedWeapons[i],contentRect, iconOffset, buttonID);
                 buttonID++;
             }
 
             for (int i = 0; i < meleeWeapons.Count; i++)
             {
-                var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1), IconSize + IconGap);
+                var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1) + LockPanelWidth, IconSize + IconGap);
                 interacted |= DrawIconForWeapon(meleeWeapons[i], contentRect, iconOffset, buttonID);
                 buttonID++;
             }
+
+            Rect locksPanel = new Rect(gizmoRect.x + ContentPadding, gizmoRect.y, LockPanelWidth - ContentPadding, MinGizmoSize);
+            //locksPanel = locksPanel.ContractedBy(LockPanelPadding);
+
+            SwapControlsHandler handler = SwapControlsHandler.GetHandlerForPawn(parent);
+
+            Rect lockPanel = new Rect(locksPanel.x, locksPanel.y + (locksPanel.height / 2f) -locksPanel.width - LockIconsOffset, locksPanel.width, locksPanel.width);
+            Rect locklockPanel = new Rect(locksPanel.x, locksPanel.y + (locksPanel.height / 2f) + LockIconsOffset, locksPanel.width, locksPanel.width);
+
+            DrawLock(handler, lockPanel);
+            DrawLocklock(handler, locklockPanel);
 
             DrawGizmoLabel(defaultLabel, gizmoRect);
             return interacted ? new GizmoResult(GizmoState.Interacted, Event.current) : new GizmoResult(GizmoState.Clear);
@@ -137,7 +214,7 @@ namespace SimpleSidearms.rimworld
 
         private void iconClickAction(int buttonID)
         {
-            ThingWithComps toSwapTo;
+            Thing toSwapTo;
 
             if (buttonID >= rangedWeapons.Count)
             {
@@ -148,6 +225,9 @@ namespace SimpleSidearms.rimworld
             {
                 toSwapTo = rangedWeapons[buttonID];
                 WeaponAssingment.weaponSwapSpecific(parent, toSwapTo, MiscUtils.shouldDrop(DroppingModeEnum.UserForced));
+                SwapControlsHandler handler = SwapControlsHandler.GetHandlerForPawn(parent);
+                if (handler.autoLockOnManualSwap)
+                    handler.currentWeaponLocked = true;
             }
         }
 
