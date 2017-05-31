@@ -1,6 +1,3 @@
-F:\SteamLibrary\SteamApps\common\RimWorld\Mods\SimpleSidearms\Assemblies\SimpleSidearms.dll
-F:\SteamLibrary\SteamApps\common\RimWorld\Mods\SimpleSidearms\Source\SimpleSidearms\obj\Debug\SimpleSidearms.dll
-F:\SteamLibrary\SteamApps\common\RimWorld\Mods\SimpleSidearms\Source\SimpleSidearms\obj\Debug\SimpleSidearms.csprojResolveAssemblyReference.cache
 C:\SimpleSidearms\SimpleSidearms\Source\SimpleSidearms\obj\Debug\SimpleSidearms.csprojResolveAssemblyReference.cache
-C:\SimpleSidearms\SimpleSidearms\Source\SimpleSidearms\obj\Debug\SimpleSidearms.dll
 C:\SimpleSidearms\SimpleSidearms\Assemblies\SimpleSidearms.dll
+C:\SimpleSidearms\SimpleSidearms\Source\SimpleSidearms\obj\Debug\SimpleSidearms.dll

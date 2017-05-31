@@ -34,11 +34,13 @@ namespace SimpleSidearms.rimworld
                     }
                     //this.pawn.equipment.MakeRoomFor(thingWithComps2);
                     //this.pawn.equipment.AddEquipment(thingWithComps2);
-                    this.pawn.inventory.innerContainer.TryAdd(thingWithComps2);
+                    bool success = this.pawn.inventory.innerContainer.TryAdd(thingWithComps2);
                     if (thingWithComps.def.soundInteract != null)
                     {
                         thingWithComps.def.soundInteract.PlayOneShot(new TargetInfo(this.pawn.Position, this.pawn.Map, false));
                     }
+                    if (success)
+                        GoldfishModule.GetGoldfishForPawn(this.pawn).AddSidearm(thingWithComps2.def);
                 },
                 defaultCompleteMode = ToilCompleteMode.Instant
             };

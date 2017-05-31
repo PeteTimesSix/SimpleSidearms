@@ -470,7 +470,7 @@ namespace SimpleSidearms.hugsLibSettings
             {
                 if (selectionThingDefs[i] == null)
                 {
-                    Log.Message("Missing matching thingDef");
+                    //Log.Message("Missing matching thingDef");
                     continue;
                 }
                 int collum = (i % iconsPerRow);

@@ -26,7 +26,7 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         private static void Reset()
         {
-            Log.Message("reset intercept");
+            //Log.Message("reset intercept");
             PawnSidearmsGenerator.Reset();
         }
     }

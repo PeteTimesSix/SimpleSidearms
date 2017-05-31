@@ -9,6 +9,52 @@ namespace SimpleSidearms
 {
     public static class Extensions
     {
+        public static bool hasWeaponSomewhere(this Pawn pawn, string wepName)
+        {
+            if (pawn == null)
+                Log.Warning("got handed null pawn");
+            if (pawn.equipment != null)
+                if (pawn.equipment.Primary != null)
+                    if (pawn.equipment.Primary.def.defName.Equals(wepName))
+                        return true;
+
+            if (pawn.inventory != null)
+            {
+                if (pawn.inventory.innerContainer != null)
+                {
+                    foreach (Thing thing in pawn.inventory.innerContainer)
+                    {
+                        if (thing.def.defName.Equals(wepName))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool hasWeaponSomewhere(this Pawn pawn, ThingDef wepDef)
+        {
+            if (pawn == null)
+                Log.Warning("got handed null pawn");
+            if (pawn.equipment != null)
+                if (pawn.equipment.Primary != null)
+                    if (pawn.equipment.Primary.def.Equals(wepDef))
+                        return true;
+
+            if (pawn.inventory != null)
+            {
+                if (pawn.inventory.innerContainer != null)
+                {
+                    foreach (Thing thing in pawn.inventory.innerContainer)
+                    {
+                        if (thing.def.Equals(wepDef))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public static bool Contains(this Rect rect, Rect otherRect)
         {
             if (!rect.Contains(new Vector2(otherRect.xMin, otherRect.yMin)))

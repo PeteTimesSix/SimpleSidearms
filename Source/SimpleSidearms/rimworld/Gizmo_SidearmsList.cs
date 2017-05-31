@@ -26,12 +26,44 @@ namespace SimpleSidearms.rimworld
         public override float Width
         {
             get {
-                int biggerCount = Math.Max(rangedWeapons.Count, meleeWeapons.Count);
-                if (biggerCount < 2)
-                    return MinGizmoSize + LockPanelWidth;
-                else
-                    return ContentPadding * 2 + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + LockPanelWidth;
+                GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
+                int biggerCount = Math.Max(rangedWeapons.Count + calcUnmatchedRangedWeapons(pawnMemory, parent), meleeWeapons.Count + calcUnmatchedMeleeWeapons(pawnMemory, parent) + 1);
+                return ContentPadding * 2 + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + LockPanelWidth;
             }
+        }
+
+        private int calcUnmatchedMeleeWeapons(GoldfishModule pawnMemory, Pawn pawn)
+        {
+            int count = 0;
+
+            foreach (string weapon in pawnMemory.weapons)
+            {
+                ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(weapon);
+                if (def == null)
+                    continue;
+                if (!def.IsMeleeWeapon)
+                    continue;
+                if (!pawn.hasWeaponSomewhere(def))
+                    count++;
+            }
+            return count;
+        }
+
+        private int calcUnmatchedRangedWeapons(GoldfishModule pawnMemory, Pawn pawn)
+        {
+            int count = 0;    
+
+            foreach (string weapon in pawnMemory.weapons)
+            {
+                ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(weapon);
+                if (def == null)
+                    continue;
+                if (!def.IsRangedWeapon)
+                    continue;
+                if (!pawn.hasWeaponSomewhere(def))
+                    count++;
+            }
+            return count;
         }
 
         //public Texture2D[] iconTextures;
@@ -41,11 +73,21 @@ namespace SimpleSidearms.rimworld
         private List<Thing> rangedWeapons;
         private List<Thing> meleeWeapons;
 
-        public Gizmo_SidearmsList(Pawn parent, List<Thing> rangedWeapons, List<Thing> meleeWeapons)
+        private List<ThingDef> rangedWeaponMemories;
+        private List<ThingDef> meleeWeaponMemories;
+
+        private Thing interactedWeapon = null;
+        private ThingDef interactedWeaponMemory = null;
+        private bool interactedRanged = false;
+        private bool interactedUnarmed = false;
+
+        public Gizmo_SidearmsList(Pawn parent, List<Thing> rangedWeapons, List<Thing> meleeWeapons, List<ThingDef> rangedWeaponMemories, List<ThingDef> meleeWeaponMemories)
         {
             this.parent = parent;
             this.rangedWeapons = rangedWeapons;
-            this.meleeWeapons = meleeWeapons; 
+            this.meleeWeapons = meleeWeapons;
+            this.rangedWeaponMemories = rangedWeaponMemories;
+            this.meleeWeaponMemories = meleeWeaponMemories;
         }
 
         private bool DrawLock(SwapControlsHandler handler, Rect rect)
@@ -112,7 +154,84 @@ namespace SimpleSidearms.rimworld
                 return false;
         }
 
-        private bool DrawIconForWeapon(Thing weapon, Rect contentRect, Vector2 iconOffset, int buttonID)
+        private static bool DrawIconForWeaponMemory(GoldfishModule pawnMemory, ThingDef weapon, Rect contentRect, Vector2 iconOffset)
+        {
+            //Log.Message("drawing memory of " + weapon.defName);
+
+            var iconTex = weapon.uiIcon;
+            Graphic g = weapon.graphicData.Graphic;
+            Color color = getColor(weapon);
+            Color colorTwo = getColor(weapon);
+            Graphic g2 = weapon.graphicData.Graphic.GetColoredVersion(g.Shader, color, colorTwo);
+
+            var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
+
+            //if (!contentRect.Contains(iconRect))
+            //    return false;
+
+            string label = weapon.label;
+            
+            Texture2D drawPocket;
+            if (pawnMemory.IsCurrentPrimary(weapon.defName))
+                drawPocket = TextureResources.drawPocketMemoryPrimary;
+            else
+                drawPocket = TextureResources.drawPocketMemory;
+
+            TooltipHandler.TipRegion(iconRect, string.Format("DrawSidearm_gizmoTooltipMemory".Translate(), weapon.label));
+            MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
+            if (Mouse.IsOver(iconRect))
+            {
+                GUI.color = iconMouseOverColor;
+                GUI.DrawTexture(iconRect, drawPocket);
+            }
+            else
+            {
+                GUI.color = iconBaseColor;
+                GUI.DrawTexture(iconRect, drawPocket);
+            }
+
+            Texture resolvedIcon;
+            if (!weapon.uiIconPath.NullOrEmpty())
+            {
+                resolvedIcon = weapon.uiIcon;
+            }
+            else
+            {
+                resolvedIcon = g2.MatSingle.mainTexture;
+            }
+            GUI.color = color;
+            GUI.DrawTexture(iconRect, resolvedIcon);
+            GUI.color = Color.white;
+
+            //Log.Message("done");
+
+            if (Widgets.ButtonInvisible(iconRect, true))
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private static Color getColor(ThingDef weapon)
+        {
+            if (weapon.graphicData != null)
+            {
+                return weapon.graphicData.color;
+            }
+            return Color.white;
+        }
+
+        private static Color getColorTwo(ThingDef weapon)
+        {
+            if (weapon.graphicData != null)
+            {
+                return weapon.graphicData.colorTwo;
+            }
+            return Color.white;
+        }
+
+        private bool DrawIconForWeapon(GoldfishModule pawnMemory, Thing weapon, Rect contentRect, Vector2 iconOffset)
         {
             var iconTex = weapon.def.uiIcon;
             Color color = weapon.DrawColor;
@@ -120,18 +239,25 @@ namespace SimpleSidearms.rimworld
             var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
             //var iconColor = iconBaseColor;
 
-            TooltipHandler.TipRegion(iconRect, string.Format(defaultDesc, weapon.LabelShort));
+            TooltipHandler.TipRegion(iconRect, string.Format("DrawSidearm_gizmoTooltip".Translate(), weapon.LabelShort));
             MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
+
+            Texture2D drawPocket;
+            if (pawnMemory.IsCurrentPrimary(weapon.def.defName))
+                drawPocket = TextureResources.drawPocketPrimary;
+            else
+                drawPocket = TextureResources.drawPocket;
+
             if (Mouse.IsOver(iconRect))
             { 
                 GUI.color = iconMouseOverColor;
-                GUI.DrawTexture(iconRect, TextureResources.drawPocket);
+                GUI.DrawTexture(iconRect, drawPocket);
                 //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconMouseOverColor);
             }
             else
             {
                 GUI.color = iconBaseColor;
-                GUI.DrawTexture(iconRect, TextureResources.drawPocket);
+                GUI.DrawTexture(iconRect, drawPocket);
                 //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconBaseColor);
             }
 
@@ -150,36 +276,112 @@ namespace SimpleSidearms.rimworld
 
             if (Widgets.ButtonInvisible(iconRect, true))
             {
-                Event.current.button = buttonID;
                 return true;
             }
             else
                 return false;
         }
 
-        
+        private bool DrawIconForUnarmed(Pawn pawn, Rect contentRect, Vector2 iconOffset)
+        {
+            var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
+            //var iconColor = iconBaseColor;
+
+            TooltipHandler.TipRegion(iconRect, "DrawSidearm_gizmoTooltipUnarmed".Translate());
+            MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
+
+            Texture2D drawPocket = TextureResources.drawPocket;
+
+            if (Mouse.IsOver(iconRect))
+            {
+                GUI.color = iconMouseOverColor;
+                GUI.DrawTexture(iconRect, drawPocket);
+                //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconMouseOverColor);
+            }
+            else
+            {
+                GUI.color = iconBaseColor;
+                GUI.DrawTexture(iconRect, drawPocket);
+                //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconBaseColor);
+            }
+
+            Texture resolvedIcon = TextureResources.unarmedIcon;
+            GUI.color = Color.white;
+            GUI.DrawTexture(iconRect, resolvedIcon);
+            GUI.color = Color.white;
+
+            if (Widgets.ButtonInvisible(iconRect, true))
+            {
+                return true;
+            }
+            else
+                return false;
+        }
 
         public override GizmoResult GizmoOnGUI(Vector2 topLeft)
         {
             var gizmoRect = new Rect(topLeft.x, topLeft.y, Width, MinGizmoSize);
             var contentRect = gizmoRect.ContractedBy(ContentPadding);
             Widgets.DrawWindowBackground(gizmoRect);
-            var interacted = false;
-            int buttonID = 0;
 
-            for (int i = 0; i < rangedWeapons.Count; i++)
+            var globalInteracted = false;
+            interactedWeapon = null;
+            interactedWeaponMemory = null;
+            interactedRanged = false;
+            interactedUnarmed = false;
+
+            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
+            
+            int i = 0;
+            for (i = 0; i < rangedWeapons.Count; i++)
             {
                 var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1) + LockPanelWidth, 0);
-                interacted |= DrawIconForWeapon(rangedWeapons[i],contentRect, iconOffset, buttonID);
-                buttonID++;
+                bool interacted = DrawIconForWeapon(pawnMemory, rangedWeapons[i], contentRect, iconOffset);
+                if (interacted) interactedWeapon = rangedWeapons[i];
+                if (interacted) interactedRanged = true;
+                globalInteracted |= interacted;
+            }
+             
+            int j = 0;
+            foreach(ThingDef def in rangedWeaponMemories)
+            {
+                if (!parent.hasWeaponSomewhere(def))
+                {
+                    var iconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + LockPanelWidth, 0);
+                    bool interacted = DrawIconForWeaponMemory(pawnMemory, def, contentRect, iconOffset);
+                    if (interacted) interactedWeaponMemory = def;
+                    if (interacted) interactedRanged = true;
+                    globalInteracted |= interacted;
+                    j++;
+                }
             }
 
-            for (int i = 0; i < meleeWeapons.Count; i++)
+            for (i = 0; i < meleeWeapons.Count; i++)
             {
                 var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1) + LockPanelWidth, IconSize + IconGap);
-                interacted |= DrawIconForWeapon(meleeWeapons[i], contentRect, iconOffset, buttonID);
-                buttonID++;
+                bool interacted = DrawIconForWeapon(pawnMemory, meleeWeapons[i], contentRect, iconOffset);
+                if (interacted) interactedWeapon = meleeWeapons[i];
+                if (interacted) interactedRanged = false;
+                globalInteracted |= interacted;
             }
+
+            j = 0;
+            foreach (ThingDef def in meleeWeaponMemories)
+            {
+                if (!parent.hasWeaponSomewhere(def))
+                {
+                    var iconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + LockPanelWidth, IconSize + IconGap);
+                    bool interacted = DrawIconForWeaponMemory(pawnMemory, def, contentRect, iconOffset);
+                    if (interacted) interactedWeaponMemory = def;
+                    if (interacted) interactedRanged = false;
+                    globalInteracted |= interacted;
+                    j++;
+                }
+            }
+
+            var unarmedIconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + LockPanelWidth, IconSize + IconGap);
+            interactedUnarmed = DrawIconForUnarmed(parent, contentRect, unarmedIconOffset);
+            globalInteracted |= interactedUnarmed;
 
             Rect locksPanel = new Rect(gizmoRect.x + ContentPadding, gizmoRect.y, LockPanelWidth - ContentPadding, MinGizmoSize);
             //locksPanel = locksPanel.ContractedBy(LockPanelPadding);
@@ -193,11 +395,12 @@ namespace SimpleSidearms.rimworld
             DrawLocklock(handler, locklockPanel);
 
             DrawGizmoLabel(defaultLabel, gizmoRect);
-            return interacted ? new GizmoResult(GizmoState.Interacted, Event.current) : new GizmoResult(GizmoState.Clear);
+            return globalInteracted ? new GizmoResult(GizmoState.Interacted, Event.current) : new GizmoResult(GizmoState.Clear);
         }
 
         public override void ProcessInput(Event ev)
         {
+            //Log.Message("click " + ev.mousePosition + " button " + ev.button);
             if (activateSound != null)
             {
                 activateSound.PlayOneShotOnCamera();
@@ -214,20 +417,70 @@ namespace SimpleSidearms.rimworld
 
         private void iconClickAction(int buttonID)
         {
-            Thing toSwapTo;
+            if(interactedWeapon != null)
+            {
+                Thing toSwapTo;
+                if (interactedRanged)
+                {
+                    if(buttonID == 0)
+                    {
+                        toSwapTo = interactedWeapon;
+                        WeaponAssingment.weaponSwapSpecific(parent, toSwapTo, true, MiscUtils.shouldDrop(DroppingModeEnum.UserForced), false);
+                        SwapControlsHandler handler = SwapControlsHandler.GetHandlerForPawn(parent);
+                        if (handler.autoLockOnManualSwap)
+                            handler.currentWeaponLocked = true;
+                    }
+                    else if(buttonID == 1)
+                    {
+                        WeaponAssingment.dropSidearm(parent, interactedWeapon);
+                    }
 
-            if (buttonID >= rangedWeapons.Count)
-            {
-                toSwapTo = meleeWeapons[buttonID - rangedWeapons.Count];
-                WeaponAssingment.weaponSwapSpecific(parent, toSwapTo, MiscUtils.shouldDrop(DroppingModeEnum.UserForced));
+                    
+                }
+                else
+                {
+                    if (buttonID == 0)
+                    {
+                        toSwapTo = interactedWeapon;
+                        WeaponAssingment.weaponSwapSpecific(parent, toSwapTo, true, MiscUtils.shouldDrop(DroppingModeEnum.UserForced), false);
+                    }
+                    else if (buttonID == 1)
+                    {
+                        WeaponAssingment.dropSidearm(parent, interactedWeapon);
+                    }
+                }
             }
-            else
+            else if(interactedWeaponMemory != null)
             {
-                toSwapTo = rangedWeapons[buttonID];
-                WeaponAssingment.weaponSwapSpecific(parent, toSwapTo, MiscUtils.shouldDrop(DroppingModeEnum.UserForced));
-                SwapControlsHandler handler = SwapControlsHandler.GetHandlerForPawn(parent);
-                if (handler.autoLockOnManualSwap)
-                    handler.currentWeaponLocked = true;
+                if (interactedRanged)
+                {
+                    if (buttonID == 0)
+                    {
+
+                    }
+                    else if (buttonID == 1)
+                    {
+                        WeaponAssingment.forgetSidearmMemory(parent, interactedWeaponMemory);
+                    }
+                }
+                else
+                {
+                    if (buttonID == 0)
+                    {
+
+                    }
+                    else if (buttonID == 1)
+                    {
+                        WeaponAssingment.forgetSidearmMemory(parent, interactedWeaponMemory);
+                    }
+                }
+            }
+            else if(interactedUnarmed == true)
+            {
+                if (buttonID == 0)
+                {
+                    WeaponAssingment.weaponSwapSpecific(parent, null, true, MiscUtils.shouldDrop(DroppingModeEnum.UserForced), false);
+                }
             }
         }
 

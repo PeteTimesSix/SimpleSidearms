@@ -65,7 +65,9 @@
     <Compile Include="intercepts\Intercepts_AI.cs" />
     <Compile Include="intercepts\Intercepts_UI.cs" />
     <Compile Include="intercepts\Intercepts_Verbs.cs" />
+    <Compile Include="rimworld\GoldfishModule.cs" />
     <Compile Include="rimworld\JobDriver_EquipSidearm.cs" />
+    <Compile Include="rimworld\JobGiver_RetrieveWeapon.cs" />
     <Compile Include="rimworld\MassComparer.cs" />
     <Compile Include="rimworld\PawnSidearmsGenerator.cs" />
     <Compile Include="rimworld\SidearmsJobDefOf.cs" />

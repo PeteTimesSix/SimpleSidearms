@@ -99,6 +99,9 @@
 <Preset0_title>Disabled</Preset0_title>
 <Preset0_desc>All options disabled. Good base for configurations that use only a small portion of the mod's features.</Preset0_desc>
 <Preset0_label></Preset0_label>
+<Preset1half_title>Lite</Preset1half_title>
+<Preset1half_desc>Allows a single melee weapon as a sidearm.</Preset1half_desc>
+<Preset1half_label></Preset1half_label>
 <Preset1_title>Loadout only</Preset1_title>
 <Preset1_desc>Allows equipping sidearms, but nothing else. Essentially a convenient inventory extension.</Preset1_desc>
 <Preset1_label></Preset1_label>
@@ -115,8 +118,6 @@
 <Preset5_desc>Melee sidearms for everyone.</Preset5_desc>
 <Preset5_label></Preset5_label>
 
-<DrawSidearm_gizmoTitle>Draw</DrawSidearm_gizmoTitle>
-<DrawSidearm_gizmoTooltip>Draw {0}.</DrawSidearm_gizmoTooltip>
 
 <SidearmPickupFail_NoFreeSpace>No free space</SidearmPickupFail_NoFreeSpace>
 <SidearmPickupFail_TooHeavyForSidearm>Loadout too heavy</SidearmPickupFail_TooHeavyForSidearm>
@@ -137,6 +138,7 @@
 
 <Preset_option_NoneApplied>None</Preset_option_NoneApplied>
 <Preset_option_Custom>Custom</Preset_option_Custom>
+<Preset_option_Lite>Lite</Preset_option_Lite>
 <Preset_option_Disabled>Disabled</Preset_option_Disabled>
 <Preset_option_LoadoutOnly>Loadout only</Preset_option_LoadoutOnly>
 <Preset_option_Basic>Basic</Preset_option_Basic>
@@ -159,5 +161,11 @@
 
 <WeaponSwitchAutolockOn>Lock autoswitch on draw</WeaponSwitchAutolockOn>
 <WeaponSwitchAutolockOff>Off</WeaponSwitchAutolockOff>
+
+<DrawSidearm_gizmoTitle>Sidearms</DrawSidearm_gizmoTitle>
+<DrawSidearm_gizmoTooltip>Left click to draw {0}.
+Right click to drop {0}.</DrawSidearm_gizmoTooltip>
+<DrawSidearm_gizmoTooltipMemory>Right click to forget about {0}.</DrawSidearm_gizmoTooltipMemory>
+<DrawSidearm_gizmoTooltipUnarmed>Left click to switch to unarmed combat.</DrawSidearm_gizmoTooltipUnarmed>
 
 </LanguageData>

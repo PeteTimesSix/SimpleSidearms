@@ -56,4 +56,24 @@ namespace SimpleSidearms.intercepts
             return jobDriver_Hunt != null | jobDriver_PredatorHunt != null;
         }
     }
+
+    [HarmonyPatch(typeof(Pawn_EquipmentTracker), "AddEquipment")]
+    static class Pawn_EquipmentTracker_AddEquipment_Postfix
+    {
+        //EW EW EW GLOBAL FLAG EW EW
+        public static bool sourcedBySimpleSidearms = false;
+
+        [HarmonyPostfix]
+        private static void AddEquipment(Pawn_EquipmentTracker __instance, ThingWithComps newEq)
+        {
+            if (!sourcedBySimpleSidearms)
+            {
+                Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
+                if (pawn == null)
+                    return;
+
+                GoldfishModule.GetGoldfishForPawn(pawn).PickupPrimary(newEq.def, true);
+            }
+        }
+    }
 }

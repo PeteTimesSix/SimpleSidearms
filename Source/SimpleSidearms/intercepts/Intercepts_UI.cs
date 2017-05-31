@@ -12,45 +12,80 @@ using SimpleSidearms.rimworld;
 
 namespace SimpleSidearms.intercepts
 {
-    [HarmonyPatch(typeof(GizmoGridDrawer), "DrawGizmoGrid")]
-    static class GizmoGridDrawer_DrawGizmoGrid_Prefix
+    [HarmonyPatch(typeof(ITab_Pawn_Gear), "InterfaceDrop")]
+    static class ITab_Pawn_Gear_InterfaceDrop_Prefix
     {
         [HarmonyPrefix]
-        private static bool DrawGizmoGrid(ref IEnumerable<Gizmo> gizmos)
+        private static void InterfaceDrop(ITab_Pawn_Gear __instance, Thing t)
         {
-            List<Gizmo> newList = new List<Gizmo>();
-            newList.AddRange(gizmos);
+            ThingWithComps thingWithComps = t as ThingWithComps;
+            if(thingWithComps.def.IsMeleeWeapon || thingWithComps.def.IsRangedWeapon)
+            {
+                ThingOwner thingOwner = thingWithComps.holdingOwner;
+                IThingHolder actualOwner = thingOwner.Owner;
+                if(actualOwner is Pawn_InventoryTracker)
+                {
+                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_InventoryTracker).pawn);
+                    pawnMemory.DropSidearm(thingWithComps.def, true);
+                }
+                else if(actualOwner is Pawn_EquipmentTracker)
+                {
+                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_InventoryTracker).pawn);
+                    pawnMemory.DropPrimary(true);
+                }
+            }
+        }
+    }
 
-            Pawn selected = GettersFilters.extractSelectedPawn();
-            if (selected == null)
+    [HarmonyPatch(typeof(Pawn), "GetGizmos")]
+    static class Pawn_GetGizmos_Postfix
+    {
+        [HarmonyPostfix]
+        private static void GetGizmos(Pawn __instance, ref IEnumerable<Gizmo> __result)
+        {
+            if (__instance.IsColonistPlayerControlled)
             {
-                //Log.Message("no pawn");
-            }
-            else if (!selected.IsColonistPlayerControlled)
-            {
-                //Log.Message("pawn uncontrolled");
-            }
-            else
-            { 
-                if (selected.inventory != null)
+                if (__instance.inventory != null)
                 {
                     List<Thing> rangedWeapons;
                     List<Thing> meleeWeapons;
-                    GettersFilters.getWeaponLists(out rangedWeapons, out meleeWeapons, selected.inventory);
+                    GettersFilters.getWeaponLists(out rangedWeapons, out meleeWeapons, __instance.inventory);
 
-                    if (rangedWeapons.Count > 0 || meleeWeapons.Count > 0)
+                    GoldfishModule memory = GoldfishModule.GetGoldfishForPawn(__instance);
+
+                    if (rangedWeapons.Count > 0 || meleeWeapons.Count > 0 || memory.weapons.Count > 0)
                     {
-                        Gizmo_SidearmsList advanced = new Gizmo_SidearmsList(selected, rangedWeapons, meleeWeapons);
+                        List<ThingDef> rangedWeaponMemories = new List<ThingDef>();
+                        List<ThingDef> meleeWeaponMemories = new List<ThingDef>();
+                        
+                        foreach (string weapon in memory.weapons)
+                        {
+                            ThingDef wepDef = DefDatabase<ThingDef>.GetNamedSilentFail(weapon);
+
+                            if (wepDef == null)
+                                continue;
+
+                            if (wepDef.IsMeleeWeapon)
+                                meleeWeaponMemories.Add(wepDef);
+                            else if (wepDef.IsRangedWeapon)
+                                rangedWeaponMemories.Add(wepDef);
+                        }
+
+                        Gizmo_SidearmsList advanced = new Gizmo_SidearmsList(__instance, rangedWeapons, meleeWeapons, rangedWeaponMemories, meleeWeaponMemories);
                         advanced.defaultLabel = "DrawSidearm_gizmoTitle".Translate();
                         //draft.hotKey = KeyBindingDefOf.CommandColonistDraft;
                         advanced.defaultDesc = "DrawSidearm_gizmoTooltip".Translate();
-                        newList.Add(advanced);
+
+                        List<Gizmo> results = new List<Gizmo>();
+                        foreach (Gizmo gizmo in __result)
+                        {
+                            results.Add(gizmo);
+                        }
+                        results.Add(advanced);
+                        __result = results;
                     }
                 }
             }
-            gizmos = newList;
-
-            return true;
         }
     }
 

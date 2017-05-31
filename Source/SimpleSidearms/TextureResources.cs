@@ -17,6 +17,11 @@ namespace SimpleSidearms
         public static readonly Texture2D autolockOff = ContentFinder<Texture2D>.Get("locklockOff", true);
 
         public static readonly Texture2D drawPocket = ContentFinder<Texture2D>.Get("drawPocket", true);
+        public static readonly Texture2D drawPocketPrimary = ContentFinder<Texture2D>.Get("drawPocketPrimary", true);
+        public static readonly Texture2D drawPocketMemory = ContentFinder<Texture2D>.Get("drawPocketMemory", true);
+        public static readonly Texture2D drawPocketMemoryPrimary = ContentFinder<Texture2D>.Get("drawPocketMemoryPrimary", true);
+
+        public static readonly Texture2D unarmedIcon = ContentFinder<Texture2D>.Get("unarmedIcon", true);
 
     }
 }

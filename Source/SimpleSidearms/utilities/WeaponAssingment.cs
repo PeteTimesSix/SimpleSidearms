@@ -1,4 +1,6 @@
 ﻿using RimWorld;
+using SimpleSidearms.intercepts;
+using SimpleSidearms.rimworld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,99 @@ namespace SimpleSidearms.utilities
 {
     public static class WeaponAssingment
     {
+        public static void SetPrimary(Pawn pawn, Thing toSwapTo, bool intentionalEquip, bool fromInventory, bool dropCurrent, bool intentionalDrop)
+        {
+            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+
+            if (toSwapTo != null)
+            {
+                if (toSwapTo.stackCount > 1)
+                {
+                    toSwapTo = toSwapTo.SplitOff(1);
+                }
+
+                if (fromInventory)
+                {
+                    if (pawn.inventory.Contains(toSwapTo))
+                        pawn.inventory.innerContainer.Remove(toSwapTo);
+                }
+            }
+
+            if (dropCurrent)
+            {
+                pawnMemory.DropPrimary(intentionalDrop);
+
+                if(pawn.equipment.Primary != null)
+                {
+                    ThingWithComps whocares;
+                    pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out whocares, pawn.Position, false);
+                }
+            }
+            else
+            {
+                if (pawn.equipment.Primary != null)
+                {
+                    ThingWithComps oldPrimary = pawn.equipment.Primary;
+                    pawn.equipment.Remove(pawn.equipment.Primary);
+                    pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
+                }
+            }
+
+            if(toSwapTo != null)
+            {
+                Pawn_EquipmentTracker_AddEquipment_Postfix.sourcedBySimpleSidearms = true;
+                pawn.equipment.AddEquipment(toSwapTo as ThingWithComps);
+                Pawn_EquipmentTracker_AddEquipment_Postfix.sourcedBySimpleSidearms = false;
+
+                if (toSwapTo.def.soundInteract != null)
+                {
+                    toSwapTo.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
+                }
+                pawnMemory.SetPrimary(toSwapTo.def, intentionalEquip);
+            }
+            else
+            {
+                pawnMemory.SetPrimaryEmpty(intentionalEquip);
+            }
+
+        }
+
+        internal static void reequipPrimaryIfNeededAndAvailable(Pawn pawn, GoldfishModule pawnMemory)
+        {
+            if(pawn.equipment.Primary == null)
+            {
+                if (pawnMemory.primary == GoldfishModule.NoWeaponString)
+                    return;
+                else
+                {
+                    foreach(Thing thing in pawn.inventory.innerContainer)
+                    {
+                        if (thing.def.defName.Equals(pawnMemory.primary))
+                        {
+                            SetPrimary(pawn, thing, true, true, false, false);
+                            return;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (pawnMemory.primary.Equals(pawn.equipment.Primary.def.defName))
+                    return;
+                else
+                {
+                    foreach (Thing thing in pawn.inventory.innerContainer)
+                    {
+                        if (thing.def.defName.Equals(pawnMemory.primary))
+                        {
+                            SetPrimary(pawn, thing, true, true, false, false);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         internal static void doCQC(Pawn pawn, Pawn attacker)
         {
             //Log.Message(attacker.LabelShort + " attacking " + pawn.LabelShort + " CQC check");
@@ -82,43 +177,19 @@ namespace SimpleSidearms.utilities
             return tryMeleeWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.Panic), true, pawn.IsColonistPlayerControlled);
         }
 
-        internal static void weaponSwapSpecific(Pawn pawn, Thing toSwapTo, bool dropCurrent)
+        internal static void weaponSwapSpecific(Pawn pawn, Thing toSwapTo, bool intentionalEquip, bool dropCurrent, bool intentionalDrop)
         {
             if (pawn.Dead)
                 return;
-
-            if (toSwapTo as ThingWithComps == null)
+           
+            if (toSwapTo != null && toSwapTo as ThingWithComps == null)
             {
                 Log.Warning("Warning: Could not convert " + toSwapTo.LabelShort + " to ThingWithComps, aborting swap");
                 return;
             }
 
-            if (toSwapTo.stackCount > 1)
-            {
-                toSwapTo = toSwapTo.SplitOff(1);
-            }
-            
-            if (pawn.inventory.Contains(toSwapTo))
-                pawn.inventory.innerContainer.Remove(toSwapTo);
-
-            if (dropCurrent)
-            {
-                pawn.equipment.MakeRoomFor(toSwapTo as ThingWithComps);
-            }
-            else
-            {
-                if (pawn.equipment.Primary != null)
-                {
-                    ThingWithComps oldPrimary = pawn.equipment.Primary;
-                    pawn.equipment.Remove(pawn.equipment.Primary);
-                    pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
-                }
-            }
-            pawn.equipment.AddEquipment(toSwapTo as ThingWithComps);
-            if (toSwapTo.def.soundInteract != null)
-            {
-                toSwapTo.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
-            }
+            SetPrimary(pawn, toSwapTo, intentionalEquip, true, dropCurrent, intentionalDrop);
+           
         }
 
         internal static bool tryRangedWeaponSwap(Pawn pawn, bool dropCurrent, bool skipDangerous)
@@ -142,41 +213,16 @@ namespace SimpleSidearms.utilities
             if (best is ThingWithComps)
             {
                 //Log.Message("converted to ThingWithComps");
-
-                if (best.stackCount > 1)
-                {
-                    best = best.SplitOff(1);
-                }
-
                 ThingWithComps bestThing = (ThingWithComps)best;
 
-                if (pawn.inventory.Contains(bestThing))
-                    pawn.inventory.innerContainer.Remove(bestThing);
+                SetPrimary(pawn, bestThing, false, true, dropCurrent, false);
 
-                if (dropCurrent)
-                {
-                    pawn.equipment.MakeRoomFor(bestThing);
-                }
-                else
-                {
-                    if (pawn.equipment.Primary != null)
-                    {
-                        ThingWithComps oldPrimary = pawn.equipment.Primary;
-                        pawn.equipment.Remove(pawn.equipment.Primary);
-                        pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
-                    }
-                }
-                pawn.equipment.AddEquipment(bestThing);
-                if (best.def.soundInteract != null)
-                {
-                    best.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
-                }
                 return true;
             }
             return false;
         }
 
-        internal static bool tryMeleeWeaponSwap(Pawn pawn, bool dropCurrent, bool dropEvenToUnarmed, bool skipDangerous)
+        internal static bool tryMeleeWeaponSwap(Pawn pawn, bool dropCurrent, bool considerUnarmed, bool skipDangerous)
         {
             if (pawn.Dead)
                 return false;
@@ -197,56 +243,16 @@ namespace SimpleSidearms.utilities
 
             if (best == null | unarmedIsBest)
             {
-                if (dropEvenToUnarmed)
+                if (considerUnarmed)
                 {
-                    if (pawn.equipment.Primary != null)
-                    {
-                        if (dropCurrent)
-                        {
-                            ThingWithComps oldPrimary;
-                            pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out oldPrimary, pawn.Position, true);
-                        }
-                        else
-                        {
-                            ThingWithComps oldPrimary = pawn.equipment.Primary;
-                            pawn.equipment.Remove(pawn.equipment.Primary);
-                            pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
-                        }
-                    }
+                    SetPrimary(pawn, null, false, true, dropCurrent, false);
                 }
             }
             else
             {
                 if (best is ThingWithComps)
                 {
-                    if (best.stackCount > 1)
-                    {
-                        best = best.SplitOff(1);
-                    }
-
-                    ThingWithComps bestThing = (ThingWithComps)best;
-
-                    if (pawn.inventory.Contains(bestThing))
-                        pawn.inventory.innerContainer.Remove(bestThing);
-
-                    if (dropCurrent)
-                    {
-                        pawn.equipment.MakeRoomFor(bestThing);
-                    }
-                    else
-                    {
-                        if (pawn.equipment.Primary != null)
-                        {
-                            ThingWithComps oldPrimary = pawn.equipment.Primary;
-                            pawn.equipment.Remove(pawn.equipment.Primary);
-                            pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
-                        }
-                    }
-                    pawn.equipment.AddEquipment(bestThing);
-                    if (best.def.soundInteract != null)
-                    {
-                        best.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
-                    }
+                    SetPrimary(pawn, best, false, true, dropCurrent, false);
                     return true;
                 }
             }
@@ -289,39 +295,23 @@ namespace SimpleSidearms.utilities
             {
                 //Log.Message("converted to ThingWithComps");
 
-                if (betterWeapon.stackCount > 1)
-                {
-                    betterWeapon = betterWeapon.SplitOff(1);
-                }
+                SetPrimary(pawn, betterWeapon, false, true, dropCurrent, false);
 
-                ThingWithComps bestThing = (ThingWithComps)betterWeapon;
-
-                if (pawn.inventory.Contains(bestThing))
-                    pawn.inventory.innerContainer.Remove(bestThing);
-
-                if (dropCurrent)
-                {
-                    pawn.equipment.MakeRoomFor(bestThing);
-                }
-                else
-                {
-                    if (pawn.equipment.Primary != null)
-                    {
-                        ThingWithComps oldPrimary = pawn.equipment.Primary;
-                        pawn.equipment.Remove(pawn.equipment.Primary);
-                        pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
-                    }
-                }
-                pawn.equipment.AddEquipment(bestThing);
-                if (bestThing.def.soundInteract != null)
-                {
-                    bestThing.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
-                }
                 return true;
             }
             return false;
         }
 
+        internal static void dropSidearm(Pawn pawn, Thing interactedWeapon)
+        { 
+            GoldfishModule.GetGoldfishForPawn(pawn).ForgetSidearm(interactedWeapon.def);
+            Thing whoCares;
+            pawn.inventory.innerContainer.TryDrop(interactedWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out whoCares, null);
+        }
 
+        internal static void forgetSidearmMemory(Pawn pawn, ThingDef interactedWeaponMemory)
+        { 
+            GoldfishModule.GetGoldfishForPawn(pawn).ForgetSidearm(interactedWeaponMemory);
+        }
     }
 }

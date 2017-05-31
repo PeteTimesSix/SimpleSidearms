@@ -37,6 +37,7 @@ namespace SimpleSidearms
         internal static SettingHandle<Preset> PresetCustom;
         internal static SettingHandle<Preset> Preset0;
         internal static SettingHandle<Preset> Preset1;
+        internal static SettingHandle<Preset> Preset1half;
         internal static SettingHandle<Preset> Preset2;
         internal static SettingHandle<Preset> Preset3;
         internal static SettingHandle<Preset> Preset4;
@@ -140,18 +141,18 @@ namespace SimpleSidearms
             ActiveTab.CustomDrawer = rect => {
                 string[] names = Enum.GetNames(ActiveTab.Value.GetType());
                 float[] forcedWidths = new float[names.Length];
-                forcedWidths[0] = 30; 
-                rect = new Rect(rect);
+                forcedWidths[0] = 30;  
+                rect = new Rect(rect); 
                 rect.position = new Vector2(rect.position.x - TabsNegativeOffset, rect.position.y);
                 rect.width = rect.width + TabsNegativeOffset;
                 return CustomDrawer_Enumlist(ActiveTab, rect, names, forcedWidths, ExpansionMode.Vertical, noHighlight);
             };
-            ActiveTab.Unsaved = true;
+            ActiveTab.Unsaved = true; 
             
-            ActivePreset = Settings.GetHandle<Preset>("ActivePreset", null, null, Preset.NoneApplied, null, "Preset_option_");
+            ActivePreset = Settings.GetHandle<Preset>("ActivePreset", null, null, Preset.NoneApplied, null, "Preset_option_"); 
             ActivePreset.CustomDrawer = rect => { return false; };
             //ActivePreset.NeverVisible = true; //so for some reason, when I set this the default preset doesnt get assinged on resetToDefaults. u wot mate
-
+             
             PresetCustom = Settings.GetHandle<Preset>("PresetCustom", "PresetCustom_title".Translate(), "PresetCustom_desc".Translate(), Preset.Custom, null, "Preset_option_");
             PresetCustom.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
             PresetCustom.CustomDrawer = rect => { return CustomDrawer_ButtonLoadConfig(rect, PresetCustom, "PresetCustom_label", this, noHighlight); };
@@ -159,6 +160,9 @@ namespace SimpleSidearms
             Preset0 = Settings.GetHandle<Preset>("Preset0", "Preset0_title".Translate(), "Preset0_desc".Translate(), Preset.Disabled, null, "Preset_option_");
             Preset0.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
             Preset0.CustomDrawer = rect => { return CustomDrawer_ButtonLoadConfig(rect, Preset0, "Preset0_label", this, noHighlight); };
+            Preset1half = Settings.GetHandle<Preset>("Preset1half", "Preset1half_title".Translate(), "Preset1half_desc".Translate(), Preset.Lite, null, "Preset_option_");
+            Preset1half.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
+            Preset1half.CustomDrawer = rect => { return CustomDrawer_ButtonLoadConfig(rect, Preset1half, "Preset1half_label", this, noHighlight); };
             Preset1 = Settings.GetHandle<Preset>("Preset1", "Preset1_title".Translate(), "Preset1_desc".Translate(), Preset.LoadoutOnly, null, "Preset_option_");
             Preset1.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
             Preset1.CustomDrawer = rect => { return CustomDrawer_ButtonLoadConfig(rect, Preset1, "Preset1_label", this, noHighlight); };

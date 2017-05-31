@@ -464,16 +464,16 @@ namespace SimpleSidearms.utilities
             VerbProperties atkProps = atkVerb.verbProps;
 
             float damage = (atkProps.projectileDef == null) ? 0 : atkProps.projectileDef.projectile.damageAmountBase;
-            float warmup = atkProps.warmupTime;
-            float cooldown = weapon.def.GetStatValueAbstract(StatDefOf.RangedWeapon_Cooldown, null);
+            float warmup = atkProps.warmupTime;  
+            float cooldown = weapon.def.GetStatValueAbstract(StatDefOf.RangedWeapon_Cooldown, null); 
             int burstShot = atkProps.burstShotCount;
-            int ticksBetweenShots = atkProps.ticksBetweenBurstShots;
+            int ticksBetweenShots = atkProps.ticksBetweenBurstShots; 
             float rawDps = (damage * burstShot) / (((warmup + cooldown)) + warmup * (speedBias - 1f) + (burstShot - 1) * (ticksBetweenShots / 60f));
-            float DpsAvg = 0f;
+            float DpsAvg = 0f; 
             DpsAvg += rawDps * AdjustedAccuracy(atkProps, RangeCategory.Short, weapon);
             DpsAvg += rawDps * AdjustedAccuracy(atkProps, RangeCategory.Medium, weapon);
             DpsAvg += rawDps * AdjustedAccuracy(atkProps, RangeCategory.Long, weapon);
-            return DpsAvg / 3f;
+            return DpsAvg / 3f; 
         }
 
         internal static float RangedDPS(ThingWithComps weapon, float speedBias, float range)
@@ -487,7 +487,7 @@ namespace SimpleSidearms.utilities
                 return -1;
 
             float damage = (atkProps.projectileDef == null) ? 0 : atkProps.projectileDef.projectile.damageAmountBase;
-            float warmup = atkProps.warmupTime;
+            float warmup = atkProps.warmupTime; 
             float cooldown = weapon.def.GetStatValueAbstract(StatDefOf.RangedWeapon_Cooldown, null);
             int burstShot = atkProps.burstShotCount;
             int ticksBetweenShots = atkProps.ticksBetweenBurstShots;

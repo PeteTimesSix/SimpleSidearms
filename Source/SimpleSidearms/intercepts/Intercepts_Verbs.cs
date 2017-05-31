@@ -26,7 +26,7 @@ namespace SimpleSidearms.intercepts
                     if (pawn.inventory.innerContainer.Any((Thing x) => x.def.defName.Equals(__instance.ownerEquipment.def.defName)))
                     {
                         Thing replacement = pawn.inventory.innerContainer.First((Thing x) => x.def.defName.Equals(__instance.ownerEquipment.def.defName));
-                        WeaponAssingment.weaponSwapSpecific(pawn, replacement, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp));
+                        WeaponAssingment.weaponSwapSpecific(pawn, replacement, false, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), false);
                     }
 
                     else if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsRangedWeapon))
@@ -36,7 +36,7 @@ namespace SimpleSidearms.intercepts
 
                     else if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsMeleeWeapon))
                     {
-                        WeaponAssingment.tryMeleeWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), false, pawn.IsColonistPlayerControlled);
+                        WeaponAssingment.tryMeleeWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), true, pawn.IsColonistPlayerControlled);
                     }
                 }
             }

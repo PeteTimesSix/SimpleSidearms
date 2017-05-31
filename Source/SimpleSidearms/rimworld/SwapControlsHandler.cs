@@ -14,6 +14,13 @@ namespace SimpleSidearms.rimworld
 
         public Pawn Owner { get; set; }
 
+        public SwapControlsHandler() : this(null) { }
+
+        public SwapControlsHandler(Pawn owner)
+        {
+            Owner = owner;
+        }
+
         public void ExposeData()
         {
             Scribe_Values.Look<bool>(ref currentWeaponLocked, "currentWeaponLocked", false, true);
@@ -27,10 +34,9 @@ namespace SimpleSidearms.rimworld
             SwapControlsHandler handler;
             if (!SimpleSidearms.saveData.handlers.TryGetValue(pawnId, out handler))
             {
-                handler = new SwapControlsHandler();
+                handler = new SwapControlsHandler(pawn);
                 SimpleSidearms.saveData.handlers.Add(pawnId, handler);
             }
-            handler.Owner = pawn;
             return handler;
         }
     }

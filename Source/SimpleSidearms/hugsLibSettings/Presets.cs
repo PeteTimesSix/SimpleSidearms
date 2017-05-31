@@ -23,6 +23,9 @@ namespace SimpleSidearms.hugsLibSettings
                 case Globals.Preset.Disabled:
                     mod.UpdateConfig(Preset_Disabled, true);
                     break;
+                case Globals.Preset.Lite:
+                    mod.UpdateConfig(Preset_Lite, true);
+                    break;
                 case Globals.Preset.LoadoutOnly:
                     mod.UpdateConfig(Preset_LoadoutOnly, true);
                     break;
@@ -49,6 +52,23 @@ namespace SimpleSidearms.hugsLibSettings
   <ActivePreset>Disabled</ActivePreset>
   <LimitModeSingle>RelativeWeight</LimitModeSingle>
   <LimitModeAmount>RelativeWeight</LimitModeAmount>
+</SimpleSidearms>";
+
+        public static string Preset_Lite =
+@"<SimpleSidearms>
+  <ActivePreset>Lite</ActivePreset>
+  <CQCAutoSwitch>True</CQCAutoSwitch>
+  <SpeedSelectionBiasMelee>1.25</SpeedSelectionBiasMelee>
+  <SeparateModes>True</SeparateModes>
+  <LimitModeSingle>RelativeWeight</LimitModeSingle>
+  <LimitModeAmount>RelativeWeight</LimitModeAmount>
+  <LimitModeSingleMelee_Selection></LimitModeSingleMelee_Selection>
+  <LimitModeAmountMelee>Slots</LimitModeAmountMelee>
+  <LimitModeAmountMelee_Selection>1</LimitModeAmountMelee_Selection>
+  <LimitModeAmountRanged>Slots</LimitModeAmountRanged>
+  <SidearmSpawnChance>0.5</SidearmSpawnChance>
+  <SidearmsEnableNeolithicExtension>True</SidearmsEnableNeolithicExtension>
+  <SidearmsNeolithicExtension>MeleeWeapon_Shiv</SidearmsNeolithicExtension>
 </SimpleSidearms>";
 
         public static string Preset_LoadoutOnly =
