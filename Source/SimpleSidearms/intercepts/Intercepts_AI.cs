@@ -71,8 +71,10 @@ namespace SimpleSidearms.intercepts
                 Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
                 if (pawn == null)
                     return;
-
-                GoldfishModule.GetGoldfishForPawn(pawn).PickupPrimary(newEq.def, true);
+                GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+                if (pawnMemory == null)
+                    return;
+                pawnMemory.PickupPrimary(newEq.def, true);
             }
         }
     }

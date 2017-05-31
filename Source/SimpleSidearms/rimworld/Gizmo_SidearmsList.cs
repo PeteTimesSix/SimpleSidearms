@@ -27,6 +27,8 @@ namespace SimpleSidearms.rimworld
         {
             get {
                 GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
+                if (pawnMemory == null)
+                    return 75;
                 int biggerCount = Math.Max(rangedWeapons.Count + calcUnmatchedRangedWeapons(pawnMemory, parent), meleeWeapons.Count + calcUnmatchedMeleeWeapons(pawnMemory, parent) + 1);
                 return ContentPadding * 2 + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + LockPanelWidth;
             }
@@ -331,7 +333,9 @@ namespace SimpleSidearms.rimworld
             interactedUnarmed = false;
 
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
-            
+            if (pawnMemory == null)
+                return new GizmoResult(GizmoState.Clear);
+
             int i = 0;
             for (i = 0; i < rangedWeapons.Count; i++)
             {

@@ -40,7 +40,12 @@ namespace SimpleSidearms.rimworld
                         thingWithComps.def.soundInteract.PlayOneShot(new TargetInfo(this.pawn.Position, this.pawn.Map, false));
                     }
                     if (success)
-                        GoldfishModule.GetGoldfishForPawn(this.pawn).AddSidearm(thingWithComps2.def);
+                    {
+                        GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(this.pawn);
+                        if (pawnMemory == null)
+                            return;
+                        pawnMemory.AddSidearm(thingWithComps2.def);
+                    }
                 },
                 defaultCompleteMode = ToilCompleteMode.Instant
             };

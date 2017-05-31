@@ -58,6 +58,8 @@ namespace SimpleSidearms.rimworld
                     return null;
 
                 GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+                if (pawnMemory == null)
+                    return null;
 
                 WeaponAssingment.reequipPrimaryIfNeededAndAvailable(pawn, pawnMemory);
 

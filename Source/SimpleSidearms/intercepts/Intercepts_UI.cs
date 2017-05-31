@@ -26,11 +26,15 @@ namespace SimpleSidearms.intercepts
                 if(actualOwner is Pawn_InventoryTracker)
                 {
                     GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_InventoryTracker).pawn);
+                    if (pawnMemory == null)
+                        return;
                     pawnMemory.DropSidearm(thingWithComps.def, true);
                 }
                 else if(actualOwner is Pawn_EquipmentTracker)
                 {
                     GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_InventoryTracker).pawn);
+                    if (pawnMemory == null)
+                        return;
                     pawnMemory.DropPrimary(true);
                 }
             }
@@ -51,14 +55,16 @@ namespace SimpleSidearms.intercepts
                     List<Thing> meleeWeapons;
                     GettersFilters.getWeaponLists(out rangedWeapons, out meleeWeapons, __instance.inventory);
 
-                    GoldfishModule memory = GoldfishModule.GetGoldfishForPawn(__instance);
+                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(__instance);
+                    if (pawnMemory == null)
+                        return;
 
-                    if (rangedWeapons.Count > 0 || meleeWeapons.Count > 0 || memory.weapons.Count > 0)
+                    if (rangedWeapons.Count > 0 || meleeWeapons.Count > 0 || pawnMemory.weapons.Count > 0)
                     {
                         List<ThingDef> rangedWeaponMemories = new List<ThingDef>();
                         List<ThingDef> meleeWeaponMemories = new List<ThingDef>();
                         
-                        foreach (string weapon in memory.weapons)
+                        foreach (string weapon in pawnMemory.weapons)
                         {
                             ThingDef wepDef = DefDatabase<ThingDef>.GetNamedSilentFail(weapon);
 

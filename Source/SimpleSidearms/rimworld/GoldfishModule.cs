@@ -55,7 +55,8 @@ namespace SimpleSidearms.rimworld
 
         public static GoldfishModule GetGoldfishForPawn(Pawn pawn)
         {
-            if (SimpleSidearms.saveData == null) throw new Exception("Cannot get goldfish module- saveData not loaded");
+            if (SimpleSidearms.saveData == null)
+                return null;
             var pawnId = pawn.thingIDNumber;
             GoldfishModule memory;
             if (!SimpleSidearms.saveData.memories.TryGetValue(pawnId, out memory))

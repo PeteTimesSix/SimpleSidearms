@@ -18,6 +18,8 @@ namespace SimpleSidearms.utilities
         public static void SetPrimary(Pawn pawn, Thing toSwapTo, bool intentionalEquip, bool fromInventory, bool dropCurrent, bool intentionalDrop)
         {
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            if (pawnMemory == null)
+                return;
 
             if (toSwapTo != null)
             {
@@ -303,15 +305,21 @@ namespace SimpleSidearms.utilities
         }
 
         internal static void dropSidearm(Pawn pawn, Thing interactedWeapon)
-        { 
-            GoldfishModule.GetGoldfishForPawn(pawn).ForgetSidearm(interactedWeapon.def);
+        {
+            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            if (pawnMemory == null)
+                return;
+            pawnMemory.ForgetSidearm(interactedWeapon.def);
             Thing whoCares;
             pawn.inventory.innerContainer.TryDrop(interactedWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out whoCares, null);
         }
 
         internal static void forgetSidearmMemory(Pawn pawn, ThingDef interactedWeaponMemory)
         { 
-            GoldfishModule.GetGoldfishForPawn(pawn).ForgetSidearm(interactedWeaponMemory);
+            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            if (pawnMemory == null)
+                return;
+            pawnMemory.ForgetSidearm(interactedWeaponMemory);
         }
     }
 }
