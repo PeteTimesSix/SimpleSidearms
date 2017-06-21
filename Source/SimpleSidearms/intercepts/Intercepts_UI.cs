@@ -19,11 +19,11 @@ namespace SimpleSidearms.intercepts
         private static void InterfaceDrop(ITab_Pawn_Gear __instance, Thing t)
         {
             ThingWithComps thingWithComps = t as ThingWithComps;
-            if(thingWithComps.def.IsMeleeWeapon || thingWithComps.def.IsRangedWeapon)
+            if (thingWithComps.def.IsMeleeWeapon || thingWithComps.def.IsRangedWeapon)
             {
                 ThingOwner thingOwner = thingWithComps.holdingOwner;
                 IThingHolder actualOwner = thingOwner.Owner;
-                if(actualOwner is Pawn_InventoryTracker)
+                if (actualOwner is Pawn_InventoryTracker)
                 {
                     GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_InventoryTracker).pawn);
                     if (pawnMemory == null)
@@ -32,7 +32,7 @@ namespace SimpleSidearms.intercepts
                 }
                 else if(actualOwner is Pawn_EquipmentTracker)
                 {
-                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_InventoryTracker).pawn);
+                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_EquipmentTracker).ParentHolder as Pawn);
                     if (pawnMemory == null)
                         return;
                     pawnMemory.DropPrimary(true);
@@ -155,8 +155,10 @@ namespace SimpleSidearms.intercepts
                         item3 = FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text2, delegate
                         {
                             equipment.SetForbidden(false, true);
-                            pawn.jobs.TryTakeOrderedJob(new Job(SidearmsJobDefOf.EquipSecondary, equipment), JobTag.Misc);
+                            pawn.jobs.TryTakeOrderedJob(new Job(SidearmsDefOf.EquipSecondary, equipment), JobTag.Misc);
                             MoteMaker.MakeStaticMote(equipment.DrawPos, equipment.Map, ThingDefOf.Mote_FeedbackEquip, 1f);
+                            
+                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                         }, MenuOptionPriority.High, null, null, 0f, null, null), pawn, equipment, "ReservedBy");
                         opts.Add(item3);
                     }

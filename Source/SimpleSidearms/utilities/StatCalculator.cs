@@ -480,9 +480,7 @@ namespace SimpleSidearms.utilities
         {
             Verb atkVerb = (weapon.GetComp<CompEquippable>()).PrimaryVerb;
             VerbProperties atkProps = atkVerb.verbProps;
-
-            //Log.Message("Range limits: > " + atkProps.minRange * atkProps.minRange + " < " + atkProps.range * atkProps.range + " range is "+range);
-
+            
             if (atkProps.range * atkProps.range < range || atkProps.minRange * atkProps.minRange > range)
                 return -1;
 

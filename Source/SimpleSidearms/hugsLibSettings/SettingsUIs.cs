@@ -145,7 +145,6 @@ namespace SimpleSidearms.hugsLibSettings
                 Widgets.Label(labelPortion, setting.Value.ToString("F2"));
 
             float val = Widgets.HorizontalSlider(sliderPortion, setting.Value, def_min, def_max, true);
-            //Log.Message("getting val of "+val);
             bool change = false;
 
             if (setting.Value != val)
@@ -363,8 +362,6 @@ namespace SimpleSidearms.hugsLibSettings
 
             int biggerRows = ((matchingSidearmsUnderLimit.Count - 1) / iconsPerRow) + 1;
             setting.CustomDrawerHeight = (biggerRows * IconSize) + ((biggerRows) * IconGap) + TextMargin;
-            //Log.Message("matching sidearms: " + matchingSidearms.Count);
-            //Log.Message("matching sidearms under limit (" + weightLimit + "): " + matchingSidearmsUnderLimit.Count);
 
             for (int i = 0; i < matchingSidearmsUnderLimit.Count; i++)
             {
@@ -458,8 +455,6 @@ namespace SimpleSidearms.hugsLibSettings
                 if (!selection.Contains(matchingSidearms[i].thing.defName))
                     unselectedSidearms.Add(matchingSidearms[i]);
             }
-            //Log.Message("matching sidearms: " + matchingSidearms.Count);
-            //Log.Message("matching sidearms under limit (" + weightLimit + "): " + matchingSidearmsUnderLimit.Count);
 
             bool change = false;
 
@@ -470,7 +465,6 @@ namespace SimpleSidearms.hugsLibSettings
             {
                 if (selectionThingDefs[i] == null)
                 {
-                    //Log.Message("Missing matching thingDef");
                     continue;
                 }
                 int collum = (i % iconsPerRow);
@@ -497,7 +491,6 @@ namespace SimpleSidearms.hugsLibSettings
             if (change)
             {
                 setting.Value.InnerList = selection;
-                //Log.Message("selected list change");
             }
             return change;
         }

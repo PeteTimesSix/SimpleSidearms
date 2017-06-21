@@ -168,4 +168,10 @@ Right click to drop {0}.</DrawSidearm_gizmoTooltip>
 <DrawSidearm_gizmoTooltipMemory>Right click to forget about {0}.</DrawSidearm_gizmoTooltipMemory>
 <DrawSidearm_gizmoTooltipUnarmed>Left click to switch to unarmed combat.</DrawSidearm_gizmoTooltipUnarmed>
 
+<Alert_MissingSidearm_label>Colonist missing sidearm</Alert_MissingSidearm_label>
+<Alert_MissingPrimary_label>Colonist missing primary weapon</Alert_MissingPrimary_label>
+
+<Alert_MissingSidearm_desc>These colonists are missing one or more of their sidearms:\n\n{0}</Alert_MissingSidearm_desc>
+<Alert_MissingPrimary_desc>These colonists are missing their primary weapon:\n\n{0}</Alert_MissingPrimary_desc>
+
 </LanguageData>

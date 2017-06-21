@@ -14,7 +14,6 @@ namespace SimpleSidearms.hugsLibSettings
     {
         internal static void presetChanged(Globals.Preset preset, SimpleSidearms mod)
         {
-            //Log.Message("Switching to preset " + preset.ToString());
             switch (preset)
             {
                 case Globals.Preset.Custom:

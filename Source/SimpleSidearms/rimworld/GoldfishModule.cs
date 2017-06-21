@@ -1,4 +1,5 @@
-﻿using SimpleSidearms.utilities;
+﻿using RimWorld;
+using SimpleSidearms.utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace SimpleSidearms.rimworld
         public static string NoWeaponString = "NOWEAPON";
 
         public Pawn Owner { get; set; }
+        public bool NoPrimary { get { return primary.Equals(NoWeaponString); } }
 
         public GoldfishModule() : this(null, false) { }
 
@@ -55,6 +57,8 @@ namespace SimpleSidearms.rimworld
 
         public static GoldfishModule GetGoldfishForPawn(Pawn pawn)
         {
+            if (pawn == null)
+                return null;
             if (SimpleSidearms.saveData == null)
                 return null;
             var pawnId = pawn.thingIDNumber;
@@ -86,6 +90,7 @@ namespace SimpleSidearms.rimworld
                 weapons.Remove(primary);
                 primary = NoWeaponString;
             }
+            LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SimpleSidearmsDropping, OpportunityType.Important);
         }
 
         internal void DropSidearm(ThingDef def, bool intentional)
@@ -94,12 +99,14 @@ namespace SimpleSidearms.rimworld
             {
                 if (weapons.Contains(def.defName))
                     weapons.Remove(def.defName);
+                if (primary.Equals(def.defName))
+                    primary = NoWeaponString;
             }
         }
 
         internal void PickupPrimary(ThingDef def, bool intentional)
         {
-            if (primary != NoWeaponString)
+            if (!NoPrimary)
                 weapons.Remove(primary);
 
             AddSidearm(def);
@@ -123,7 +130,6 @@ namespace SimpleSidearms.rimworld
 
         internal bool IsCurrentPrimary(string defName)
         {
-            //Log.Message("comparing " + primary + " to " + defName + " result " + defName.Equals(primary));
             return defName.Equals(primary);
         }
 
@@ -131,6 +137,8 @@ namespace SimpleSidearms.rimworld
         {
             if (weapons.Contains(def.defName))
                 weapons.Remove(def.defName);
+            if (primary.Equals(def.defName))
+                primary = NoWeaponString;
         }
     }
 }

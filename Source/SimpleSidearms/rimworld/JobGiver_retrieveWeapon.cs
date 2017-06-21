@@ -30,28 +30,15 @@ namespace SimpleSidearms.rimworld
             pawn.mindState.thinkData[base.UniqueSaveKey] = val;
         }
 
-        protected override Job TryGiveJob(Pawn pawn)
+        public static Job TryGiveJobStatic(Pawn pawn, bool inCombat)
         {
-            //Log.Message("retrieval precheck for " + pawn.LabelShort);
-            if (pawn.Faction != Faction.OfPlayer)
-            {
-                return null;
-            }
 
-            if (pawn.Drafted)
-            {
+            if (RestraintsUtility.InRestraints(pawn))
                 return null;
-            }
-
-            /*if (Find.TickManager.TicksGame > GetNextTryTick(pawn))
-            {
-                return null;
-            }
-            else*/
+      
             {
                 //SetNextTryTick(pawn, Find.TickManager.TicksGame + UnityEngine.Random.Range(PickupCheckIntervalMin, PickupCheckIntervalMax));
-
-                //Log.Message("retrieval check for " + pawn.LabelShort);
+                
 
                 Pawn_EquipmentTracker equipment = pawn.equipment;
                 if (equipment == null)
@@ -63,29 +50,39 @@ namespace SimpleSidearms.rimworld
 
                 WeaponAssingment.reequipPrimaryIfNeededAndAvailable(pawn, pawnMemory);
 
-                foreach(string wepName in pawnMemory.weapons)
+                foreach (string wepName in pawnMemory.weapons)
                 {
-                    //Log.Message("checking "+wepName);
                     ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(wepName);
                     if (def == null)
                         continue;
 
                     if (!pawn.hasWeaponSomewhere(wepName))
                     {
-                        //Log.Message("looking for");
                         ThingRequest request = new ThingRequest();
                         request.singleDef = def;
-                        Thing thing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, request, PathEndMode.OnCell, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), 1000f, (Thing x) => (!x.IsForbidden(pawn)) && pawn.CanReserve(x, 1, -1, null, false));
+                        float maxDist = 1000f;
+                        if (pawn.Faction != Faction.OfPlayer || inCombat)
+                            maxDist = 30f;
+                        Thing thing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, request, PathEndMode.OnCell, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), maxDist, (Thing x) => (!x.IsForbidden(pawn)) && pawn.CanReserve(x, 1, -1, null, false));
 
                         if (thing == null)
                             continue;
 
-                        return new Job(SidearmsJobDefOf.EquipSecondary, thing);
+                        if(!inCombat)
+                            return new Job(SidearmsDefOf.EquipSecondary, thing);
+                        else
+                            return new Job(SidearmsDefOf.EquipSecondaryCombat, thing, pawn.Position);
+                        
                     }
                 }
 
                 return null;
             }
+        }
+
+        protected override Job TryGiveJob(Pawn pawn)
+        {
+            return TryGiveJobStatic(pawn, false);
         }
     }
 }

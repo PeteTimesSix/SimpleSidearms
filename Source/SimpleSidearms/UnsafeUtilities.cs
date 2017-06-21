@@ -25,7 +25,6 @@ namespace SimpleSidearms
             StringBuilder builder = new StringBuilder();
             foreach(XElement child in root.Elements())
             {
-                //Log.Message(child.ToString());
                 builder.AppendLine(child.ToString());
             }
             HugsLibUtility.CopyToClipboard(builder.ToString());

@@ -158,9 +158,7 @@ namespace SimpleSidearms.utilities
                         continue;
 
                 float DPS = StatCalculator.RangedDPS(thing as ThingWithComps, SpeedSelectionBiasRanged.Value, range);
-
-                //Log.Message("DPS for " + thing.LabelShort + " is " + DPS);
-
+                
                 if (DPS > bestSoFar)
                 {
                     bestSoFar = DPS;

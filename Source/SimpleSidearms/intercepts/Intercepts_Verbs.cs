@@ -49,7 +49,6 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         private static void TryCastShot(Verb_MeleeAttack __instance)
         {
-            //Log.Message("tryCastShot intercepted");
             BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
             FieldInfo field = (__instance.GetType()).GetField("currentTarget", bindFlags);
             object fieldValue = field.GetValue(__instance);

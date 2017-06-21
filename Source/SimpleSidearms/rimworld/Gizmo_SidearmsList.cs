@@ -90,6 +90,7 @@ namespace SimpleSidearms.rimworld
             this.meleeWeapons = meleeWeapons;
             this.rangedWeaponMemories = rangedWeaponMemories;
             this.meleeWeaponMemories = meleeWeaponMemories;
+            tutorTag = "SidearmsList";
         }
 
         private bool DrawLock(SwapControlsHandler handler, Rect rect)
@@ -108,7 +109,10 @@ namespace SimpleSidearms.rimworld
             MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
 
             if (Mouse.IsOver(rect))
+            {
+                LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SimpleSidearmsAdvanced, OpportunityType.GoodToKnow);
                 GUI.color = iconMouseOverColor;
+            }
             else
                 GUI.color = iconBaseColor;
 
@@ -118,6 +122,7 @@ namespace SimpleSidearms.rimworld
             if (Widgets.ButtonInvisible(rect, true))
             {
                 handler.currentWeaponLocked = !handler.currentWeaponLocked;
+                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvanced, KnowledgeAmount.SpecificInteraction);
                 return true;
             }
             else
@@ -140,7 +145,10 @@ namespace SimpleSidearms.rimworld
             MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
 
             if (Mouse.IsOver(rect))
+            {
+                LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SimpleSidearmsAdvanced, OpportunityType.GoodToKnow);
                 GUI.color = iconMouseOverColor;
+            }
             else
                 GUI.color = iconBaseColor;
 
@@ -150,7 +158,8 @@ namespace SimpleSidearms.rimworld
             if (Widgets.ButtonInvisible(rect, true))
             {
                 handler.autoLockOnManualSwap = !handler.autoLockOnManualSwap;
-                return true;
+                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvanced, KnowledgeAmount.SpecificInteraction);
+                return true; 
             }
             else
                 return false;
@@ -158,8 +167,6 @@ namespace SimpleSidearms.rimworld
 
         private static bool DrawIconForWeaponMemory(GoldfishModule pawnMemory, ThingDef weapon, Rect contentRect, Vector2 iconOffset)
         {
-            //Log.Message("drawing memory of " + weapon.defName);
-
             var iconTex = weapon.uiIcon;
             Graphic g = weapon.graphicData.Graphic;
             Color color = getColor(weapon);
@@ -167,10 +174,7 @@ namespace SimpleSidearms.rimworld
             Graphic g2 = weapon.graphicData.Graphic.GetColoredVersion(g.Shader, color, colorTwo);
 
             var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
-
-            //if (!contentRect.Contains(iconRect))
-            //    return false;
-
+            
             string label = weapon.label;
             
             Texture2D drawPocket;
@@ -183,6 +187,9 @@ namespace SimpleSidearms.rimworld
             MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
             if (Mouse.IsOver(iconRect))
             {
+                LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SidearmsMissing, OpportunityType.GoodToKnow);
+                if (pawnMemory.IsCurrentPrimary(weapon.defName))
+                    LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SidearmsPrimary, OpportunityType.GoodToKnow);
                 GUI.color = iconMouseOverColor;
                 GUI.DrawTexture(iconRect, drawPocket);
             }
@@ -205,8 +212,10 @@ namespace SimpleSidearms.rimworld
             GUI.DrawTexture(iconRect, resolvedIcon);
             GUI.color = Color.white;
 
-            //Log.Message("done");
-
+            UIHighlighter.HighlightOpportunity(iconRect, "SidearmMissing");
+            if (pawnMemory.IsCurrentPrimary(weapon.defName))
+                UIHighlighter.HighlightOpportunity(iconRect, "SidearmPrimary");
+            
             if (Widgets.ButtonInvisible(iconRect, true))
             {
                 return true;
@@ -251,7 +260,10 @@ namespace SimpleSidearms.rimworld
                 drawPocket = TextureResources.drawPocket;
 
             if (Mouse.IsOver(iconRect))
-            { 
+            {
+                LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SidearmsInInventory, OpportunityType.GoodToKnow);
+                if (pawnMemory.IsCurrentPrimary(weapon.def.defName))
+                    LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SidearmsPrimary, OpportunityType.GoodToKnow);
                 GUI.color = iconMouseOverColor;
                 GUI.DrawTexture(iconRect, drawPocket);
                 //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconMouseOverColor);
@@ -275,6 +287,10 @@ namespace SimpleSidearms.rimworld
             GUI.color = weapon.DrawColor;
             GUI.DrawTexture(iconRect, resolvedIcon);
             GUI.color = Color.white;
+
+            UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventory");
+            if (pawnMemory.IsCurrentPrimary(weapon.def.defName))
+                UIHighlighter.HighlightOpportunity(iconRect, "SidearmPrimary");
 
             if (Widgets.ButtonInvisible(iconRect, true))
             {
@@ -323,6 +339,12 @@ namespace SimpleSidearms.rimworld
         public override GizmoResult GizmoOnGUI(Vector2 topLeft)
         {
             var gizmoRect = new Rect(topLeft.x, topLeft.y, Width, MinGizmoSize);
+
+            if (Mouse.IsOver(gizmoRect))
+            {
+                LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SimpleSidearmsBasic, OpportunityType.Important);
+            }
+
             var contentRect = gizmoRect.ContractedBy(ContentPadding);
             Widgets.DrawWindowBackground(gizmoRect);
 
@@ -396,7 +418,11 @@ namespace SimpleSidearms.rimworld
             Rect locklockPanel = new Rect(locksPanel.x, locksPanel.y + (locksPanel.height / 2f) + LockIconsOffset, locksPanel.width, locksPanel.width);
 
             DrawLock(handler, lockPanel);
+            UIHighlighter.HighlightOpportunity(lockPanel, "SidearmListButton");
             DrawLocklock(handler, locklockPanel);
+            UIHighlighter.HighlightOpportunity(locklockPanel, "SidearmListButton");
+
+            UIHighlighter.HighlightOpportunity(gizmoRect, "SidearmList");
 
             DrawGizmoLabel(defaultLabel, gizmoRect);
             return globalInteracted ? new GizmoResult(GizmoState.Interacted, Event.current) : new GizmoResult(GizmoState.Clear);
@@ -404,7 +430,6 @@ namespace SimpleSidearms.rimworld
 
         public override void ProcessInput(Event ev)
         {
-            //Log.Message("click " + ev.mousePosition + " button " + ev.button);
             if (activateSound != null)
             {
                 activateSound.PlayOneShotOnCamera();
@@ -429,14 +454,24 @@ namespace SimpleSidearms.rimworld
                     if(buttonID == 0)
                     {
                         toSwapTo = interactedWeapon;
+
+                        if (GoldfishModule.GetGoldfishForPawn(parent) != null && toSwapTo.def.defName.Equals(GoldfishModule.GetGoldfishForPawn(parent).primary))
+                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsPrimary, KnowledgeAmount.Total);
+
                         WeaponAssingment.weaponSwapSpecific(parent, toSwapTo, true, MiscUtils.shouldDrop(DroppingModeEnum.UserForced), false);
                         SwapControlsHandler handler = SwapControlsHandler.GetHandlerForPawn(parent);
                         if (handler.autoLockOnManualSwap)
                             handler.currentWeaponLocked = true;
+
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsInInventory, KnowledgeAmount.SpecificInteraction);
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                     }
                     else if(buttonID == 1)
                     {
                         WeaponAssingment.dropSidearm(parent, interactedWeapon);
+
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsInInventory, KnowledgeAmount.SpecificInteraction);
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                     }
 
                     
@@ -446,11 +481,21 @@ namespace SimpleSidearms.rimworld
                     if (buttonID == 0)
                     {
                         toSwapTo = interactedWeapon;
+                        
+                        if (GoldfishModule.GetGoldfishForPawn(parent) != null && toSwapTo.def.defName.Equals(GoldfishModule.GetGoldfishForPawn(parent).primary))
+                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsPrimary, KnowledgeAmount.Total);
+
                         WeaponAssingment.weaponSwapSpecific(parent, toSwapTo, true, MiscUtils.shouldDrop(DroppingModeEnum.UserForced), false);
+
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsInInventory, KnowledgeAmount.SpecificInteraction);
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                     }
                     else if (buttonID == 1)
                     {
                         WeaponAssingment.dropSidearm(parent, interactedWeapon);
+
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsInInventory, KnowledgeAmount.SpecificInteraction);
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                     }
                 }
             }
@@ -465,6 +510,9 @@ namespace SimpleSidearms.rimworld
                     else if (buttonID == 1)
                     {
                         WeaponAssingment.forgetSidearmMemory(parent, interactedWeaponMemory);
+
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsMissing, KnowledgeAmount.SpecificInteraction);
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                     }
                 }
                 else
@@ -476,6 +524,9 @@ namespace SimpleSidearms.rimworld
                     else if (buttonID == 1)
                     {
                         WeaponAssingment.forgetSidearmMemory(parent, interactedWeaponMemory);
+
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsMissing, KnowledgeAmount.SpecificInteraction);
+                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                     }
                 }
             }
@@ -484,6 +535,7 @@ namespace SimpleSidearms.rimworld
                 if (buttonID == 0)
                 {
                     WeaponAssingment.weaponSwapSpecific(parent, null, true, MiscUtils.shouldDrop(DroppingModeEnum.UserForced), false);
+                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                 }
             }
         }

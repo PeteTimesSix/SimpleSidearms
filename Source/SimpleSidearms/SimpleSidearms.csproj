@@ -60,6 +60,8 @@
     <Compile Include="hugsLibSettings\SettingsUIs.cs" />
     <Compile Include="hugsLibSettings\StringHashSetHandler.cs" />
     <Compile Include="intercepts\Intercepts_Generators.cs" />
+    <Compile Include="rimworld\alerts\Alert_MissingPrimary.cs" />
+    <Compile Include="rimworld\alerts\Alert_MissingSidearm.cs" />
     <Compile Include="rimworld\Gizmo_SidearmsList.cs" />
     <Compile Include="Globals.cs" />
     <Compile Include="intercepts\Intercepts_AI.cs" />
@@ -67,10 +69,11 @@
     <Compile Include="intercepts\Intercepts_Verbs.cs" />
     <Compile Include="rimworld\GoldfishModule.cs" />
     <Compile Include="rimworld\JobDriver_EquipSidearm.cs" />
+    <Compile Include="rimworld\JobDriver_EquipSidearmCombat.cs" />
     <Compile Include="rimworld\JobGiver_RetrieveWeapon.cs" />
     <Compile Include="rimworld\MassComparer.cs" />
     <Compile Include="rimworld\PawnSidearmsGenerator.cs" />
-    <Compile Include="rimworld\SidearmsJobDefOf.cs" />
+    <Compile Include="rimworld\SidearmsDefOf.cs" />
     <Compile Include="rimworld\SimpleSidearmsData.cs" />
     <Compile Include="rimworld\SwapControlsHandler.cs" />
     <Compile Include="rimworld\ThingStuffPairComparer.cs" />

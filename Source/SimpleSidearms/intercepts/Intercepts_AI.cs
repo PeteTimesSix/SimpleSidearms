@@ -8,9 +8,59 @@ using Verse;
 using static SimpleSidearms.Globals;
 using SimpleSidearms.utilities;
 using SimpleSidearms.rimworld;
+using Verse.AI;
 
 namespace SimpleSidearms.intercepts
 {
+
+    [HarmonyPatch(typeof(AutoUndrafter), "AutoUndraftTick")]
+    static class AutoUndrafter_AutoUndraftTick_Postfix
+    {
+        [HarmonyPostfix]
+        private static void AutoUndraftTick(AutoUndrafter __instance)
+        {
+            Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
+            if (Find.TickManager.TicksGame % 100 == 0)
+            {
+                if (pawn.jobs.curJob != null && pawn.jobs.curJob.def == JobDefOf.WaitCombat && pawn.stances != null && pawn.stances.curStance is Stance_Mobile)
+                {
+                    //pawn.jobs.EndCurrentJob(JobCondition.Succeeded);
+                    
+                    WeaponAssingment.reequipPrimaryIfNeededAndAvailable(pawn, GoldfishModule.GetGoldfishForPawn(pawn));
+                }
+            }
+        }
+    }
+
+    //Commented out because it just doesnt work properly.
+    //Maybe someday I can think of a better way of doing it.
+
+
+    /*[HarmonyPatch(typeof(JobGiver_Orders), "TryGiveJob")]
+    static class JobGiver_Orders_TryGiveJob_Postfix
+    {
+        [HarmonyPostfix]
+        private static void TryGiveJob(JobGiver_Orders __instance, Pawn pawn, ref Job __result)
+        {
+            if (__result == null)
+                return;
+            if (__result.def != JobDefOf.WaitCombat)
+                return;
+            if (pawn.Downed)
+                return;
+            if (!(pawn.stances.curStance is Stance_Mobile))
+                return;          
+
+
+            Job retrieval = JobGiver_RetrieveWeapon.TryGiveJobStatic(pawn, true);
+            if (retrieval != null)
+            {
+                __result = retrieval;
+                return;
+            }
+        }
+    }*/
+
 
     [HarmonyPatch(typeof(Stance_Warmup), "StanceTick")]
     static class Stance_Warmup_StanceTick_Postfix
