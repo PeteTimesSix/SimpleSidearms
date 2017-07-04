@@ -60,5 +60,13 @@
     <priority>1</priority>
     <helpText>Depending on the settings, Simple Sidearms can cause colonists to drop their weapons in a variety of situations (default is attacks in melee). Don't worry - your colonists will retrieve their weapons after the fight. \n\nThis is a customizable feature - take a look in the mod settings dialog to learn more.</helpText>
   </ConceptDef>
+  
+  <ConceptDef>
+    <defName>Concept_CEOverride</defName>
+    <label>SS: CE patch</label>
+    <needsOpportunity>True</needsOpportunity>
+    <priority>1</priority>
+    <helpText>Combat Extended is loaded. SimpleSidearms inventory management functionality is disabled.</helpText>
+  </ConceptDef>
  
  </Defs>  

@@ -59,6 +59,8 @@ namespace SimpleSidearms.rimworld
         {
             if (pawn == null)
                 return null;
+            if (SimpleSidearms.CEOverride)
+                return null;
             if (SimpleSidearms.saveData == null)
                 return null;
             var pawnId = pawn.thingIDNumber;

@@ -65,9 +65,19 @@ namespace SimpleSidearms.intercepts
     [HarmonyPatch(typeof(Stance_Warmup), "StanceTick")]
     static class Stance_Warmup_StanceTick_Postfix
     {
+        private static Type ceRangedVerb;
+        private static Type CERangedVerb {
+            get {
+                if(ceRangedVerb == null)
+                    ceRangedVerb = AccessTools.TypeByName("CombatExtended.Verb_ShootCE");
+                return ceRangedVerb;
+            }
+        }
+
         [HarmonyPostfix]
         private static void StanceTick(Stance_Warmup __instance)
         {
+
             if (SimpleSidearms.RangedCombatAutoSwitch == false)
                 return;
             Pawn pawn = __instance.stanceTracker.pawn;
@@ -75,7 +85,9 @@ namespace SimpleSidearms.intercepts
                 return;
             if (IsHunting(pawn))
                 return;
-            if (!(__instance.verb is Verb_Shoot))
+            if (!SimpleSidearms.CEOverride && !(__instance.verb is Verb_Shoot))
+                return;
+            if (SimpleSidearms.CEOverride && !(CERangedVerb.IsAssignableFrom(__instance.verb.GetType())))
                 return;
             float statValue = pawn.GetStatValue(StatDefOf.AimingDelayFactor, true);
             int ticks = (__instance.verb.verbProps.warmupTime * statValue).SecondsToTicks();
@@ -93,13 +105,16 @@ namespace SimpleSidearms.intercepts
                 float range = cellRect.ClosestDistSquaredTo(pawn.Position);
                 WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, MiscUtils.shouldDrop(DroppingModeEnum.Range), range, pawn.IsColonistPlayerControlled);
             }
+            else
+            {
+            }
         }
 
         private static bool IsHunting(Pawn pawn)
         {
             if (pawn.CurJob == null)
             {
-                return false;
+                return false; 
             }
             JobDriver_Hunt jobDriver_Hunt = pawn.jobs.curDriver as JobDriver_Hunt;
             JobDriver_PredatorHunt jobDriver_PredatorHunt = pawn.jobs.curDriver as JobDriver_PredatorHunt;

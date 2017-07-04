@@ -24,7 +24,7 @@ namespace SimpleSidearms
     public class SimpleSidearms : HugsLib.ModBase
     {
         public override string ModIdentifier { get { return "SimpleSidearms"; } }
-
+        
         public static SimpleSidearmsData saveData;
 
         internal enum OptionsTab { Folded, Presets, Automation, Allowances, Spawning, Misc}
@@ -56,6 +56,7 @@ namespace SimpleSidearms
         internal static SettingHandle<float> SpeedSelectionBiasRanged;
 
         internal static SettingHandle<bool> LimitCarryInfo;
+        internal static SettingHandle<bool> CEOverrideInfo;
 
         internal static SettingHandle<bool> SeparateModes;
         internal static SettingHandle<LimitModeSingleSidearm> LimitModeSingle;
@@ -125,6 +126,9 @@ namespace SimpleSidearms
         private static Color highlight4 = new Color(0.5f, 0, 0.5f, 0.1f);
         private static Color highlight5 = new Color(0.5f, 0.5f, 0, 0.1f);
         private static Color highlight6 = new Color(0, 0.5f, 0.5f, 0.1f);
+
+        private static bool ceOverride = false;
+        public static bool CEOverride { get { return ceOverride; } }
 
         public override void DefsLoaded()
         {
@@ -221,7 +225,7 @@ namespace SimpleSidearms
 
             SeparateModes = Settings.GetHandle<bool>("SeparateModes", "SeparateModes_title".Translate(), "SeparateModes_desc".Translate(), false);
             SeparateModes.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(SeparateModes, rect, noHighlight); };
-            SeparateModes.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Allowances; };
+            SeparateModes.VisibilityPredicate = delegate { return !CEOverride && ActiveTab == OptionsTab.Allowances; };
 
             LimitModeSingle = Settings.GetHandle<LimitModeSingleSidearm>("LimitModeSingle", "LimitModeSingle_title".Translate(), "LimitModeSingle_desc".Translate(), LimitModeSingleSidearm.None, null, "LimitModeSingle_option_");
             LimitModeSingle.CustomDrawer = rect => { string[] names = Enum.GetNames(LimitModeSingle.Value.GetType()); float[] forcedWidths = new float[names.Length]; return CustomDrawer_Enumlist(LimitModeSingle, rect, names, forcedWidths, ExpansionMode.Vertical, highlight1); };
@@ -231,17 +235,17 @@ namespace SimpleSidearms
             LimitModeSingle_Absolute = Settings.GetHandle<float>("LimitModeSingle_Absolute", "MaximumMassSingleAbsolute_title".Translate(), "MaximumMassSingleAbsolute_desc".Translate(), 0f);
             LimitModeSingle_AbsoluteMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingle_AbsoluteMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Both, null, "WeaponListKind_option_");
             LimitModeSingle_Selection = Settings.GetHandle<StringHashSetHandler>("LimitModeSingle_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
-            LimitModeSingle_Relative.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingle_Relative.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingle_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingle_Relative, true, highlight1); };
-            LimitModeSingle_RelativeMatches.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingle_RelativeMatches.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingle_RelativeMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveRelative(rect, LimitModeSingle_RelativeMatches, highlight1); };
             LimitModeSingle_RelativeMatches.Unsaved = true;
-            LimitModeSingle_Absolute.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingle_Absolute.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingle_Absolute.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingle_Absolute, false, 0, maxWeightTotal, highlight1); };
-            LimitModeSingle_AbsoluteMatches.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingle_AbsoluteMatches.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingle_AbsoluteMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveAbsolute(rect, LimitModeSingle_AbsoluteMatches, highlight1); };
             LimitModeSingle_AbsoluteMatches.Unsaved = true;
-            LimitModeSingle_Selection.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingle_Selection.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == false) && (LimitModeSingle == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingle_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingle_Selection, WeaponListKind.Both, highlight1, "ConsideredSidearms".Translate(), "NotConsideredSidearms".Translate()); };
             #endregion
             LimitModeAmount = Settings.GetHandle<LimitModeAmountOfSidearms>("LimitModeAmount", "LimitModeAmount_title".Translate(), "LimitModeAmount_desc".Translate(), LimitModeAmountOfSidearms.MaximumCarryWeightOnly, null, "LimitModeAmount_option_");
@@ -251,11 +255,11 @@ namespace SimpleSidearms
             LimitModeAmount_Absolute = Settings.GetHandle<float>("LimitModeAmount_Absolute", "MaximumMassAmountAbsolute_title".Translate(), "MaximumMassAmountAbsolute_desc".Translate(), 0f);
             LimitModeAmount_Slots = Settings.GetHandle<int>("LimitModeAmount_Selection", "MaximumSlots_title".Translate(), "MaximumSlots_desc".Translate(), 0);
             LimitModeAmount_Slots.CustomDrawer = rect => { return HugsDrawerRebuild_Spinner(LimitModeAmount_Slots, rect, highlight2); };
-            LimitModeAmount_Relative.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeAmount == LimitModeAmountOfSidearms.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmount_Relative.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == false) && (LimitModeAmount == LimitModeAmountOfSidearms.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeAmount_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeAmount_Relative, true, highlight2); };
-            LimitModeAmount_Absolute.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeAmount == LimitModeAmountOfSidearms.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmount_Absolute.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == false) && (LimitModeAmount == LimitModeAmountOfSidearms.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeAmount_Absolute.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeAmount_Absolute, false, 0, maxCapacity, highlight2); };
-            LimitModeAmount_Slots.VisibilityPredicate = delegate { return (SeparateModes == false) && (LimitModeAmount == LimitModeAmountOfSidearms.Slots) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmount_Slots.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == false) && (LimitModeAmount == LimitModeAmountOfSidearms.Slots) && (ActiveTab == OptionsTab.Allowances); };
             #endregion
             LimitModeSingleMelee = Settings.GetHandle<LimitModeSingleSidearm>("LimitModeSingleMelee", "LimitModeSingleMelee_title".Translate(), "LimitModeSingleMelee_desc".Translate(), LimitModeSingleSidearm.None, null, "LimitModeSingle_option_");
             LimitModeSingleMelee.CustomDrawer = rect => { string[] names = Enum.GetNames(LimitModeSingleMelee.Value.GetType()); float[] forcedWidths = new float[names.Length]; return CustomDrawer_Enumlist(LimitModeSingleMelee, rect, names, forcedWidths, ExpansionMode.Vertical, highlight1); };
@@ -265,17 +269,17 @@ namespace SimpleSidearms
             LimitModeSingleMelee_Absolute = Settings.GetHandle<float>("LimitModeSingleMelee_Absolute", "MaximumMassSingleAbsolute_title".Translate(), "MaximumMassSingleAbsolute_desc".Translate(), 0f);
             LimitModeSingleMelee_AbsoluteMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingleMelee_AbsoluteMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Melee, null, "WeaponListKind_option_");
             LimitModeSingleMelee_Selection = Settings.GetHandle<StringHashSetHandler>("LimitModeSingleMelee_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
-            LimitModeSingleMelee_Relative.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleMelee_Relative.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleMelee_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingleMelee_Relative, true, highlight1); };
-            LimitModeSingleMelee_RelativeMatches.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleMelee_RelativeMatches.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleMelee_RelativeMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveRelative(rect, LimitModeSingleMelee_RelativeMatches, highlight1); };
             LimitModeSingleMelee_RelativeMatches.Unsaved = true;
-            LimitModeSingleMelee_Absolute.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleMelee_Absolute.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleMelee_Absolute.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingleMelee_Absolute, false, 0, maxWeightMelee, highlight1); };
-            LimitModeSingleMelee_AbsoluteMatches.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleMelee_AbsoluteMatches.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleMelee_AbsoluteMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveAbsolute(rect, LimitModeSingleMelee_AbsoluteMatches, highlight1); };
             LimitModeSingleMelee_AbsoluteMatches.Unsaved = true;
-            LimitModeSingleMelee_Selection.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleMelee_Selection.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleMelee == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleMelee_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingleMelee_Selection, WeaponListKind.Melee, highlight1, "ConsideredSidearms".Translate(), "NotConsideredSidearms".Translate()); };
             #endregion
             LimitModeAmountMelee = Settings.GetHandle<LimitModeAmountOfSidearms>("LimitModeAmountMelee", "LimitModeAmountMelee_title".Translate(), "LimitModeAmountMelee_desc".Translate(), LimitModeAmountOfSidearms.MaximumCarryWeightOnly, null, "LimitModeAmount_option_");
@@ -285,11 +289,11 @@ namespace SimpleSidearms
             LimitModeAmountMelee_Absolute = Settings.GetHandle<float>("LimitModeAmountMelee_Absolute", "MaximumMassAmountAbsolute_title".Translate(), "MaximumMassAmountAbsolute_desc".Translate(), 0f);
             LimitModeAmountMelee_Slots = Settings.GetHandle<int>("LimitModeAmountMelee_Selection", "MaximumSlots_title".Translate(), "MaximumSlots_desc".Translate(), 0);
             LimitModeAmountMelee_Slots.CustomDrawer = rect => { return HugsDrawerRebuild_Spinner(LimitModeAmountMelee_Slots, rect, highlight2); };
-            LimitModeAmountMelee_Relative.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountMelee == LimitModeAmountOfSidearms.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountMelee_Relative.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountMelee == LimitModeAmountOfSidearms.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeAmountMelee_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeAmountMelee_Relative, true, highlight2); };
-            LimitModeAmountMelee_Absolute.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountMelee == LimitModeAmountOfSidearms.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountMelee_Absolute.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountMelee == LimitModeAmountOfSidearms.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeAmountMelee_Absolute.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeAmountMelee_Absolute, false, 0, maxCapacity, highlight2); };
-            LimitModeAmountMelee_Slots.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountMelee == LimitModeAmountOfSidearms.Slots) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountMelee_Slots.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountMelee == LimitModeAmountOfSidearms.Slots) && (ActiveTab == OptionsTab.Allowances); };
             #endregion
 
             /*Underline1 = Settings.GetHandle<bool>("NilB", null, "", false);
@@ -306,17 +310,17 @@ namespace SimpleSidearms
             LimitModeSingleRanged_Absolute = Settings.GetHandle<float>("LimitModeSingleRanged_Absolute", "MaximumMassSingleAbsolute_title".Translate(), "MaximumMassSingleAbsolute_desc".Translate(), 0f);
             LimitModeSingleRanged_AbsoluteMatches = Settings.GetHandle<WeaponListKind>("LimitModeSingleRanged_AbsoluteMatches", "WeaponMatch_title".Translate(), "WeaponMatch_desc".Translate(), WeaponListKind.Ranged, null, "WeaponListKind_option_");
             LimitModeSingleRanged_Selection = Settings.GetHandle<StringHashSetHandler>("LimitModeSingleRanged_Selection", "SidearmSelection_title".Translate(), "SidearmSelection_desc".Translate(), null);
-            LimitModeSingleRanged_Relative.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleRanged_Relative.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleRanged_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingleRanged_Relative, true, highlight3); };
-            LimitModeSingleRanged_RelativeMatches.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleRanged_RelativeMatches.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleRanged_RelativeMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveRelative(rect, LimitModeSingleRanged_RelativeMatches, highlight3); };
             LimitModeSingleRanged_RelativeMatches.Unsaved = true;
-            LimitModeSingleRanged_Absolute.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleRanged_Absolute.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleRanged_Absolute.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeSingleRanged_Absolute, false, 0, maxWeightRanged, highlight3); };
-            LimitModeSingleRanged_AbsoluteMatches.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleRanged_AbsoluteMatches.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleRanged_AbsoluteMatches.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_passiveAbsolute(rect, LimitModeSingleRanged_AbsoluteMatches, highlight3); };
             LimitModeSingleRanged_AbsoluteMatches.Unsaved = true;
-            LimitModeSingleRanged_Selection.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleRanged_Selection.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeSingleRanged == LimitModeSingleSidearm.Selection) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeSingleRanged_Selection.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, LimitModeSingleRanged_Selection, WeaponListKind.Ranged, highlight3, "ConsideredSidearms".Translate(), "NotConsideredSidearms".Translate()); };
             #endregion
             LimitModeAmountRanged = Settings.GetHandle<LimitModeAmountOfSidearms>("LimitModeAmountRanged", "LimitModeAmountRanged_title".Translate(), "LimitModeAmountRanged_desc".Translate(), LimitModeAmountOfSidearms.MaximumCarryWeightOnly, null, "LimitModeAmount_option_");
@@ -326,11 +330,11 @@ namespace SimpleSidearms
             LimitModeAmountRanged_Absolute = Settings.GetHandle<float>("LimitModeAmountRanged_Absolute", "MaximumMassAmountAbsolute_title".Translate(), "MaximumMassAmountAbsolute_desc".Translate(), 0f);
             LimitModeAmountRanged_Slots = Settings.GetHandle<int>("LimitModeAmountRanged_Selection", "MaximumSlots_title".Translate(), "MaximumSlots_desc".Translate(), 0);
             LimitModeAmountRanged_Slots.CustomDrawer = rect => { return HugsDrawerRebuild_Spinner(LimitModeAmountRanged_Slots, rect, highlight4); };
-            LimitModeAmountRanged_Relative.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountRanged == LimitModeAmountOfSidearms.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountRanged_Relative.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountRanged == LimitModeAmountOfSidearms.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeAmountRanged_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeAmountRanged_Relative, true, highlight4); };
-            LimitModeAmountRanged_Absolute.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountRanged == LimitModeAmountOfSidearms.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountRanged_Absolute.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountRanged == LimitModeAmountOfSidearms.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeAmountRanged_Absolute.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeAmountRanged_Absolute, false, 0, maxCapacity, highlight4); };
-            LimitModeAmountRanged_Slots.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountRanged == LimitModeAmountOfSidearms.Slots) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountRanged_Slots.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountRanged == LimitModeAmountOfSidearms.Slots) && (ActiveTab == OptionsTab.Allowances); };
             #endregion
 
             /*Underline2 = Settings.GetHandle<bool>("NilC", null, "", false);
@@ -346,27 +350,32 @@ namespace SimpleSidearms
             LimitModeAmountTotal_Absolute = Settings.GetHandle<float>("LimitModeAmountTotal_Absolute", "MaximumMassAmountAbsolute_title".Translate(), "MaximumMassAmountAbsolute_desc".Translate(), 0f);
             LimitModeAmountTotal_Slots = Settings.GetHandle<int>("LimitModeAmountTotal_Selection", "MaximumSlots_title".Translate(), "MaximumSlots_desc".Translate(), 0);
             LimitModeAmountTotal_Slots.CustomDrawer = rect => { return HugsDrawerRebuild_Spinner(LimitModeAmountTotal_Slots, rect, highlight5); };
-            LimitModeAmountTotal_Relative.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountTotal == LimitModeAmountOfSidearms.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountTotal_Relative.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountTotal == LimitModeAmountOfSidearms.RelativeWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeAmountTotal_Relative.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeAmountTotal_Relative, true, highlight5); };
-            LimitModeAmountTotal_Absolute.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountTotal == LimitModeAmountOfSidearms.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountTotal_Absolute.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountTotal == LimitModeAmountOfSidearms.AbsoluteWeight) && (ActiveTab == OptionsTab.Allowances); };
             LimitModeAmountTotal_Absolute.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, LimitModeAmountTotal_Absolute, false, 0, maxCapacity, highlight5); };
-            LimitModeAmountTotal_Slots.VisibilityPredicate = delegate { return (SeparateModes == true) && (LimitModeAmountTotal == LimitModeAmountOfSidearms.Slots) && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountTotal_Slots.VisibilityPredicate = delegate { return !CEOverride && (SeparateModes == true) && (LimitModeAmountTotal == LimitModeAmountOfSidearms.Slots) && (ActiveTab == OptionsTab.Allowances); };
             #endregion 
 
-            LimitModeSingle.VisibilityPredicate = delegate { return SeparateModes.Value == false && (ActiveTab == OptionsTab.Allowances); };
-            LimitModeAmount.VisibilityPredicate = delegate { return SeparateModes.Value == false && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingle.VisibilityPredicate = delegate { return !CEOverride && SeparateModes.Value == false && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmount.VisibilityPredicate = delegate { return !CEOverride && SeparateModes.Value == false && (ActiveTab == OptionsTab.Allowances); };
 
-            LimitModeSingleMelee.VisibilityPredicate = delegate { return SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
-            LimitModeAmountMelee.VisibilityPredicate = delegate { return SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
-            LimitModeSingleRanged.VisibilityPredicate = delegate { return SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
-            LimitModeAmountRanged.VisibilityPredicate = delegate { return SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
-            LimitModeAmountTotal.VisibilityPredicate = delegate { return SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleMelee.VisibilityPredicate = delegate { return !CEOverride && SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountMelee.VisibilityPredicate = delegate { return !CEOverride && SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeSingleRanged.VisibilityPredicate = delegate { return !CEOverride && SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountRanged.VisibilityPredicate = delegate { return !CEOverride && SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
+            LimitModeAmountTotal.VisibilityPredicate = delegate { return !CEOverride && SeparateModes.Value == true && (ActiveTab == OptionsTab.Allowances); };
 
             LimitCarryInfo = Settings.GetHandle<bool>("LimitCarryInfo", null, "LimitCarryInfo_desc".Translate(), false);
-            LimitCarryInfo.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Allowances; };
+            LimitCarryInfo.VisibilityPredicate = delegate { return !CEOverride && ActiveTab == OptionsTab.Allowances; };
             LimitCarryInfo.CustomDrawer = rect => { return CustomDrawer_RighthandSideLabel(rect, "LimitCarryInfo_title".Translate(), noHighlight); };
             LimitCarryInfo.Unsaved = true;
-            
+
+            CEOverrideInfo = Settings.GetHandle<bool>("CEOverrideInfo", null, "CEOverrideInfo_desc".Translate(), false);
+            CEOverrideInfo.VisibilityPredicate = delegate { return CEOverride && ActiveTab == OptionsTab.Allowances; };
+            CEOverrideInfo.CustomDrawer = rect => { return CustomDrawer_RighthandSideLabel(rect, "CEOverrideInfo_title".Translate(), noHighlight); };
+            CEOverrideInfo.Unsaved = true;
+
             SidearmSpawnChance = Settings.GetHandle<float>("SidearmSpawnChance", "SidearmSpawnChance_title".Translate(), "SidearmSpawnChance_desc".Translate(), 0f);
             SidearmSpawnChance.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, SidearmSpawnChance, true, noHighlight); };
             SidearmSpawnChance.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Spawning; };
@@ -427,6 +436,10 @@ namespace SimpleSidearms
             SidearmsNeolithicExtension.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
             SidearmsEnableNeolithicExtension.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
 
+            ceOverride = CEPatcher.isCEPresent(this.HarmonyInst);
+
+            if (CEOverride)
+                CEPatcher.patchCE(this.HarmonyInst);
         }
 
         private int delay = 0;
@@ -450,10 +463,12 @@ namespace SimpleSidearms
             saveData = UtilityWorldObjectManager.GetUtilityWorldObject<SimpleSidearmsData>();
         }
 
-
-        public override void Initialize()
+        public override void MapLoaded(Map map)
         {
-            base.Initialize();
+            base.MapLoaded(map);
+
+            if(CEOverride)
+                LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_CEOverride, OpportunityType.Critical);
         }
 
         internal void UpdateConfig(string config, bool resetFirst)

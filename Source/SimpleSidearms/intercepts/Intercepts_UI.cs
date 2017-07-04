@@ -56,27 +56,30 @@ namespace SimpleSidearms.intercepts
                     GettersFilters.getWeaponLists(out rangedWeapons, out meleeWeapons, __instance.inventory);
 
                     GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(__instance);
-                    if (pawnMemory == null)
-                        return;
+                    //if (pawnMemory == null)
+                    //    return;
 
-                    if (rangedWeapons.Count > 0 || meleeWeapons.Count > 0 || pawnMemory.weapons.Count > 0)
+                    if (rangedWeapons.Count > 0 || meleeWeapons.Count > 0 || (pawnMemory != null && pawnMemory.weapons.Count > 0))
                     {
                         List<ThingDef> rangedWeaponMemories = new List<ThingDef>();
                         List<ThingDef> meleeWeaponMemories = new List<ThingDef>();
                         
-                        foreach (string weapon in pawnMemory.weapons)
+                        if(pawnMemory != null)
                         {
-                            ThingDef wepDef = DefDatabase<ThingDef>.GetNamedSilentFail(weapon);
+                            foreach (string weapon in pawnMemory.weapons)
+                            {
+                                ThingDef wepDef = DefDatabase<ThingDef>.GetNamedSilentFail(weapon);
 
-                            if (wepDef == null)
-                                continue;
+                                if (wepDef == null)
+                                    continue;
 
-                            if (wepDef.IsMeleeWeapon)
-                                meleeWeaponMemories.Add(wepDef);
-                            else if (wepDef.IsRangedWeapon)
-                                rangedWeaponMemories.Add(wepDef);
+                                if (wepDef.IsMeleeWeapon)
+                                    meleeWeaponMemories.Add(wepDef);
+                                else if (wepDef.IsRangedWeapon)
+                                    rangedWeaponMemories.Add(wepDef);
+                            }
                         }
-
+                       
                         Gizmo_SidearmsList advanced = new Gizmo_SidearmsList(__instance, rangedWeapons, meleeWeapons, rangedWeaponMemories, meleeWeaponMemories);
                         advanced.defaultLabel = "DrawSidearm_gizmoTitle".Translate();
                         //draft.hotKey = KeyBindingDefOf.CommandColonistDraft;
@@ -102,6 +105,9 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         private static void AddHumanlikeOrders(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
+            if (SimpleSidearms.CEOverride)
+                return;
+
             IntVec3 c = IntVec3.FromVector3(clickPos);
             if (pawn.equipment != null)
             {

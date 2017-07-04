@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CEPatcher.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="hugsLibSettings\Presets.cs" />
     <Compile Include="hugsLibSettings\SettingsUIs.cs" />

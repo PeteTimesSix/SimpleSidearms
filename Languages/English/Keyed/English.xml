@@ -16,6 +16,9 @@
 <LimitCarryInfo_desc></LimitCarryInfo_desc>
 <LimitCarryInfo_title>*Always limited by pawn's carry capacity</LimitCarryInfo_title>
 
+<CEOverrideInfo_desc></CEOverrideInfo_desc>
+<CEOverrideInfo_title>Disabled in favor of CE's system.</CEOverrideInfo_title>
+
 <LimitModeAmountMelee_desc>What restrictions are there on all melee sidearms.</LimitModeAmountMelee_desc>
 <LimitModeAmountMelee_title>Total melee sidearms limit mode</LimitModeAmountMelee_title>
 <LimitModeAmountRanged_desc>What restrictions are there on all ranged sidearms.</LimitModeAmountRanged_desc>

@@ -23,5 +23,7 @@ namespace SimpleSidearms.rimworld
         public static ConceptDef Concept_SimpleSidearmsAdvanced;
 
         public static ConceptDef Concept_SimpleSidearmsDropping;
+
+        public static ConceptDef Concept_CEOverride;
     }
 }

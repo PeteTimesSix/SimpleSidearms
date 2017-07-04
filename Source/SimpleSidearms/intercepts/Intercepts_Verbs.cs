@@ -46,6 +46,7 @@ namespace SimpleSidearms.intercepts
     [HarmonyPatch(typeof(Verb_MeleeAttack), "TryCastShot")]
     static class Verb_MeleeAttack_TryCastShot_PostFix
     {
+
         [HarmonyPostfix]
         private static void TryCastShot(Verb_MeleeAttack __instance)
         {

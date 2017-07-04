@@ -27,8 +27,8 @@ namespace SimpleSidearms.rimworld
         {
             get {
                 GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
-                if (pawnMemory == null)
-                    return 75;
+                //if (pawnMemory == null)
+                //    return 75;
                 int biggerCount = Math.Max(rangedWeapons.Count + calcUnmatchedRangedWeapons(pawnMemory, parent), meleeWeapons.Count + calcUnmatchedMeleeWeapons(pawnMemory, parent) + 1);
                 return ContentPadding * 2 + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + LockPanelWidth;
             }
@@ -36,6 +36,9 @@ namespace SimpleSidearms.rimworld
 
         private int calcUnmatchedMeleeWeapons(GoldfishModule pawnMemory, Pawn pawn)
         {
+            if (pawnMemory == null)
+                return 0;
+
             int count = 0;
 
             foreach (string weapon in pawnMemory.weapons)
@@ -53,6 +56,9 @@ namespace SimpleSidearms.rimworld
 
         private int calcUnmatchedRangedWeapons(GoldfishModule pawnMemory, Pawn pawn)
         {
+            if (pawnMemory == null)
+                return 0;
+
             int count = 0;    
 
             foreach (string weapon in pawnMemory.weapons)
@@ -162,7 +168,7 @@ namespace SimpleSidearms.rimworld
                 return true; 
             }
             else
-                return false;
+                return false;  
         }
 
         private static bool DrawIconForWeaponMemory(GoldfishModule pawnMemory, ThingDef weapon, Rect contentRect, Vector2 iconOffset)
@@ -254,7 +260,7 @@ namespace SimpleSidearms.rimworld
             MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
 
             Texture2D drawPocket;
-            if (pawnMemory.IsCurrentPrimary(weapon.def.defName))
+            if (pawnMemory != null && pawnMemory.IsCurrentPrimary(weapon.def.defName))
                 drawPocket = TextureResources.drawPocketPrimary;
             else
                 drawPocket = TextureResources.drawPocket;
@@ -262,7 +268,7 @@ namespace SimpleSidearms.rimworld
             if (Mouse.IsOver(iconRect))
             {
                 LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SidearmsInInventory, OpportunityType.GoodToKnow);
-                if (pawnMemory.IsCurrentPrimary(weapon.def.defName))
+                if (pawnMemory != null && pawnMemory.IsCurrentPrimary(weapon.def.defName))
                     LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SidearmsPrimary, OpportunityType.GoodToKnow);
                 GUI.color = iconMouseOverColor;
                 GUI.DrawTexture(iconRect, drawPocket);
@@ -289,7 +295,7 @@ namespace SimpleSidearms.rimworld
             GUI.color = Color.white;
 
             UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventory");
-            if (pawnMemory.IsCurrentPrimary(weapon.def.defName))
+            if (pawnMemory != null && pawnMemory.IsCurrentPrimary(weapon.def.defName))
                 UIHighlighter.HighlightOpportunity(iconRect, "SidearmPrimary");
 
             if (Widgets.ButtonInvisible(iconRect, true))
@@ -355,8 +361,8 @@ namespace SimpleSidearms.rimworld
             interactedUnarmed = false;
 
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
-            if (pawnMemory == null)
-                return new GizmoResult(GizmoState.Clear);
+            //if (pawnMemory == null)
+            //    return new GizmoResult(GizmoState.Clear);
 
             int i = 0;
             for (i = 0; i < rangedWeapons.Count; i++)
@@ -369,16 +375,20 @@ namespace SimpleSidearms.rimworld
             }
              
             int j = 0;
-            foreach(ThingDef def in rangedWeaponMemories)
+
+            if (pawnMemory != null)
             {
-                if (!parent.hasWeaponSomewhere(def))
+                foreach (ThingDef def in rangedWeaponMemories)
                 {
-                    var iconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + LockPanelWidth, 0);
-                    bool interacted = DrawIconForWeaponMemory(pawnMemory, def, contentRect, iconOffset);
-                    if (interacted) interactedWeaponMemory = def;
-                    if (interacted) interactedRanged = true;
-                    globalInteracted |= interacted;
-                    j++;
+                    if (!parent.hasWeaponSomewhere(def))
+                    {
+                        var iconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + LockPanelWidth, 0);
+                        bool interacted = DrawIconForWeaponMemory(pawnMemory, def, contentRect, iconOffset);
+                        if (interacted) interactedWeaponMemory = def;
+                        if (interacted) interactedRanged = true;
+                        globalInteracted |= interacted;
+                        j++;
+                    }
                 }
             }
 
@@ -392,16 +402,19 @@ namespace SimpleSidearms.rimworld
             }
 
             j = 0;
-            foreach (ThingDef def in meleeWeaponMemories)
+            if (pawnMemory != null)
             {
-                if (!parent.hasWeaponSomewhere(def))
+                foreach (ThingDef def in meleeWeaponMemories)
                 {
-                    var iconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + LockPanelWidth, IconSize + IconGap);
-                    bool interacted = DrawIconForWeaponMemory(pawnMemory, def, contentRect, iconOffset);
-                    if (interacted) interactedWeaponMemory = def;
-                    if (interacted) interactedRanged = false;
-                    globalInteracted |= interacted;
-                    j++;
+                    if (!parent.hasWeaponSomewhere(def))
+                    {
+                        var iconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + LockPanelWidth, IconSize + IconGap);
+                        bool interacted = DrawIconForWeaponMemory(pawnMemory, def, contentRect, iconOffset);
+                        if (interacted) interactedWeaponMemory = def;
+                        if (interacted) interactedRanged = false;
+                        globalInteracted |= interacted;
+                        j++;
+                    }
                 }
             }
 

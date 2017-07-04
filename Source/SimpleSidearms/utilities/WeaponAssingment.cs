@@ -18,8 +18,6 @@ namespace SimpleSidearms.utilities
         public static void SetPrimary(Pawn pawn, Thing toSwapTo, bool intentionalEquip, bool fromInventory, bool dropCurrent, bool intentionalDrop)
         {
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
-            if (pawnMemory == null)
-                return;
 
             if (toSwapTo != null)
             {
@@ -37,7 +35,8 @@ namespace SimpleSidearms.utilities
 
             if (dropCurrent)
             {
-                pawnMemory.DropPrimary(intentionalDrop);
+                if(pawnMemory != null)
+                    pawnMemory.DropPrimary(intentionalDrop);
 
                 if(pawn.equipment.Primary != null)
                 {
@@ -65,11 +64,13 @@ namespace SimpleSidearms.utilities
                 {
                     toSwapTo.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
                 }
-                pawnMemory.SetPrimary(toSwapTo.def, intentionalEquip);
+                if (pawnMemory != null)
+                    pawnMemory.SetPrimary(toSwapTo.def, intentionalEquip);
             }
             else
             {
-                pawnMemory.SetPrimaryEmpty(intentionalEquip);
+                if (pawnMemory != null)
+                    pawnMemory.SetPrimaryEmpty(intentionalEquip);
             }
 
         }
@@ -302,12 +303,13 @@ namespace SimpleSidearms.utilities
 
         internal static void dropSidearm(Pawn pawn, Thing interactedWeapon)
         {
+            Thing whoCares;
+            pawn.inventory.innerContainer.TryDrop(interactedWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out whoCares, null);
+
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
             if (pawnMemory == null)
                 return;
             pawnMemory.ForgetSidearm(interactedWeapon.def);
-            Thing whoCares;
-            pawn.inventory.innerContainer.TryDrop(interactedWeapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out whoCares, null);
         }
 
         internal static void forgetSidearmMemory(Pawn pawn, ThingDef interactedWeaponMemory)
