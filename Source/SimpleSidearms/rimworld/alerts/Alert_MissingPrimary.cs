@@ -45,38 +45,41 @@ namespace SimpleSidearms.rimworld.alerts
         private IEnumerable<Pawn> AffectedPawns()
         {
             HashSet<Pawn> pawns = new HashSet<Pawn>();
-            foreach (Pawn pawn in PawnsFinder.AllMaps_FreeColonists)
+            if(PawnsFinder.AllMaps_FreeColonistsSpawned != null)
             {
-                if (pawn.Dead)
+                foreach (Pawn pawn in PawnsFinder.AllMaps_FreeColonistsSpawned)
                 {
-                    Log.Error("Dead pawn in PawnsFinder.AllMaps_FreeColonists:" + pawn);
-                }
-                else
-                {
-                    if (pawn.Downed)
-                        continue;
-                    if (pawn.Drafted)
-                        continue;
-                    if (pawn.CurJob != null && (pawn.CurJob.def == SidearmsDefOf.EquipSecondary || pawn.CurJob.def == SidearmsDefOf.EquipSecondaryCombat))
-                        continue;
-                    
-                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
-                    if (pawnMemory != null)
+                    if (pawn.health != null && pawn.Dead)
                     {
-                        if (pawnMemory.NoPrimary)
+                        Log.Error("Dead pawn in PawnsFinder.AllMaps_FreeColonists:" + pawn);
+                    }
+                    else
+                    {
+                        if (pawn.health != null && pawn.Downed)
                             continue;
-                        ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(pawnMemory.primary);
-                        if (def == null)
+                        if (pawn.drafter != null && pawn.Drafted)
+                            continue;
+                        if (pawn.CurJob != null && pawn.CurJob.def != null && (pawn.CurJob.def == SidearmsDefOf.EquipSecondary || pawn.CurJob.def == SidearmsDefOf.EquipSecondaryCombat))
                             continue;
 
-                        if (!pawn.hasWeaponSomewhere(pawnMemory.primary))
+                        GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+                        if (pawnMemory != null)
                         {
-                            if (pawns.Add(pawn))
-                                yield return pawn;
+                            if (pawnMemory.NoPrimary)
+                                continue;
+                            ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(pawnMemory.primary);
+                            if (def == null)
+                                continue;
+
+                            if (pawnMemory.primary != null && !pawn.hasWeaponSomewhere(pawnMemory.primary))
+                            {
+                                if (pawns.Add(pawn))
+                                    yield return pawn;
+                            }
                         }
                     }
                 }
-            }
+            }         
         }
     }
 }
