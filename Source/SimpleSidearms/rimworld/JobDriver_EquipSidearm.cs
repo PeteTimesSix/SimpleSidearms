@@ -11,6 +11,11 @@ namespace SimpleSidearms.rimworld
 {
     class JobDriver_EquipSidearm : JobDriver
     {
+        public override bool TryMakePreToilReservations()
+        {
+            //Reservation logic when dealing with queues.
+            return this.pawn.Reserve(this.job.targetA, this.job, 1, -1, null);
+        }
 
         [DebuggerHidden]
         protected override IEnumerable<Toil> MakeNewToils()
@@ -21,7 +26,7 @@ namespace SimpleSidearms.rimworld
             {
                 initAction = delegate
                 {
-                    ThingWithComps thingWithComps = (ThingWithComps)this.CurJob.targetA.Thing;
+                    ThingWithComps thingWithComps = (ThingWithComps)this.job.targetA.Thing;
                     ThingWithComps thingWithComps2;
                     if (thingWithComps.def.stackLimit > 1 && thingWithComps.stackCount > 1)
                     {

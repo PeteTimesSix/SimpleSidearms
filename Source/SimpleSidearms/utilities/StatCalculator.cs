@@ -377,14 +377,14 @@ namespace SimpleSidearms.utilities
             float num = 0f;
             for (int i = 0; i < verbsList.Count; i++)
             {
-                num += verbsList[i].verbProps.AdjustedSelectionWeight(verbsList[i], pawn, verbsList[i].ownerEquipment);
+                num += verbsList[i].verbProps.AdjustedMeleeSelectionWeight(verbsList[i], pawn, verbsList[i].ownerEquipment);
             }
             float num2 = 0f;
             for (int j = 0; j < verbsList.Count; j++)
             {
                 ThingWithComps ownerEquipment = verbsList[j].ownerEquipment;
-                float selectionWeight = verbsList[j].verbProps.AdjustedSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
-                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedCooldownTicks(ownerEquipment);
+                float selectionWeight = verbsList[j].verbProps.AdjustedMeleeSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
+                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedCooldownTicks(verbsList[j], pawn, ownerEquipment);
             }
             return num2 / 60f;
         }
@@ -414,13 +414,13 @@ namespace SimpleSidearms.utilities
             float num = 0f;
             for (int i = 0; i < verbsList.Count; i++)
             {
-                num += verbsList[i].verbProps.AdjustedSelectionWeight(verbsList[i], pawn, verbsList[i].ownerEquipment);
+                num += verbsList[i].verbProps.AdjustedMeleeSelectionWeight(verbsList[i], pawn, verbsList[i].ownerEquipment);
             }
             float num2 = 0f;
             for (int j = 0; j < verbsList.Count; j++)
             {
                 ThingWithComps ownerEquipment = verbsList[j].ownerEquipment;
-                float selectionWeight = verbsList[j].verbProps.AdjustedSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
+                float selectionWeight = verbsList[j].verbProps.AdjustedMeleeSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
                 num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedMeleeDamageAmount(verbsList[j], pawn, ownerEquipment);
             }
             return num2;
@@ -463,7 +463,7 @@ namespace SimpleSidearms.utilities
             Verb atkVerb = (weapon.GetComp<CompEquippable>()).PrimaryVerb;
             VerbProperties atkProps = atkVerb.verbProps;
 
-            float damage = (atkProps.projectileDef == null) ? 0 : atkProps.projectileDef.projectile.damageAmountBase;
+            float damage = (atkProps.defaultProjectile == null) ? 0 : atkProps.defaultProjectile.projectile.damageAmountBase;
             float warmup = atkProps.warmupTime;  
             float cooldown = weapon.def.GetStatValueAbstract(StatDefOf.RangedWeapon_Cooldown, null); 
             int burstShot = atkProps.burstShotCount;
@@ -484,7 +484,7 @@ namespace SimpleSidearms.utilities
             if (atkProps.range * atkProps.range < range || atkProps.minRange * atkProps.minRange > range)
                 return -1;
 
-            float damage = (atkProps.projectileDef == null) ? 0 : atkProps.projectileDef.projectile.damageAmountBase;
+            float damage = (atkProps.defaultProjectile == null) ? 0 : atkProps.defaultProjectile.projectile.damageAmountBase;
             float warmup = atkProps.warmupTime; 
             float cooldown = weapon.def.GetStatValueAbstract(StatDefOf.RangedWeapon_Cooldown, null);
             int burstShot = atkProps.burstShotCount;

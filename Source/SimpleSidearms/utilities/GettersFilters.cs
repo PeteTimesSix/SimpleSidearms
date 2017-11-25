@@ -290,7 +290,7 @@ namespace SimpleSidearms.utilities
             CompEquippable equip = weapon.TryGetComp<CompEquippable>();
             if (equip == null)
                 return false;
-            if (equip.PrimaryVerb.verbProps.ai_IsIncendiary || equip.PrimaryVerb.verbProps.onlyManualCast || equip.PrimaryVerb.verbProps.ai_IsBuildingDestroyer)
+            if (equip.PrimaryVerb.IsIncendiary() || equip.PrimaryVerb.verbProps.onlyManualCast || equip.PrimaryVerb.verbProps.ai_IsBuildingDestroyer)
                 return true;
             else
                 return false;
