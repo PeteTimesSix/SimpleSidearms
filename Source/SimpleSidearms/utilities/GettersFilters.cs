@@ -253,13 +253,14 @@ namespace SimpleSidearms.utilities
             return best as ThingWithComps;
         }
 
-        internal static ThingWithComps findBestMeleeWeapon(Pawn pawn, bool skipDangerous, out bool unarmedIsBetter/*, SelectionMode mode*/)
+        internal static ThingWithComps findBestMeleeWeapon(Pawn pawn, bool skipDangerous/*, SelectionMode mode*/, Pawn target)
         {
             List<Thing> weapons = getWeaponsOfType(pawn, WeaponSearchType.Melee);
 
-            float bestSoFar = float.MinValue;
-            Thing best = null;
-
+            Thing best = pawn.equipment.Primary;
+            float bestSoFar = best == null ? float.MinValue :
+                StatCalculator.MeleeDPS(pawn, best as ThingWithComps, SpeedSelectionBiasMelee.Value, target);
+            
             foreach (Thing thing in weapons)
             {
                 if (!(thing is ThingWithComps))
@@ -271,7 +272,7 @@ namespace SimpleSidearms.utilities
 
                 float dpsAvg = -1f;
 
-                dpsAvg = StatCalculator.MeleeDPS(pawn, thing as ThingWithComps, SpeedSelectionBiasMelee.Value);
+                dpsAvg = StatCalculator.MeleeDPS(pawn, thing as ThingWithComps, SpeedSelectionBiasMelee.Value, target);
 
                 if (dpsAvg > bestSoFar)
                 {
@@ -280,7 +281,8 @@ namespace SimpleSidearms.utilities
                 }
             }
 
-            unarmedIsBetter = StatCalculator.UnarmedDPS(pawn, SpeedSelectionBiasMelee.Value) > bestSoFar;
+            if (StatCalculator.MeleeDPS(pawn, null, SpeedSelectionBiasMelee.Value, target) > bestSoFar)
+                best = null;
 
             return best as ThingWithComps;
         }

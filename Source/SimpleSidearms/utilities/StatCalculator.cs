@@ -322,31 +322,27 @@ namespace SimpleSidearms.utilities
             return true;
         }*/
 
-        private static float GetMeleeHitChance(Pawn pawn, Thing weapon)
+        private static float GetMeleeHitChance(Pawn pawn)
         {
-            if (weapon != null)
-            {
-                return weapon.GetStatValue(StatDefOf.MeleeHitChance, true);
-            }
-            return pawn.def.GetStatValueAbstract(StatDefOf.MeleeHitChance, null);
+            return pawn.GetStatValue(StatDefOf.MeleeHitChance, true);
         }
 
-        private static List<Verb> GetUnarmedVerbs(Pawn pawn)
+        private static List<Verb_MeleeAttack> GetUnarmedVerbs(Pawn pawn)
         {
-            List<Verb> meleeAtks = new List<Verb>();
+            List<Verb_MeleeAttack> meleeAtks = new List<Verb_MeleeAttack>();
             List<Verb> allVerbs = pawn.verbTracker.AllVerbs;
             for (int i = 0; i < allVerbs.Count; i++)
             {
                 if (allVerbs[i] is Verb_MeleeAttack && allVerbs[i].IsStillUsableBy(pawn) && (allVerbs[i].ownerEquipment == null || allVerbs[i].ownerEquipment.def.IsMeleeWeapon))
                 {
-                    meleeAtks.Add(allVerbs[i]);
+                    meleeAtks.Add(allVerbs[i] as Verb_MeleeAttack);
                 }
             }
             foreach (Verb current in pawn.health.hediffSet.GetHediffsVerbs())
             {
                 if (current is Verb_MeleeAttack && current.IsStillUsableBy(pawn))
                 {
-                    meleeAtks.Add(current);
+                    meleeAtks.Add(current as Verb_MeleeAttack);
                 }
             }
             return meleeAtks;
@@ -358,17 +354,9 @@ namespace SimpleSidearms.utilities
             {
                 return 1f;
             }
-            List<Verb> verbsList;
-
-            if (weapon != null)
-            {
-                verbsList = new List<Verb>();
-                verbsList.Add(weapon.GetComp<CompEquippable>().PrimaryVerb);
-            }
-            else
-            {
-                verbsList = GetUnarmedVerbs(pawn);
-            }
+            List<Verb_MeleeAttack> verbsList = GetUnarmedVerbs(pawn);
+            if (weapon != null && weapon.TryGetComp<CompEquippable>() != null)
+                verbsList.AddRange(weapon.TryGetComp<CompEquippable>().AllVerbs.OfType<Verb_MeleeAttack>().ToList<Verb_MeleeAttack>());
 
             if (verbsList.Count == 0)
             {
@@ -384,28 +372,22 @@ namespace SimpleSidearms.utilities
             {
                 ThingWithComps ownerEquipment = verbsList[j].ownerEquipment;
                 float selectionWeight = verbsList[j].verbProps.AdjustedMeleeSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
-                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedCooldownTicks(verbsList[j], pawn, ownerEquipment);
+                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedCooldown(verbsList[j], pawn, ownerEquipment);
             }
-            return num2 / 60f;
+            return num2;
         }
 
-        private static float GetMeleeDamage(Pawn pawn, ThingWithComps weapon)
+        private static float GetMeleeDamage(Pawn pawn, ThingWithComps weapon, Pawn target)
         {
             if (pawn == null)
             {
                 return 0f;
             }
 
-            List<Verb> verbsList;
-            if (weapon != null)
-            {
-                verbsList = new List<Verb>();
-                verbsList.Add(weapon.GetComp<CompEquippable>().PrimaryVerb);
-            }
-            else
-            {
-                verbsList = GetUnarmedVerbs(pawn);
-            }
+            List<Verb_MeleeAttack> verbsList = GetUnarmedVerbs(pawn);
+            //Possbily don't need all Unarmed Verbs, but insignificant as the discrepency with Stat Page is <1%, rounding down and such.
+            if (weapon != null  && weapon.TryGetComp<CompEquippable>() != null)
+                verbsList.AddRange(weapon.TryGetComp<CompEquippable>().AllVerbs.OfType<Verb_MeleeAttack>().ToList<Verb_MeleeAttack>());
 
             if (verbsList.Count == 0)
             {
@@ -421,24 +403,75 @@ namespace SimpleSidearms.utilities
             {
                 ThingWithComps ownerEquipment = verbsList[j].ownerEquipment;
                 float selectionWeight = verbsList[j].verbProps.AdjustedMeleeSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
-                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedMeleeDamageAmount(verbsList[j], pawn, ownerEquipment);
+
+                float damage = (float)verbsList[j].verbProps.AdjustedMeleeDamageAmount(verbsList[j], pawn, ownerEquipment);
+                StatDef deflectionStat = verbsList[j].verbProps.meleeDamageDef.armorCategory.deflectionStat;    //aka Armor Type
+                damage *= ReduceForArmorType(deflectionStat, target);
+
+                num2 += selectionWeight / num * damage;
             }
             return num2;
         }
 
-        internal static float UnarmedDPS(Pawn pawn, float speedBias)
+        internal static float ReduceForArmorType(StatDef deflectionStat, Pawn target)
         {
-            if (pawn == null)
-                return 0;
-            float dps = GetMeleeDamage(pawn, null) * GetMeleeHitChance(pawn, null) / GetMeleeCooldown(pawn, null);
-            return dps;
+            float reduction = 1.0f;
+            if (target != null)
+            {
+                BodyPartGroupDef bodyPartTest = BodyPartGroupDefOf.Torso;   //For statistical purposes, consider torso only
+
+                foreach (Apparel a in target.apparel.WornApparel.Where(a => a.def.apparel.bodyPartGroups.Contains(bodyPartTest)))
+                {
+                    reduction *= GetArmorTypeFactor(a.GetStatValue(deflectionStat, true));
+                }
+                reduction *= GetArmorTypeFactor(target.GetStatValue(deflectionStat, true));
+            }
+            return reduction;
         }
 
-        internal static float MeleeDPS(Pawn pawn, ThingWithComps weapon, float speedBias)
+        internal static float GetArmorTypeFactor(float armorRating)
+        {
+            // Word from Tynan himself, praise be unto he
+            // https://www.reddit.com/r/RimWorld/comments/2q542f/alpha_eight_armor_changes/
+            /*
+             One armor value.
+             Up to 50%, damage resistance increases.
+             Past 50%, damage deflection increases.
+             Past 100%, damage deflection and resistance both increase at 1/4 rate up to a maximum of 90% and 90%.
+             */
+            float resistance;
+            float deflectChance;
+
+            if (armorRating <= 0.50)
+            {
+                resistance = armorRating;
+                deflectChance = 0;
+            }
+            else if (armorRating < 1.0f)
+            {
+                resistance = 0.5f;
+                deflectChance = armorRating - 0.5f;
+            }
+            else
+            {
+                resistance = 0.5f + (armorRating - 1f) * 0.25f;
+                deflectChance = 0.5f + (armorRating - 1f) * 0.25f;
+            }
+
+            if (resistance > 0.9f)
+                resistance = 0.9f;
+            if (deflectChance > 0.9f)
+                deflectChance = 0.9f;
+
+            // Game code computes deflect or resist, we're looking for just the statistical average:
+            return (1.0f - resistance) * (1.0f - deflectChance);
+        }
+
+        internal static float MeleeDPS(Pawn pawn, ThingWithComps weapon, float speedBias, Pawn target)
         {
             if (pawn == null)
                 return 0;
-            float dps = GetMeleeDamage(pawn, weapon) * GetMeleeHitChance(pawn, weapon) / GetMeleeCooldown(pawn, weapon);
+            float dps = GetMeleeDamage(pawn, weapon, target) * GetMeleeHitChance(pawn) / GetMeleeCooldown(pawn, weapon);
             return dps;
             /*if (weapon == null)
                 return 0;
