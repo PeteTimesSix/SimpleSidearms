@@ -15,12 +15,18 @@ namespace SimpleSidearms.utilities
 {
     public static class WeaponAssingment
     {
-        public static void SetPrimary(Pawn pawn, Thing toSwapTo, bool intentionalEquip, bool fromInventory, bool dropCurrent, bool intentionalDrop)
+        public static bool SetPrimary(Pawn pawn, Thing toSwapTo, bool intentionalEquip, bool fromInventory, bool dropCurrent, bool intentionalDrop)
         {
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
 
             if (toSwapTo != null)
             {
+                if (pawn.equipment != null && pawn.equipment.Primary != null &&
+                    toSwapTo.thingIDNumber == pawn.equipment.Primary.thingIDNumber)
+                {
+                    return false;
+                }
+
                 if (toSwapTo.stackCount > 1)
                 {
                     toSwapTo = toSwapTo.SplitOff(1);
@@ -32,6 +38,8 @@ namespace SimpleSidearms.utilities
                         pawn.inventory.innerContainer.Remove(toSwapTo);
                 }
             }
+            else if (pawn.equipment != null && pawn.equipment.Primary == null)
+                return false;
 
             if (dropCurrent)
             {
@@ -72,7 +80,7 @@ namespace SimpleSidearms.utilities
                 if (pawnMemory != null)
                     pawnMemory.SetPrimaryEmpty(intentionalEquip);
             }
-
+            return true;    
         }
 
         internal static void reequipPrimaryIfNeededAndAvailable(Pawn pawn, GoldfishModule pawnMemory)
@@ -145,7 +153,10 @@ namespace SimpleSidearms.utilities
                         return;
                     }
 
-                    bool changed = tryCQCWeaponSwapToMelee(pawn);
+                    if (pawn.equipment.Primary != null && pawn.equipment.Primary.def.IsMeleeWeapon)
+                        return;
+
+                    bool changed = tryCQCWeaponSwapToMelee(pawn, attacker);
 
                     //change targets if shooting something else, or has no set target (or nothing)
                     if (changed && (attacker != pawn.mindState.enemyTarget || pawn.mindState.enemyTarget == null))
@@ -161,14 +172,19 @@ namespace SimpleSidearms.utilities
                         }
                     }
                 }
-                else
-                {
-                    return;
-                }
             }
         }
 
-        internal static bool tryCQCWeaponSwapToMelee(Pawn pawn)
+        //Okay I don't know what CQC means so maybe CQCOnAttack is a silly name
+        internal static void doCQCOnAttack(Pawn pawn, Pawn target)
+        {
+            if (target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))
+                    return;
+
+            tryCQCWeaponSwapToMelee(pawn, target);
+        }
+
+        internal static bool tryCQCWeaponSwapToMelee(Pawn pawn, Pawn target)
         {
             if (pawn.Dead)
                 return false;
@@ -185,12 +201,10 @@ namespace SimpleSidearms.utilities
             }
             if (pawn.equipment.Primary != null)
             {
-                if (pawn.equipment.Primary.def.IsMeleeWeapon)
-                    return false;
                 if (pawn.equipment.Primary.def.destroyOnDrop)
                     return false;
             }
-            return tryMeleeWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.Panic), true, pawn.IsColonistPlayerControlled);
+            return tryMeleeWeaponSwap(pawn, MiscUtils.shouldDrop(DroppingModeEnum.Panic), true, pawn.IsColonistPlayerControlled, target);
         }
 
         internal static void weaponSwapSpecific(Pawn pawn, Thing toSwapTo, bool intentionalEquip, bool dropCurrent, bool intentionalDrop)
@@ -233,38 +247,14 @@ namespace SimpleSidearms.utilities
             return false;
         }
 
-        internal static bool tryMeleeWeaponSwap(Pawn pawn, bool dropCurrent, bool considerUnarmed, bool skipDangerous)
+        internal static bool tryMeleeWeaponSwap(Pawn pawn, bool dropCurrent, bool considerUnarmed, bool skipDangerous, Pawn target = null)
         {
             if (pawn.Dead)
                 return false;
-            Thing best = null;
+            ThingWithComps best = GettersFilters.findBestMeleeWeapon(pawn, skipDangerous/*, MeleeSelectionMode*/, target);
 
-            bool unarmedIsBest;
-            
-            if (pawn.inventory.innerContainer.Any((Thing x) => x.def.IsMeleeWeapon))
-            {
-                best = GettersFilters.findBestMeleeWeapon(pawn, skipDangerous, out unarmedIsBest/*, MeleeSelectionMode*/);
-            }
-            else
-            {
-                unarmedIsBest = true;
-            }
-
-            if (best == null | unarmedIsBest)
-            {
-                if (considerUnarmed)
-                {
-                    SetPrimary(pawn, null, false, true, dropCurrent, false);
-                }
-            }
-            else
-            {
-                if (best is ThingWithComps)
-                {
-                    SetPrimary(pawn, best, false, true, dropCurrent, false);
-                    return true;
-                }
-            }
+            if (best != null || considerUnarmed)
+                return SetPrimary(pawn, best, false, true, dropCurrent, false);
             
             return false;
         }
