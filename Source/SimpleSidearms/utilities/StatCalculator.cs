@@ -420,10 +420,14 @@ namespace SimpleSidearms.utilities
             {
                 BodyPartGroupDef bodyPartTest = BodyPartGroupDefOf.Torso;   //For statistical purposes, consider torso only
 
-                foreach (Apparel a in target.apparel.WornApparel.Where(a => a.def.apparel.bodyPartGroups.Contains(bodyPartTest)))
+                if (target.apparel != null && target.apparel.WornApparel != null)
                 {
-                    reduction *= GetArmorTypeFactor(a.GetStatValue(deflectionStat, true));
+                    foreach (Apparel apparel in target.apparel.WornApparel.Where(a => a.def.apparel.bodyPartGroups.Contains(bodyPartTest)))
+                    {
+                        reduction *= GetArmorTypeFactor(apparel.GetStatValue(deflectionStat, true));
+                    }
                 }
+
                 reduction *= GetArmorTypeFactor(target.GetStatValue(deflectionStat, true));
             }
             return reduction;

@@ -176,6 +176,7 @@ namespace SimpleSidearms.utilities
         }
 
         //Okay I don't know what CQC means so maybe CQCOnAttack is a silly name
+                //Close-quarters combat, just fyi
         internal static void doCQCOnAttack(Pawn pawn, Pawn target)
         {
             if (target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))

@@ -32,8 +32,8 @@
 <LimitModeSingle_desc>What restrictions are there on individual sidearms.</LimitModeSingle_desc>
 <LimitModeSingle_title>Single sidearm limit mode</LimitModeSingle_title>
 
-<LimitModeAmountTotal_title>What restrictions are there on all sidearms.</LimitModeAmountTotal_title>
-<LimitModeAmountTotal_desc>Total</LimitModeAmountTotal_desc>
+<LimitModeAmountTotal_title>Total</LimitModeAmountTotal_title>
+<LimitModeAmountTotal_desc>What restrictions are there on all sidearms.</LimitModeAmountTotal_desc>
 
 <MaximumMassAmountAbsolute_desc>Maximum total mass of sidearms a pawn can carry.</MaximumMassAmountAbsolute_desc>
 <MaximumMassAmountAbsolute_title>Max. mass of sidearms</MaximumMassAmountAbsolute_title>
