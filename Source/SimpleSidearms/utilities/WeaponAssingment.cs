@@ -121,6 +121,7 @@ namespace SimpleSidearms.utilities
             }
         }
 
+        //When hit in Close-Quarter Combat 
         internal static void doCQC(Pawn pawn, Pawn attacker)
         {
             if(pawn.jobs != null)
@@ -174,12 +175,10 @@ namespace SimpleSidearms.utilities
                 }
             }
         }
-
-        //Okay I don't know what CQC means so maybe CQCOnAttack is a silly name
-                //Close-quarters combat, just fyi
-        internal static void doCQCOnAttack(Pawn pawn, Pawn target)
+        
+        internal static void chooseOptimalMeleeForAttack(Pawn pawn, Pawn target)
         {
-            if (target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))
+            if (!OptimalMelee || target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))
                     return;
 
             tryCQCWeaponSwapToMelee(pawn, target);

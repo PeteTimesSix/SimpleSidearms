@@ -55,15 +55,10 @@ namespace SimpleSidearms.intercepts
             object fieldValue = field.GetValue(__instance);
             if (fieldValue != null && fieldValue is LocalTargetInfo)
             {
-                Thing target = ((LocalTargetInfo)fieldValue).Thing;
-                Pawn caster = __instance.CasterPawn;
-                if (caster != null && target != null && target is Pawn && !(target as Pawn).Dead && (target as Pawn).equipment != null)
+                Thing targetThing = ((LocalTargetInfo)fieldValue).Thing;
+                if (__instance.CasterPawn != null && targetThing != null && targetThing is Pawn && !(targetThing as Pawn).Dead && (targetThing as Pawn).equipment != null)
                 {
-                    WeaponAssingment.doCQC(target as Pawn, caster);
-                }
-                if (caster != null && target != null && target is Pawn && !caster.Dead)
-                {
-                    WeaponAssingment.doCQCOnAttack(caster, target as Pawn);
+                    WeaponAssingment.doCQC(targetThing as Pawn, __instance.CasterPawn);
                 }
             }
         }

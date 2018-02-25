@@ -56,6 +56,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Lite =
 @"<SimpleSidearms>
   <ActivePreset>Lite</ActivePreset>
+  <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <SpeedSelectionBiasMelee>1.25</SpeedSelectionBiasMelee>
   <SeparateModes>True</SeparateModes>
@@ -91,6 +92,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Basic =
 @"<SimpleSidearms>
   <ActivePreset>Basic</ActivePreset>
+  <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <SpeedSelectionBiasMelee>1.25</SpeedSelectionBiasMelee>
   <RangedCombatAutoSwitch>True</RangedCombatAutoSwitch>
@@ -111,6 +113,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Advanced =
 @"<SimpleSidearms>
   <ActivePreset>Advanced</ActivePreset>
+  <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <SpeedSelectionBiasMelee>1.25</SpeedSelectionBiasMelee>
   <RangedCombatAutoSwitch>True</RangedCombatAutoSwitch>
@@ -131,6 +134,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Excessive =
 @"<SimpleSidearms>
   <ActivePreset>Excessive</ActivePreset>
+  <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <SpeedSelectionBiasMelee>1.25</SpeedSelectionBiasMelee>
   <RangedCombatAutoSwitch>True</RangedCombatAutoSwitch>
@@ -145,6 +149,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Brawler =
  @"<SimpleSidearms>
   <ActivePreset>Brawler</ActivePreset>
+  <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <SpeedSelectionBiasMelee>1.25</SpeedSelectionBiasMelee>
   <SeparateModes>True</SeparateModes>
