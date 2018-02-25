@@ -149,7 +149,7 @@ namespace SimpleSidearms.utilities
                     }
                     
 
-                    if (CQCTargetOnly.Value == true && attacker != pawn.mindState.enemyTarget)
+                    if (CQCTargetOnly.Value == true && attacker != pawn.mindState.lastAttackedTarget.Thing)
                     {
                         return;
                     }
