@@ -154,7 +154,7 @@ namespace SimpleSidearms.utilities
                         return;
                     }
 
-                    if (pawn.equipment.Primary != null && pawn.equipment.Primary.def.IsMeleeWeapon)
+                    if (!OptimalMelee && pawn.equipment.Primary != null && pawn.equipment.Primary.def.IsMeleeWeapon)
                         return;
 
                     bool changed = tryCQCWeaponSwapToMelee(pawn, attacker);
