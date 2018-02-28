@@ -3,6 +3,8 @@
 
 <ActiveTab_desc></ActiveTab_desc>
 <ActiveTab_title>Configuration tabs</ActiveTab_title>
+<OptimalMelee_desc>Should pawns automatically switch to a higher DPS melee weapon? (counting the target's armor)</OptimalMelee_desc>
+<OptimalMelee_title>Best melee weapon</OptimalMelee_title>
 <CQCAutoSwitch_desc>Should pawns switch to their melee sidearms when attacked in melee?</CQCAutoSwitch_desc>
 <CQCAutoSwitch_title>Melee combat autoswitch</CQCAutoSwitch_title>
 <CQCFistSwitch_desc>Should pawns switch even when they are not using a weapon?</CQCFistSwitch_desc>

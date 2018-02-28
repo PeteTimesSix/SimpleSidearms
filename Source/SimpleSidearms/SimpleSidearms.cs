@@ -44,6 +44,7 @@ namespace SimpleSidearms
         internal static SettingHandle<Preset> Preset5;
         internal static SettingHandle<bool> PresetExport;
 
+        internal static SettingHandle<bool> OptimalMelee;
         internal static SettingHandle<bool> CQCAutoSwitch;
         internal static SettingHandle<bool> CQCFistSwitch;
         internal static SettingHandle<bool> CQCTargetOnly;
@@ -157,6 +158,7 @@ namespace SimpleSidearms
             ActivePreset.CustomDrawer = rect => { return false; };
             //ActivePreset.NeverVisible = true; //so for some reason, when I set this the default preset doesnt get assinged on resetToDefaults. u wot mate
              
+            //OptionsTab.Presets
             PresetCustom = Settings.GetHandle<Preset>("PresetCustom", "PresetCustom_title".Translate(), "PresetCustom_desc".Translate(), Preset.Custom, null, "Preset_option_");
             PresetCustom.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Presets; };
             PresetCustom.CustomDrawer = rect => { return CustomDrawer_ButtonLoadConfig(rect, PresetCustom, "PresetCustom_label", this, noHighlight); };
@@ -188,12 +190,18 @@ namespace SimpleSidearms
             PresetExport.Unsaved = true;
             PresetExport.CustomDrawer = rect => { return CustomDrawer_ButtonExportConfig(rect, "PresetExport_label", this, noHighlight); };
 
+            //OptionsTab.Automation
+            OptimalMelee = Settings.GetHandle<bool>("OptimalMelee", "OptimalMelee_title".Translate(), "OptimalMelee_desc".Translate(), false);
             CQCAutoSwitch = Settings.GetHandle<bool>("CQCAutoSwitch", "CQCAutoSwitch_title".Translate(), "CQCAutoSwitch_desc".Translate(), false);
             CQCFistSwitch = Settings.GetHandle<bool>("CQCFistSwitch", "CQCFistSwitch_title".Translate(), "CQCFistSwitch_desc".Translate(), false);
             CQCTargetOnly = Settings.GetHandle<bool>("CQCTargetOnly", "CQCTargetOnly_title".Translate(), "CQCTargetOnly_desc".Translate(), false);
+
+            OptimalMelee.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Automation; };
             CQCAutoSwitch.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Automation; };
             CQCFistSwitch.VisibilityPredicate = delegate { return CQCAutoSwitch.Value == true && ActiveTab == OptionsTab.Automation; };
             CQCTargetOnly.VisibilityPredicate = delegate { return CQCAutoSwitch.Value == true && ActiveTab == OptionsTab.Automation; };
+
+            OptimalMelee.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(OptimalMelee, rect, highlight1); };
             CQCAutoSwitch.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(CQCAutoSwitch, rect, highlight1); };
             CQCFistSwitch.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(CQCFistSwitch, rect, highlight1); };
             CQCTargetOnly.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(CQCTargetOnly, rect, highlight1); };
@@ -223,6 +231,7 @@ namespace SimpleSidearms
             SpeedSelectionBiasRanged.CustomDrawer = rect => { return HugsDrawerRebuild_FloatEntry(SpeedSelectionBiasRanged, rect, highlight3); };
             SpeedSelectionBiasRanged.VisibilityPredicate = delegate { return (RangedCombatAutoSwitch.Value == true | SingleshotAutoSwitch.Value == true) && ActiveTab == OptionsTab.Automation; };
 
+            //OptionsTab.Allowances
             SeparateModes = Settings.GetHandle<bool>("SeparateModes", "SeparateModes_title".Translate(), "SeparateModes_desc".Translate(), false);
             SeparateModes.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(SeparateModes, rect, noHighlight); };
             SeparateModes.VisibilityPredicate = delegate { return !CEOverride && ActiveTab == OptionsTab.Allowances; };
@@ -376,6 +385,7 @@ namespace SimpleSidearms
             CEOverrideInfo.CustomDrawer = rect => { return CustomDrawer_RighthandSideLabel(rect, "CEOverrideInfo_title".Translate(), noHighlight); };
             CEOverrideInfo.Unsaved = true;
 
+            //OptionsTab.Spawning
             SidearmSpawnChance = Settings.GetHandle<float>("SidearmSpawnChance", "SidearmSpawnChance_title".Translate(), "SidearmSpawnChance_desc".Translate(), 0f);
             SidearmSpawnChance.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, SidearmSpawnChance, true, noHighlight); };
             SidearmSpawnChance.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Spawning; };
@@ -387,6 +397,7 @@ namespace SimpleSidearms
             SidearmsNeolithicExtension.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Spawning && SidearmsEnableNeolithicExtension.Value == true; };
             SidearmsNeolithicExtension.CustomDrawer = rect => { return SettingsUIs.CustomDrawer_MatchingWeapons_active(rect, SidearmsNeolithicExtension, WeaponListKind.Both, noHighlight, "TribalWeapons".Translate(),"NonTribalWeapons".Translate(), true); };
 
+            //OptionsTab.Misc
             DropMode = Settings.GetHandle<DroppingModeOptionsEnum>("DropMode", "DropMode_title".Translate(), "DropMode_desc".Translate(), DroppingModeOptionsEnum.Never, null, "DropMode_option_");
             DropMode.CustomDrawer = rect => {
                 string[] names = Enum.GetNames(DropMode.Value.GetType());
@@ -395,6 +406,7 @@ namespace SimpleSidearms
             };
             DropMode.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Misc; };
 
+            OptimalMelee.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
             CQCAutoSwitch.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
             CQCFistSwitch.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
             CQCTargetOnly.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };

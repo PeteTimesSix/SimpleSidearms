@@ -143,4 +143,19 @@ namespace SimpleSidearms.intercepts
             }
         }
     }
+
+    [HarmonyPatch(typeof(JobDriver_AttackMelee), "TryMakePreToilReservations")]
+    static class JobDriver_AttackMelee_TryMakePreToilReservations
+    {
+        private static void Postfix(JobDriver_AttackMelee __instance)
+        {
+            Pawn caster = ((__instance.GetType()).GetField("pawn").GetValue(__instance) as Pawn);
+            Job job = ((__instance.GetType()).GetField("job").GetValue(__instance) as Job);
+            Thing target = job?.targetA.Thing;
+            if (caster != null && target != null && target is Pawn && !caster.Dead)
+            {
+                WeaponAssingment.chooseOptimalMeleeForAttack(caster, target as Pawn);
+            }
+        }
+    }
 }
