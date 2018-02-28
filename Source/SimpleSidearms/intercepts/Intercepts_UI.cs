@@ -18,9 +18,9 @@ namespace SimpleSidearms.intercepts
         [HarmonyPrefix]
         private static void InterfaceDrop(ITab_Pawn_Gear __instance, Thing t)
         {
-            ThingWithComps thingWithComps = t as ThingWithComps;
-            if (thingWithComps.def.IsMeleeWeapon || thingWithComps.def.IsRangedWeapon)
+            if (t.def.IsMeleeWeapon || t.def.IsRangedWeapon)
             {
+                ThingWithComps thingWithComps = t as ThingWithComps;
                 ThingOwner thingOwner = thingWithComps.holdingOwner;
                 IThingHolder actualOwner = thingOwner.Owner;
                 if (actualOwner is Pawn_InventoryTracker)
