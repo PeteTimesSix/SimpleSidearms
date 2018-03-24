@@ -14,6 +14,8 @@
 
 <DropMode_desc>In which situations are pawns forced to drop their weapon instead of moving it to their inventory?</DropMode_desc>
 <DropMode_title>Weapon dropping criteria</DropMode_title>
+<ReEquipBest_desc>After having dropped a weapon, auto-re-equip will find the best weapon available (instead of the closest)</ReEquipBest_desc>
+<ReEquipBest_title>Re-equip best available</ReEquipBest_title>
 
 <LimitCarryInfo_desc></LimitCarryInfo_desc>
 <LimitCarryInfo_title>*Always limited by pawn's carry capacity</LimitCarryInfo_title>
