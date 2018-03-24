@@ -164,20 +164,28 @@ namespace SimpleSidearms.intercepts
     [HarmonyPatch(typeof(Pawn_InventoryTracker), "get_FirstUnloadableThing")]
     static class Pawn_InventoryTracker_FirstUnloadableThing_Transpiler
     {
-        public static bool IsBestSidearm(Pawn pawn, Thing thing)
+        public static bool IsBestSidearm(Pawn pawn, Thing weapon)
         {
-            if (!thing.def.IsWeapon) return false;
-            Log.Message("IsSidearm for pawn " + pawn + " and weapon " + thing);
+            if (!weapon.def.IsWeapon) return false;
+            ThingDef weaponDef = weapon.def;
+
+            //Go ahead and drop if same type is already equipped
+            if (pawn.equipment?.Primary?.def == weaponDef)
+                return false;
 
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
             if (pawnMemory != null)
             {
                 foreach (string wepName in pawnMemory.weapons)
                 {
-                    if (thing.def.defName == wepName)
+                    if (weaponDef.defName == wepName)
                     {
+                        List<Thing> matchingWeapons = pawn.inventory?.innerContainer.Where(t => t.def == weaponDef).ToList() ?? new List<Thing> ();
+
+                        Thing bestWeapon = matchingWeapons.MaxBy(t => t.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS, false));
+                        //Ranged damage scales with melee damage so this works for all weapons
                         
-                        return true;
+                        return bestWeapon == weapon;
                     }
                 }
             }
@@ -206,7 +214,6 @@ namespace SimpleSidearms.intercepts
                 {
                     if (foundIndexOnce)
                     {
-                        Log.Message("Adding label to continue");
                         i.labels.Add(forContinue);
                         break;
                     }
@@ -231,7 +238,6 @@ namespace SimpleSidearms.intercepts
                 yield return i;
                 if (afterIsDrug)
                 {
-                    Log.Message("after");
                     //Call IsBestSidearms(Pawn, Thing)
                     //Call IsBestSidearms(this.pawn, this.innercontainer[index])
 
@@ -257,12 +263,10 @@ namespace SimpleSidearms.intercepts
                     yield return new CodeInstruction(OpCodes.Brtrue, forContinue);
                     
                     afterIsDrug = false;
-                    Log.Message("done");
                 }
                 if (i.opcode == OpCodes.Callvirt && i.operand == isDrugInfo)
                 {
                     afterIsDrug = true;
-                    Log.Message("IsDrugInfo");
                 }
             }
         }
