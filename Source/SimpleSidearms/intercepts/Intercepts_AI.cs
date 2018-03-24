@@ -1,6 +1,8 @@
 ﻿using Harmony;
 using RimWorld;
 using System;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -155,6 +157,113 @@ namespace SimpleSidearms.intercepts
             if (caster != null && target != null && target is Pawn && !caster.Dead)
             {
                 WeaponAssingment.chooseOptimalMeleeForAttack(caster, target as Pawn);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_InventoryTracker), "get_FirstUnloadableThing")]
+    static class Pawn_InventoryTracker_FirstUnloadableThing_Transpiler
+    {
+        public static bool IsBestSidearm(Pawn pawn, Thing thing)
+        {
+            if (!thing.def.IsWeapon) return false;
+            Log.Message("IsSidearm for pawn " + pawn + " and weapon " + thing);
+
+            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            if (pawnMemory != null)
+            {
+                foreach (string wepName in pawnMemory.weapons)
+                {
+                    if (thing.def.defName == wepName)
+                    {
+                        
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase mb)
+        {
+            //get_FirstUnloadableThing should ignore sidearms.
+            //It already loops through the inventory and checks for drug usage.
+            //Need to add a check for sidearms and skip it.
+
+            //First, we need to add a continue statement to the inventory's for loop
+            //ldloc_3 is the method's local variable indexed by 3, in this case the inventory for loop index
+            //the last reference to it is the loop test, second to last is the increment ( where it should jump to continue the loop )
+
+            //So : reverse the instructions and label the second to last reference to ld_loc3
+
+            Label forContinue = il.DefineLabel();
+            
+            bool foundIndexOnce = false;
+
+            foreach (CodeInstruction i in instructions.Reverse())
+            {
+                if (i.opcode == OpCodes.Ldloc_3)
+                {
+                    if (foundIndexOnce)
+                    {
+                        Log.Message("Adding label to continue");
+                        i.labels.Add(forContinue);
+                        break;
+                    }
+                    else
+                        foundIndexOnce = true;
+                }
+            }
+
+            //Now, when IsDrug is checked, we also need to sheck for sidearms and continue
+            //
+
+            MethodInfo isDrugInfo = AccessTools.Method(typeof(ThingDef), "get_IsDrug");
+            FieldInfo thisPawnInfo = AccessTools.Field(typeof(Pawn_InventoryTracker), "pawn");
+            FieldInfo innerContainerInfo = AccessTools.Field(typeof(Pawn_InventoryTracker), "innerContainer");
+            MethodInfo getItemInfo = AccessTools.Method(typeof(ThingOwner<Thing>), "get_Item");
+
+            MethodInfo isBestSidearmInfo = AccessTools.Method(typeof(Pawn_InventoryTracker_FirstUnloadableThing_Transpiler), "IsBestSidearm");
+
+            bool afterIsDrug = false;
+            foreach (CodeInstruction i in instructions)
+            {
+                yield return i;
+                if (afterIsDrug)
+                {
+                    Log.Message("after");
+                    //Call IsBestSidearms(Pawn, Thing)
+                    //Call IsBestSidearms(this.pawn, this.innercontainer[index])
+
+                    //IL_001a: ldarg.0      // this
+                    //IL_001b: ldfld        class Verse.Pawn Verse.Pawn_InventoryTracker::pawn
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Ldfld, thisPawnInfo);
+
+                    //IL_00b1: ldarg.0      // this
+                    //IL_00b2: ldfld        class Verse.ThingOwner`1<class Verse.Thing> Verse.Pawn_InventoryTracker::innerContainer
+                    //IL_00b7: ldloc.3      // index1
+                    //IL_00b8: callvirt instance !0/*class Verse.Thing*/ class Verse.ThingOwner`1<class Verse.Thing>::get_Item(int32)
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Ldfld, innerContainerInfo);
+                    yield return new CodeInstruction(OpCodes.Ldloc_3);
+                    yield return new CodeInstruction(OpCodes.Callvirt, getItemInfo);
+
+                    //Call IsBestSidearms(Pawn, Thing)
+                    yield return new CodeInstruction(OpCodes.Call, isBestSidearmInfo);
+
+                    //if (IsBestSidearms(Pawn, THing)  
+                    //  continue;
+                    yield return new CodeInstruction(OpCodes.Brtrue, forContinue);
+                    
+                    afterIsDrug = false;
+                    Log.Message("done");
+                }
+                if (i.opcode == OpCodes.Callvirt && i.operand == isDrugInfo)
+                {
+                    afterIsDrug = true;
+                    Log.Message("IsDrugInfo");
+                }
             }
         }
     }
