@@ -161,7 +161,8 @@ namespace SimpleSidearms.intercepts
         }
     }
 
-    [HarmonyPatch(typeof(Pawn_InventoryTracker), "get_FirstUnloadableThing")]
+    [HarmonyPatch(typeof(Pawn_InventoryTracker))]
+    [HarmonyPatch("FirstUnloadableThing", PropertyMethod.Getter)]
     static class Pawn_InventoryTracker_FirstUnloadableThing_Transpiler
     {
         public static bool IsBestSidearm(Pawn pawn, Thing weapon)
@@ -225,10 +226,10 @@ namespace SimpleSidearms.intercepts
             //Now, when IsDrug is checked, we also need to sheck for sidearms and continue
             //
 
-            MethodInfo isDrugInfo = AccessTools.Method(typeof(ThingDef), "get_IsDrug");
+            MethodInfo isDrugInfo = AccessTools.Property(typeof(ThingDef), "IsDrug").GetGetMethod();
             FieldInfo thisPawnInfo = AccessTools.Field(typeof(Pawn_InventoryTracker), "pawn");
             FieldInfo innerContainerInfo = AccessTools.Field(typeof(Pawn_InventoryTracker), "innerContainer");
-            MethodInfo getItemInfo = AccessTools.Method(typeof(ThingOwner<Thing>), "get_Item");
+            MethodInfo getItemInfo = AccessTools.Property(typeof(ThingOwner<Thing>), "Item").GetGetMethod();
 
             MethodInfo isBestSidearmInfo = AccessTools.Method(typeof(Pawn_InventoryTracker_FirstUnloadableThing_Transpiler), "IsBestSidearm");
 
