@@ -29,7 +29,7 @@ namespace SimpleSidearms.rimworld
         {
             //Log.Message("reset called");
             hasBeenReset = true;
-            Predicate<ThingDef> isWeapon = (ThingDef td) => td.equipmentType == EquipmentType.Primary && td.canBeSpawningInventory && !td.weaponTags.NullOrEmpty<string>();
+            Predicate<ThingDef> isWeapon = (ThingDef td) => td.equipmentType == EquipmentType.Primary && !td.weaponTags.NullOrEmpty<string>();
             allWeaponPairs = ThingStuffPair.AllWith(isWeapon);
             foreach (ThingDef thingDef in from td in DefDatabase<ThingDef>.AllDefs
                                           where isWeapon(td)
@@ -89,7 +89,7 @@ namespace SimpleSidearms.rimworld
                 return;
             }
 
-            bool meleeOnly = pawn.equipment.Primary.def.IsMeleeWeapon | (pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler));
+            bool meleeOnly = pawn.equipment.Primary.def.IsMeleeWeapon || (pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler));
             bool neolithic = true;
             foreach(string wepTag in pawn.kindDef.weaponTags)
             {

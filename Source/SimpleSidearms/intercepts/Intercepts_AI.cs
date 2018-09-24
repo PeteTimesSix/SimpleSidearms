@@ -22,7 +22,7 @@ namespace SimpleSidearms.intercepts
             Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
             if (Find.TickManager.TicksGame % 100 == 0)
             {
-                if (pawn.jobs.curJob != null && pawn.jobs.curJob.def == JobDefOf.WaitCombat && pawn.stances != null && pawn.stances.curStance is Stance_Mobile)
+                if (pawn.jobs.curJob != null && pawn.jobs.curJob.def == JobDefOf.Wait_Combat && pawn.stances != null && pawn.stances.curStance is Stance_Mobile)
                 {
                     //pawn.jobs.EndCurrentJob(JobCondition.Succeeded);
                     
@@ -118,7 +118,7 @@ namespace SimpleSidearms.intercepts
             }
             JobDriver_Hunt jobDriver_Hunt = pawn.jobs.curDriver as JobDriver_Hunt;
             JobDriver_PredatorHunt jobDriver_PredatorHunt = pawn.jobs.curDriver as JobDriver_PredatorHunt;
-            return jobDriver_Hunt != null | jobDriver_PredatorHunt != null;
+            return jobDriver_Hunt != null || jobDriver_PredatorHunt != null;
         }
     }
 
@@ -152,7 +152,7 @@ namespace SimpleSidearms.intercepts
             Pawn caster = ((__instance.GetType()).GetField("pawn").GetValue(__instance) as Pawn);
             Job job = ((__instance.GetType()).GetField("job").GetValue(__instance) as Job);
             Thing target = job?.targetA.Thing;
-            if (caster != null && target != null && target is Pawn && !caster.Dead)
+            if (caster != null && target != null && target is Pawn && !caster.Dead/* && caster.def.race.Humanlike*/)
             {
                 WeaponAssingment.chooseOptimalMeleeForAttack(caster, target as Pawn);
             }

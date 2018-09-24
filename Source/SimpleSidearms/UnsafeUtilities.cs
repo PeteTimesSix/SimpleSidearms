@@ -30,12 +30,17 @@ namespace SimpleSidearms
             HugsLibUtility.CopyToClipboard(builder.ToString());
         }
 
-        private static object GetPropertyValue(object src, string propName)
+        internal static object GetPropertyValue(object src, string propName)
         {
             return src.GetType().GetProperty(propName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(src, null);
         }
 
-        private static object CallByReflection(this object o, string methodName, params object[] args)
+        internal static void SetPropertyValue(object src, string propName, object value)
+        {
+            src.GetType().GetProperty(propName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(src, value, null);
+        }
+
+        internal static object CallByReflection(this object o, string methodName, params object[] args)
         {
             var mi = o.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             if (mi != null)

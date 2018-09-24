@@ -23,7 +23,7 @@ namespace SimpleSidearms.rimworld.alerts
             StringBuilder stringBuilder = new StringBuilder();
             foreach (Pawn current in this.AffectedPawns())
             {
-                stringBuilder.AppendLine("    " + current.NameStringShort);
+                stringBuilder.AppendLine("    " + current.Name);
             }
             return explanation.Translate(new object[]
             {

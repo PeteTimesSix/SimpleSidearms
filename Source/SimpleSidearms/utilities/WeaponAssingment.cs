@@ -251,9 +251,14 @@ namespace SimpleSidearms.utilities
         {
             if (pawn.Dead)
                 return false;
+
+            ThingWithComps current = null;
+            if (pawn.equipment != null & pawn.equipment.Primary != null)
+                current = pawn.equipment.Primary;
+
             ThingWithComps best = GettersFilters.findBestMeleeWeapon(pawn, skipDangerous/*, MeleeSelectionMode*/, target);
 
-            if (best != null || considerUnarmed)
+            if (current != best && (best != null || considerUnarmed))
                 return SetPrimary(pawn, best, false, true, dropCurrent, false);
             
             return false;
@@ -278,7 +283,7 @@ namespace SimpleSidearms.utilities
                 return false;
 
             float currentDPS = StatCalculator.RangedDPS(pawn.equipment.Primary, SpeedSelectionBiasRanged.Value, range);
-
+            
             if (betterDPS < currentDPS + ANTI_OSCILLATION_FACTOR)
                 return false;
 

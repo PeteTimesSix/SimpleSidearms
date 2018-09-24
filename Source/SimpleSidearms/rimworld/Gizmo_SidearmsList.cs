@@ -23,17 +23,16 @@ namespace SimpleSidearms.rimworld
         private static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
         private static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
 
-        public override float Width
+        public override float GetWidth(float maxWidth)
         {
-            get {
-                GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
-                //if (pawnMemory == null)
-                //    return 75;
-                int biggerCount = Math.Max(rangedWeapons.Count + calcUnmatchedRangedWeapons(pawnMemory, parent), meleeWeapons.Count + calcUnmatchedMeleeWeapons(pawnMemory, parent) + 1);
-                return ContentPadding * 2 + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + LockPanelWidth;
-            }
+            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
+            //if (pawnMemory == null)
+            //    return 75;
+            int biggerCount = Math.Max(rangedWeapons.Count + calcUnmatchedRangedWeapons(pawnMemory, parent), meleeWeapons.Count + calcUnmatchedMeleeWeapons(pawnMemory, parent) + 1);
+            float width = ContentPadding * 2 + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + LockPanelWidth;
+            return Math.Min(width, maxWidth);
         }
-
+        
         private int calcUnmatchedMeleeWeapons(GoldfishModule pawnMemory, Pawn pawn)
         {
             if (pawnMemory == null)
@@ -112,7 +111,7 @@ namespace SimpleSidearms.rimworld
                 lockTex = TextureResources.lockOpen;
                 TooltipHandler.TipRegion(rect, "UnlockedWeaponSwitch".Translate());
             }           
-            MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
+            MouseoverSounds.DoRegion(rect, SoundDefOf.Mouseover_Command);
 
             if (Mouse.IsOver(rect))
             {
@@ -148,7 +147,7 @@ namespace SimpleSidearms.rimworld
                 lockTex = TextureResources.autolockOff;
                 TooltipHandler.TipRegion(rect, "WeaponSwitchAutolockOff".Translate()); 
             }
-            MouseoverSounds.DoRegion(rect, SoundDefOf.MouseoverCommand);
+            MouseoverSounds.DoRegion(rect, SoundDefOf.Mouseover_Command);
 
             if (Mouse.IsOver(rect))
             {
@@ -190,7 +189,7 @@ namespace SimpleSidearms.rimworld
                 drawPocket = TextureResources.drawPocketMemory;
 
             TooltipHandler.TipRegion(iconRect, string.Format("DrawSidearm_gizmoTooltipMemory".Translate(), weapon.label));
-            MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
+            MouseoverSounds.DoRegion(iconRect, SoundDefOf.Mouseover_Command);
             if (Mouse.IsOver(iconRect))
             {
                 LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SidearmsMissing, OpportunityType.GoodToKnow);
@@ -257,7 +256,7 @@ namespace SimpleSidearms.rimworld
             //var iconColor = iconBaseColor;
 
             TooltipHandler.TipRegion(iconRect, string.Format("DrawSidearm_gizmoTooltip".Translate(), weapon.LabelShort));
-            MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
+            MouseoverSounds.DoRegion(iconRect, SoundDefOf.Mouseover_Command);
 
             Texture2D drawPocket;
             if (pawnMemory != null && pawnMemory.IsCurrentPrimary(weapon.def.defName))
@@ -312,7 +311,7 @@ namespace SimpleSidearms.rimworld
             //var iconColor = iconBaseColor;
 
             TooltipHandler.TipRegion(iconRect, "DrawSidearm_gizmoTooltipUnarmed".Translate());
-            MouseoverSounds.DoRegion(iconRect, SoundDefOf.MouseoverCommand);
+            MouseoverSounds.DoRegion(iconRect, SoundDefOf.Mouseover_Command);
 
             Texture2D drawPocket = TextureResources.drawPocket;
 
@@ -342,9 +341,9 @@ namespace SimpleSidearms.rimworld
                 return false;
         }
 
-        public override GizmoResult GizmoOnGUI(Vector2 topLeft)
+        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
         {
-            var gizmoRect = new Rect(topLeft.x, topLeft.y, Width, MinGizmoSize);
+            var gizmoRect = new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), MinGizmoSize);
 
             if (Mouse.IsOver(gizmoRect))
             {

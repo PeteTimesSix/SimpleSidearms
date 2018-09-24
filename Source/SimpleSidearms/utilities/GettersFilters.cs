@@ -57,15 +57,22 @@ namespace SimpleSidearms.utilities
                     continue;
                 switch (type)
                 {
+                    case WeaponSearchType.MeleeCapable:
+                        if ((weapon.thing.IsMeleeWeapon || (weapon.thing.tools != null && weapon.thing.tools.Any((Tool x) => x.VerbsProperties.Any((VerbProperties y) => y.IsMeleeAttack)))) & (allowThingDuplicates || !things.Contains(weapon.thing)))
+                        {
+                            returnList.Add(weapon);
+                            things.Add(weapon.thing);
+                        }
+                        break;
                     case WeaponSearchType.Melee:
-                        if (weapon.thing.IsMeleeWeapon & (allowThingDuplicates | !things.Contains(weapon.thing)))
+                        if (weapon.thing.IsMeleeWeapon & (allowThingDuplicates || !things.Contains(weapon.thing)))
                         {
                             returnList.Add(weapon);
                             things.Add(weapon.thing);
                         }
                         break;
                     case WeaponSearchType.Ranged:
-                        if (weapon.thing.IsRangedWeapon & (allowThingDuplicates | !things.Contains(weapon.thing)))
+                        if (weapon.thing.IsRangedWeapon & (allowThingDuplicates || !things.Contains(weapon.thing)))
                         {
                             returnList.Add(weapon);
                             things.Add(weapon.thing);
@@ -73,7 +80,7 @@ namespace SimpleSidearms.utilities
                         break;
                     case WeaponSearchType.Both:
                     default:
-                        if ((allowThingDuplicates | !things.Contains(weapon.thing)))
+                        if ((allowThingDuplicates || !things.Contains(weapon.thing)))
                         {
                             returnList.Add(weapon);
                             things.Add(weapon.thing);
@@ -89,7 +96,7 @@ namespace SimpleSidearms.utilities
             for (int i = list.Count - 1; i>= 0; i--)
             {
                 ThingStuffPair weapon = list[i];
-                if (weapon.thing.weaponTags.Contains("NeolithicMelee") | weapon.thing.weaponTags.Contains("NeolithicRanged") | weapon.thing.weaponTags.Contains("Neolithic"))
+                if (weapon.thing.weaponTags.Contains("NeolithicMelee") || weapon.thing.weaponTags.Contains("NeolithicRanged") || weapon.thing.weaponTags.Contains("Neolithic"))
                 {
                     list.RemoveAt(i);
                 }
@@ -120,20 +127,33 @@ namespace SimpleSidearms.utilities
             foreach (Thing thing in pawn.inventory.innerContainer)
             {
                 float weight = thing.def.BaseMass;
-                if (type == WeaponSearchType.Both || type == WeaponSearchType.Ranged)
+                switch (type)
                 {
-                    if (thing.def.IsRangedWeapon)
-                    {
-                        things.Add(thing);
-                    }
-
-                }
-                if (type == WeaponSearchType.Both || type == WeaponSearchType.Melee)
-                {
-                    if (thing.def.IsMeleeWeapon)
-                    {
-                        things.Add(thing);
-                    }
+                    case WeaponSearchType.MeleeCapable:
+                        if ((thing.def.IsMeleeWeapon || (thing.def.tools != null && thing.def.tools.Any((Tool x) => (x.VerbsProperties != null && x.VerbsProperties.Any((VerbProperties y) => y.IsMeleeAttack))))))
+                        {
+                            things.Add(thing);
+                        }
+                        break;
+                    case WeaponSearchType.Melee:
+                        if (thing.def.IsMeleeWeapon)
+                        {
+                            things.Add(thing);
+                        }
+                        break;
+                    case WeaponSearchType.Ranged:
+                        if (thing.def.IsRangedWeapon)
+                        {
+                            things.Add(thing);
+                        }
+                        break;
+                    case WeaponSearchType.Both:
+                    default:
+                        if (thing.def.IsWeapon)
+                        {
+                            things.Add(thing);
+                        }
+                        break;
                 }
             }
             return things;
@@ -255,17 +275,22 @@ namespace SimpleSidearms.utilities
 
         internal static ThingWithComps findBestMeleeWeapon(Pawn pawn, bool skipDangerous/*, SelectionMode mode*/, Pawn target)
         {
-            List<Thing> weapons = getWeaponsOfType(pawn, WeaponSearchType.Melee);
+            List<Thing> weapons = getWeaponsOfType(pawn, WeaponSearchType.MeleeCapable);
 
-            Thing best = pawn.equipment.Primary;
-            float bestSoFar = best == null ? float.MinValue :
-                StatCalculator.MeleeDPS(pawn, best as ThingWithComps, SpeedSelectionBiasMelee.Value, target);
+            if (pawn.equipment != null && pawn.equipment.Primary != null)
+                weapons.Add(pawn.equipment.Primary);
+            weapons.Add(null);  //for considering unarmed attacks
+
+            /*string candList = "";
+            foreach (Thing thing in weapons)
+                candList += (thing == null) ? " unarmed" : " " + thing.def.defName;
+            Log.Message("Considering melee swap, candidates:"+candList);*/
+
+            Thing best = null;
+            float bestSoFar = float.MinValue;
             
             foreach (Thing thing in weapons)
             {
-                if (!(thing is ThingWithComps))
-                    continue;
-
                 if (skipDangerous)
                     if (isDangerousWeapon(thing as ThingWithComps))
                         continue;
@@ -274,21 +299,31 @@ namespace SimpleSidearms.utilities
 
                 dpsAvg = StatCalculator.MeleeDPS(pawn, thing as ThingWithComps, SpeedSelectionBiasMelee.Value, target);
 
+                /*if(thing == null)
+                    Log.Message("DPS for unarmed is " + dpsAvg);
+                else
+                    Log.Message("DPS for " + thing.def.defName + " is " + dpsAvg);*/
+
                 if (dpsAvg > bestSoFar)
                 {
                     bestSoFar = dpsAvg;
                     best = thing;
                 }
+
             }
 
-            if (StatCalculator.MeleeDPS(pawn, null, SpeedSelectionBiasMelee.Value, target) > bestSoFar)
-                best = null;
-
+            /*if (best == null)
+                Log.Message("best: unarmed");
+            else
+                Log.Message("best: " + best.def.defName);*/
+            
             return best as ThingWithComps;
         }
 
         internal static bool isDangerousWeapon(ThingWithComps weapon)
         {
+            if (weapon == null)
+                return false;
             CompEquippable equip = weapon.TryGetComp<CompEquippable>();
             if (equip == null)
                 return false;

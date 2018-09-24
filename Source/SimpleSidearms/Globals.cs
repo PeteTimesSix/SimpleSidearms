@@ -13,7 +13,7 @@ namespace SimpleSidearms
         internal enum DroppingModeEnum { Panic, Range, UserForced, UsedUp }
         internal enum DroppingModeOptionsEnum { Never, Panic, PanicOrRange, Always }
 
-        internal enum WeaponSearchType { Both, Ranged, Melee }
+        internal enum WeaponSearchType { Both, Ranged, Melee, MeleeCapable }
 
         internal enum LimitModeSingleSidearm { None, RelativeWeight, AbsoluteWeight, Selection }
         internal enum LimitModeAmountOfSidearms { MaximumCarryWeightOnly, RelativeWeight, AbsoluteWeight, Slots }

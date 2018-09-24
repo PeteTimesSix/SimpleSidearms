@@ -23,9 +23,9 @@ namespace SimpleSidearms.intercepts
                 if (__instance.caster is Pawn)
                 {
                     Pawn pawn = (__instance.caster as Pawn);
-                    if (pawn.inventory.innerContainer.Any((Thing x) => x.def.defName.Equals(__instance.ownerEquipment.def.defName)))
+                    if (pawn.inventory.innerContainer.Any((Thing x) => x.def.defName.Equals(__instance.EquipmentSource.def.defName)))
                     {
-                        Thing replacement = pawn.inventory.innerContainer.First((Thing x) => x.def.defName.Equals(__instance.ownerEquipment.def.defName));
+                        Thing replacement = pawn.inventory.innerContainer.First((Thing x) => x.def.defName.Equals(__instance.EquipmentSource.def.defName));
                         WeaponAssingment.weaponSwapSpecific(pawn, replacement, false, MiscUtils.shouldDrop(DroppingModeEnum.UsedUp), false);
                     }
 
@@ -56,7 +56,7 @@ namespace SimpleSidearms.intercepts
             if (fieldValue != null && fieldValue is LocalTargetInfo)
             {
                 Thing targetThing = ((LocalTargetInfo)fieldValue).Thing;
-                if (__instance.CasterPawn != null && targetThing != null && targetThing is Pawn && !(targetThing as Pawn).Dead && (targetThing as Pawn).equipment != null)
+                if (__instance.CasterPawn != null && targetThing != null && targetThing is Pawn && !(targetThing as Pawn).Dead && (targetThing as Pawn).RaceProps.Humanlike && (targetThing as Pawn).equipment != null)
                 {
                     WeaponAssingment.doCQC(targetThing as Pawn, __instance.CasterPawn);
                 }

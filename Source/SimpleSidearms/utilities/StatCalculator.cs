@@ -15,39 +15,42 @@ namespace SimpleSidearms.utilities
     {
         internal static int countForType(Pawn pawn, WeaponSearchType type)
         {
-            int total = 0;
-            foreach (Thing thing in pawn.inventory.innerContainer)
-            {
-                float weight = thing.def.BaseMass;
-                if (thing.def.IsRangedWeapon)
-                {
-                    if (type == WeaponSearchType.Both || type == WeaponSearchType.Ranged)
-                        total++;
-                }
-                else if (thing.def.IsMeleeWeapon)
-                {
-                    if (type == WeaponSearchType.Both || type == WeaponSearchType.Melee)
-                        total++;
-                }
-            }
-            return total;
+            return GettersFilters.getWeaponsOfType(pawn, type).Count;
         }
 
         internal static float weightForType(Pawn pawn, WeaponSearchType type)
         {
             float total = 0;
-            foreach (Thing thing in pawn.inventory.innerContainer)
+            List<Thing> weapons = GettersFilters.getWeaponsOfType(pawn, type);
+            foreach (Thing thing in weapons)
             {
-                float weight = thing.def.BaseMass;
-                if (thing.def.IsRangedWeapon)
+                switch (type)
                 {
-                    if (type == WeaponSearchType.Both || type == WeaponSearchType.Ranged)
-                        total += weight;
-                }
-                else if (thing.def.IsMeleeWeapon)
-                {
-                    if (type == WeaponSearchType.Both || type == WeaponSearchType.Melee)
-                        total += weight;
+                    case WeaponSearchType.MeleeCapable:
+                        if ((thing.def.IsMeleeWeapon || (thing.def.tools != null && thing.def.tools.Any((Tool x) => x.VerbsProperties.Any((VerbProperties y) => y.IsMeleeAttack)))))
+                        {
+                            total += thing.GetStatValue(StatDefOf.Mass);
+                        }
+                        break;
+                    case WeaponSearchType.Melee:
+                        if (thing.def.IsMeleeWeapon)
+                        {
+                            total += thing.GetStatValue(StatDefOf.Mass);
+                        }
+                        break;
+                    case WeaponSearchType.Ranged:
+                        if (thing.def.IsRangedWeapon)
+                        {
+                            total += thing.GetStatValue(StatDefOf.Mass);
+                        }
+                        break;
+                    case WeaponSearchType.Both:
+                    default:
+                        if (thing.def.IsWeapon)
+                        {
+                            total += thing.GetStatValue(StatDefOf.Mass);
+                        }
+                        break;
                 }
             }
             return total;
@@ -329,11 +332,19 @@ namespace SimpleSidearms.utilities
 
         private static List<Verb_MeleeAttack> GetUnarmedVerbs(Pawn pawn)
         {
-            List<Verb_MeleeAttack> meleeAtks = new List<Verb_MeleeAttack>();
-            List<Verb> allVerbs = pawn.verbTracker.AllVerbs;
+            //List<Verb_MeleeAttack> meleeAtks = new List<Verb_MeleeAttack>();
+            //List<Verb> allVerbs = pawn.verbTracker.AllVerbs;
+            List<Verb_MeleeAttack> verbs = new List<Verb_MeleeAttack>();
+            foreach (Verb_MeleeAttack verb in pawn.VerbTracker.AllVerbs.Where((Verb v) => (v is Verb_MeleeAttack)).Cast<Verb_MeleeAttack>())
+            {
+                if (verb.IsStillUsableBy(pawn))
+                    verbs.Add(verb);
+            }
+            return verbs;
+            /*return pawn.VerbProperties.Where((VerbProperties x) => (x.IsMeleeAttack & x as Verb_MeleeAttack))
             for (int i = 0; i < allVerbs.Count; i++)
             {
-                if (allVerbs[i] is Verb_MeleeAttack && allVerbs[i].IsStillUsableBy(pawn) && (allVerbs[i].ownerEquipment == null || allVerbs[i].ownerEquipment.def.IsMeleeWeapon))
+                if (allVerbs[i] is Verb_MeleeAttack && allVerbs[i].IsStillUsableBy(pawn))
                 {
                     meleeAtks.Add(allVerbs[i] as Verb_MeleeAttack);
                 }
@@ -345,7 +356,7 @@ namespace SimpleSidearms.utilities
                     meleeAtks.Add(current as Verb_MeleeAttack);
                 }
             }
-            return meleeAtks;
+            return meleeAtks;*/
         }
 
         private static float GetMeleeCooldown(Pawn pawn, ThingWithComps weapon)
@@ -365,55 +376,116 @@ namespace SimpleSidearms.utilities
             float num = 0f;
             for (int i = 0; i < verbsList.Count; i++)
             {
-                num += verbsList[i].verbProps.AdjustedMeleeSelectionWeight(verbsList[i], pawn, verbsList[i].ownerEquipment);
+                num += verbsList[i].verbProps.AdjustedMeleeSelectionWeight(verbsList[i], pawn);
             }
             float num2 = 0f;
             for (int j = 0; j < verbsList.Count; j++)
             {
-                ThingWithComps ownerEquipment = verbsList[j].ownerEquipment;
-                float selectionWeight = verbsList[j].verbProps.AdjustedMeleeSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
-                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedCooldown(verbsList[j], pawn, ownerEquipment);
+                float selectionWeight = verbsList[j].verbProps.AdjustedMeleeSelectionWeight(verbsList[j], pawn);
+                num2 += selectionWeight / num * (float)verbsList[j].verbProps.AdjustedCooldown(verbsList[j], pawn);
             }
             return num2;
         }
 
         private static float GetMeleeDamage(Pawn pawn, ThingWithComps weapon, Pawn target)
         {
+            Log.Message("calcing melee damage for "+((weapon == null) ? "unarmed" : weapon.def.defName));
+
             if (pawn == null)
             {
-                return 0f;
+                Log.Warning("attempted to calc meleeDPS for null pawn!");
+                return 0;
             }
 
-            List<Verb_MeleeAttack> verbsList = GetUnarmedVerbs(pawn);
-            //Possbily don't need all Unarmed Verbs, but insignificant as the discrepency with Stat Page is <1%, rounding down and such.
-            if (weapon != null  && weapon.TryGetComp<CompEquippable>() != null)
-                verbsList.AddRange(weapon.TryGetComp<CompEquippable>().AllVerbs.OfType<Verb_MeleeAttack>().ToList<Verb_MeleeAttack>());
+            if (weapon == null)
+            {
+                Log.Message("no weapon, getting unarmed");
 
-            if (verbsList.Count == 0)
+                Log.Message("pawn unarmed atk dmg is: " + pawn.GetStatValue(StatDefOf.MeleeDPS));
+                return pawn.GetStatValue(StatDefOf.MeleeDPS);
+                //calc unarmed damage
+                /*if (pawn.equipment != null)
+                {
+                    pawn.equipment.s
+                    float meleeDPSWithWeapon = pawn.GetStatValue(StatDefOf.MeleeDPS);
+                    ThingWithComps primary = pawn.equipment.Primary;
+                    UnsafeUtilities.SetPropertyValue(pawn.equipment, "Primary", null);
+                    float meleeDPSWithoutWeapon = pawn.GetStatValue(StatDefOf.MeleeDPS);
+                    UnsafeUtilities.SetPropertyValue(pawn.equipment, "Primary", primary);
+                    Log.Warning("DPS with " + primary.def.defName + ": " + meleeDPSWithWeapon + " without: " + meleeDPSWithoutWeapon);
+                    return meleeDPSWithoutWeapon;
+                }
+                else
+                {
+                    Log.Message("pawn unarmed atk dmg is: "+ pawn.GetStatValue(StatDefOf.MeleeDPS));
+                    return pawn.GetStatValue(StatDefOf.MeleeDPS);
+                }*/
+            }
+            else
+            {
+                Log.Message("weapon dmg is: " + weapon.GetStatValue(StatDefOf.MeleeDPS));
+                return weapon.GetStatValue(StatDefOf.MeleeDPS);
+            }
+
+            //I dont even know what to say, really
+            /*
+            List<Verb_MeleeAttack> verbs = GetUnarmedVerbs(pawn);
+
+            if(weapon != null)
+            {
+                CompEquippable equippable = weapon.TryGetComp<CompEquippable>();
+                if (equippable != null)
+                {
+                    foreach (Tool tool in weapon.def.tools)
+                    {
+                        foreach (Verb_MeleeAttack verb in weapon.GetComp<CompEquippable>().VerbTracker.AllVerbs.Where((Verb v) => (v is Verb_MeleeAttack)).Cast<Verb_MeleeAttack>())
+                        {
+                            if (verb.IsStillUsableBy(pawn))
+                                verbs.Add(verb);
+                        }
+                    }
+                }
+            }
+
+            if (weapon == null)
+                Log.Message("melee damage for fists calculated from ");
+            else
+                Log.Message("melee damage for " + weapon.def.defName+ " calculated from ");
+
+            string list = "";
+            foreach (Verb_MeleeAttack verb in verbs)
+            {
+                list += verb + " " + verb.tool + "";
+            }
+
+            if (verbs.Count == 0)
             {
                 return 0f;
             }
             float num = 0f;
-            for (int i = 0; i < verbsList.Count; i++)
+            foreach (Verb_MeleeAttack verb in verbs)
             {
-                num += verbsList[i].verbProps.AdjustedMeleeSelectionWeight(verbsList[i], pawn, verbsList[i].ownerEquipment);
+                num += verb.verbProps.AdjustedMeleeSelectionWeight(verb, pawn);
             }
             float num2 = 0f;
-            for (int j = 0; j < verbsList.Count; j++)
+            foreach (Verb_MeleeAttack verb in verbs)
             {
-                ThingWithComps ownerEquipment = verbsList[j].ownerEquipment;
-                float selectionWeight = verbsList[j].verbProps.AdjustedMeleeSelectionWeight(verbsList[j], pawn, verbsList[j].ownerEquipment);
+                float selectionWeight = verb.verbProps.AdjustedMeleeSelectionWeight(verb, pawn);
+                float damage = (float)verb.verbProps.AdjustedMeleeDamageAmount(verb, pawn);
 
-                float damage = (float)verbsList[j].verbProps.AdjustedMeleeDamageAmount(verbsList[j], pawn, ownerEquipment);
-                StatDef deflectionStat = verbsList[j].verbProps.meleeDamageDef.armorCategory.deflectionStat;    //aka Armor Type
-                damage *= ReduceForArmorType(deflectionStat, target);
+                //TODO: Note to self: this is where all the armor related stuff should be
+
+                //StatDef deflectionStat = verbsList[j].verbProps.meleeDamageDef.armorCategory.armorRatingStat;  
+                //damage *= ReduceForArmorType(deflectionStat, target);
 
                 num2 += selectionWeight / num * damage;
             }
-            return num2;
+            return num2;*/
         }
 
-        internal static float ReduceForArmorType(StatDef deflectionStat, Pawn target)
+        //far as I know, this all now works completely differently again. Yay.
+
+        /*internal static float ReduceForArmorType(StatDef deflectionStat, Pawn target)
         {
             float reduction = 1.0f;
             if (target != null)
@@ -437,12 +509,12 @@ namespace SimpleSidearms.utilities
         {
             // Word from Tynan himself, praise be unto he
             // https://www.reddit.com/r/RimWorld/comments/2q542f/alpha_eight_armor_changes/
-            /*
-             One armor value.
-             Up to 50%, damage resistance increases.
-             Past 50%, damage deflection increases.
-             Past 100%, damage deflection and resistance both increase at 1/4 rate up to a maximum of 90% and 90%.
-             */
+            
+             //One armor value.
+             //Up to 50%, damage resistance increases.
+             //Past 50%, damage deflection increases.
+             //Past 100%, damage deflection and resistance both increase at 1/4 rate up to a maximum of 90% and 90%.
+             
             float resistance;
             float deflectChance;
 
@@ -469,27 +541,22 @@ namespace SimpleSidearms.utilities
 
             // Game code computes deflect or resist, we're looking for just the statistical average:
             return (1.0f - resistance) * (1.0f - deflectChance);
-        }
+        }*/
 
         internal static float MeleeDPS(Pawn pawn, ThingWithComps weapon, float speedBias, Pawn target)
         {
             if (pawn == null)
+            {
+                Log.Warning("attempted to calc meleeDPS for null pawn!");
                 return 0;
-            float dps = GetMeleeDamage(pawn, weapon, target) * GetMeleeHitChance(pawn) / GetMeleeCooldown(pawn, weapon);
+            }
+            float dps;
+            if (weapon == null)
+                dps = pawn.GetStatValue(StatDefOf.MeleeDPS);
+            else
+                dps = weapon.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS);
+            //float dps = GetMeleeDamage(pawn, weapon, target) * GetMeleeHitChance(pawn) / GetMeleeCooldown(pawn, weapon);
             return dps;
-            /*if (weapon == null)
-                return 0;
-
-            Verb atkVerb = (weapon.GetComp<CompEquippable>()).PrimaryVerb;
-            VerbProperties atkProps = atkVerb.verbProps;
-
-            ThingDef wepDef = weapon.def;
-
-            float damage = atkProps.AdjustedMeleeDamageAmount(atkVerb, atkVerb.CasterPawn, weapon);
-            float warmup = atkProps.warmupTime;
-            float cooldown = atkProps.AdjustedCooldownTicks(weapon);
-            float dps = damage / ((warmup * speedBias + cooldown));
-            return dps;*/
         }
 
         internal static float RangedDPSAverage(ThingWithComps weapon, float speedBias)
@@ -500,7 +567,7 @@ namespace SimpleSidearms.utilities
             Verb atkVerb = (weapon.GetComp<CompEquippable>()).PrimaryVerb;
             VerbProperties atkProps = atkVerb.verbProps;
 
-            float damage = (atkProps.defaultProjectile == null) ? 0 : atkProps.defaultProjectile.projectile.damageAmountBase;
+            float damage = (atkProps.defaultProjectile == null) ? 0 : atkProps.defaultProjectile.projectile.damageDef.defaultDamage;
             float warmup = atkProps.warmupTime;  
             float cooldown = weapon.def.GetStatValueAbstract(StatDefOf.RangedWeapon_Cooldown, null); 
             int burstShot = atkProps.burstShotCount;
@@ -521,18 +588,20 @@ namespace SimpleSidearms.utilities
             if (atkProps.range * atkProps.range < range || atkProps.minRange * atkProps.minRange > range)
                 return -1;
 
-            float damage = (atkProps.defaultProjectile == null) ? 0 : atkProps.defaultProjectile.projectile.damageAmountBase;
+            float hitChance = atkProps.GetHitChanceFactor(weapon, range);
+            float damage = (atkProps.defaultProjectile == null) ? 0 : atkProps.defaultProjectile.projectile.GetDamageAmount(weapon);
             float warmup = atkProps.warmupTime; 
             float cooldown = weapon.def.GetStatValueAbstract(StatDefOf.RangedWeapon_Cooldown, null);
             int burstShot = atkProps.burstShotCount;
             int ticksBetweenShots = atkProps.ticksBetweenBurstShots;
             float rawDps = (damage * burstShot) / (((warmup + cooldown)) + warmup * (speedBias - 1f) + (burstShot - 1) * (ticksBetweenShots / 60f));
-            float Dps = rawDps * GetHitChanceFactor(atkProps, weapon, range);
-
+            float Dps = rawDps * hitChance;
             return Dps;
         }
 
-        internal static float GetHitChanceFactor(VerbProperties props, Thing equipment, float dist)
+        //implemented in vanilla now
+
+        /*internal static float GetHitChanceFactor(VerbProperties props, Thing equipment, float dist)
         {
             float num;
             if (dist <= 4f)
@@ -564,7 +633,7 @@ namespace SimpleSidearms.utilities
                 num = 1f;
             }
             return num;
-        }
+        }*/
 
         internal static float AdjustedAccuracy(VerbProperties props, RangeCategory cat, Thing equipment)
         {

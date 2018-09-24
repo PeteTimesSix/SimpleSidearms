@@ -229,7 +229,7 @@ namespace SimpleSidearms
             SpeedSelectionBiasMelee.CustomDrawer = rect => { return HugsDrawerRebuild_FloatEntry(SpeedSelectionBiasMelee, rect, highlight3); };
             SpeedSelectionBiasRanged = Settings.GetHandle<float>("SpeedSelectionBiasRanged", "SpeedSelectionBiasRanged_title".Translate(), "SpeedSelectionBiasRanged_desc".Translate(), 1f);
             SpeedSelectionBiasRanged.CustomDrawer = rect => { return HugsDrawerRebuild_FloatEntry(SpeedSelectionBiasRanged, rect, highlight3); };
-            SpeedSelectionBiasRanged.VisibilityPredicate = delegate { return (RangedCombatAutoSwitch.Value == true | SingleshotAutoSwitch.Value == true) && ActiveTab == OptionsTab.Automation; };
+            SpeedSelectionBiasRanged.VisibilityPredicate = delegate { return (RangedCombatAutoSwitch.Value == true || SingleshotAutoSwitch.Value == true) && ActiveTab == OptionsTab.Automation; };
 
             //OptionsTab.Allowances
             SeparateModes = Settings.GetHandle<bool>("SeparateModes", "SeparateModes_title".Translate(), "SeparateModes_desc".Translate(), false);
