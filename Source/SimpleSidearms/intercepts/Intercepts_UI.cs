@@ -140,18 +140,13 @@ namespace SimpleSidearms.intercepts
                     }
                     else if (!StatCalculator.canCarrySidearm(equipment.def, pawn, out errStr))
                     {
-                        item3 = new FloatMenuOption("CannotEquip".Translate(new object[]
-                        {
-                                labelShort
-                        }) + " (" + errStr + ")", null, MenuOptionPriority.Default, null, null, 0f, null, null);
+                        "CannotEquip".Translate();
+                        item3 = new FloatMenuOption("CannotEquip".Translate(labelShort) + " (" + errStr + ")", null, MenuOptionPriority.Default, null, null, 0f, null, null);
                         opts.Add(item3);
                     }
                     else
                     {
-                        string text2 = "Equip".Translate(new object[]
-                        {
-                            labelShort
-                        }) + "AsSidearm".Translate();
+                        string text2 = "Equip".Translate(labelShort) + "AsSidearm".Translate();
 
                         if (equipment.def.IsRangedWeapon && pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler))
                         {

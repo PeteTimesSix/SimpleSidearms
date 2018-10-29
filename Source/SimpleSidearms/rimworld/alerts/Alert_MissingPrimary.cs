@@ -25,10 +25,7 @@ namespace SimpleSidearms.rimworld.alerts
             {
                 stringBuilder.AppendLine("    " + current.Name);
             }
-            return explanation.Translate(new object[]
-            {
-                stringBuilder.ToString()
-            });
+            return explanation.Translate(stringBuilder.ToString());
         }
 
         public override AlertReport GetReport()

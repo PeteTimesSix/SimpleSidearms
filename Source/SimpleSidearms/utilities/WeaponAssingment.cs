@@ -80,6 +80,11 @@ namespace SimpleSidearms.utilities
                 if (pawnMemory != null)
                     pawnMemory.SetPrimaryEmpty(intentionalEquip);
             }
+
+            //avoid hunting stackoverflowexception
+            if (pawn.jobs.curJob.def == JobDefOf.Hunt)
+                pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, true);
+
             return true;    
         }
 
