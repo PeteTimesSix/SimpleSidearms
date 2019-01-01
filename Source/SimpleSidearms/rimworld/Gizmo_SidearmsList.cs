@@ -258,11 +258,23 @@ namespace SimpleSidearms.rimworld
             TooltipHandler.TipRegion(iconRect, string.Format("DrawSidearm_gizmoTooltip".Translate(), weapon.LabelShort));
             MouseoverSounds.DoRegion(iconRect, SoundDefOf.Mouseover_Command);
 
-            Texture2D drawPocket;
+            Texture2D drawPocket = TextureResources.drawPocketTemp;
             if (pawnMemory != null && pawnMemory.IsCurrentPrimary(weapon.def.defName))
                 drawPocket = TextureResources.drawPocketPrimary;
             else
-                drawPocket = TextureResources.drawPocket;
+            {
+                if (pawnMemory != null)
+                {
+                    foreach(string weaponName in pawnMemory.weapons)
+                    {
+                        if (weaponName.Equals(weapon.def.defName))
+                        {
+                            drawPocket = TextureResources.drawPocket;
+                            break;
+                        }
+                    }
+                }
+            }
 
             if (Mouse.IsOver(iconRect))
             {

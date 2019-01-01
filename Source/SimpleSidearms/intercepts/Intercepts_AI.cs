@@ -162,7 +162,7 @@ namespace SimpleSidearms.intercepts
     }
 
     [HarmonyPatch(typeof(Pawn_InventoryTracker))]
-    [HarmonyPatch("FirstUnloadableThing", PropertyMethod.Getter)]
+    [HarmonyPatch("FirstUnloadableThing", MethodType.Getter)]
     static class Pawn_InventoryTracker_FirstUnloadableThing_Transpiler
     {
         public static bool IsBestSidearm(Pawn pawn, Thing weapon)

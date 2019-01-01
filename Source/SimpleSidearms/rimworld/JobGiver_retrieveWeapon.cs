@@ -66,6 +66,7 @@ namespace SimpleSidearms.rimworld
                         Thing thing = GenClosest.ClosestThing_Global_Reachable(pawn.Position, pawn.Map, matchingWeapons, PathEndMode.OnCell, TraverseParms.For(pawn), maxDist,
                             (Thing t) => !t.IsForbidden(pawn) && pawn.CanReserve(t),
                             (Thing t) => SimpleSidearms.ReEquipBest ? t.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS, false) : 0);
+                                                                      //this works properly because better ranged weapons also happen to be better at pistolwhipping
 
                         if (thing == null)
                             continue;
