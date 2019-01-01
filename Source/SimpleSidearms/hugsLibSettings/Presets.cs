@@ -107,6 +107,7 @@ namespace SimpleSidearms.hugsLibSettings
   <SidearmsEnableNeolithicExtension>True</SidearmsEnableNeolithicExtension>
   <SidearmsNeolithicExtension>MeleeWeapon_Shiv</SidearmsNeolithicExtension>
   <DropMode>Panic</DropMode>
+  <ReEquipBest>True</ReEquipBest>
 </SimpleSidearms>
 ";
 
@@ -128,6 +129,7 @@ namespace SimpleSidearms.hugsLibSettings
   <SidearmsEnableNeolithicExtension>True</SidearmsEnableNeolithicExtension>
   <SidearmsNeolithicExtension>MeleeWeapon_Shiv</SidearmsNeolithicExtension>
   <DropMode>Panic</DropMode>
+  <ReEquipBest>True</ReEquipBest>
 </SimpleSidearms>
 ";
 
@@ -144,6 +146,7 @@ namespace SimpleSidearms.hugsLibSettings
   <SidearmsEnableNeolithicExtension>True</SidearmsEnableNeolithicExtension>
   <SidearmsNeolithicExtension>MeleeWeapon_Shiv|MeleeWeapon_Knife|MeleeWeapon_Gladius|MeleeWeapon_Mace|MeleeWeapon_LongSword</SidearmsNeolithicExtension>
   <DropMode>Panic</DropMode>
+  <ReEquipBest>True</ReEquipBest>
 </SimpleSidearms>";
 
         public static string Preset_Brawler =
@@ -161,6 +164,7 @@ namespace SimpleSidearms.hugsLibSettings
   <SidearmsEnableNeolithicExtension>True</SidearmsEnableNeolithicExtension>
   <SidearmsNeolithicExtension>MeleeWeapon_Shiv|MeleeWeapon_Knife|MeleeWeapon_Gladius|MeleeWeapon_Mace|MeleeWeapon_LongSword</SidearmsNeolithicExtension>
   <DropMode>Panic</DropMode>
+  <ReEquipBest>True</ReEquipBest>
 </SimpleSidearms>";
 
     }

@@ -119,6 +119,7 @@ namespace SimpleSidearms
         internal static SettingHandle<StringHashSetHandler> SidearmsNeolithicExtension;
 
         internal static SettingHandle<DroppingModeOptionsEnum> DropMode;
+        internal static SettingHandle<bool> ReEquipBest;
 
         private static Color noHighlight = new Color(0, 0, 0, 0);
         private static Color highlight1 = new Color(0.5f, 0, 0, 0.1f);
@@ -405,6 +406,10 @@ namespace SimpleSidearms
                 return CustomDrawer_Enumlist(DropMode, rect, names, forcedWidths, ExpansionMode.Vertical, noHighlight);
             };
             DropMode.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Misc; };
+
+            ReEquipBest = Settings.GetHandle<bool>("ReEquipBest", "ReEquipBest_title".Translate(), "ReEquipBest_desc".Translate(), true);
+            ReEquipBest.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Misc; };
+            ReEquipBest.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(ReEquipBest, rect, highlight2); };
 
             OptimalMelee.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };
             CQCAutoSwitch.OnValueChanged += delegate { if(ActivePreset.Value != Preset.NoneApplied) ActivePreset.Value = Preset.Custom; };

@@ -58,12 +58,14 @@ namespace SimpleSidearms.rimworld
 
                     if (!pawn.hasWeaponSomewhere(wepName))
                     {
-                        ThingRequest request = new ThingRequest();
-                        request.singleDef = def;
                         float maxDist = 1000f;
                         if (pawn.Faction != Faction.OfPlayer || inCombat)
                             maxDist = 30f;
-                        Thing thing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, request, PathEndMode.OnCell, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), maxDist, (Thing x) => (!x.IsForbidden(pawn)) && pawn.CanReserve(x, 1, -1, null, false));
+                        List<Thing> matchingWeapons = pawn.Map.listerThings.ThingsOfDef(def);
+
+                        Thing thing = GenClosest.ClosestThing_Global_Reachable(pawn.Position, pawn.Map, matchingWeapons, PathEndMode.OnCell, TraverseParms.For(pawn), maxDist,
+                            (Thing t) => !t.IsForbidden(pawn) && pawn.CanReserve(t),
+                            (Thing t) => SimpleSidearms.ReEquipBest ? t.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS, false) : 0);
 
                         if (thing == null)
                             continue;
