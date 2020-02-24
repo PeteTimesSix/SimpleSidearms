@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{9F419654-C9CF-472E-BF42-A1F0133CDD49}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SimpleSidearms</RootNamespace>
+    <AssemblyName>SimpleSidearms</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Assemblies\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputPath>..\SimpleSidearms\v1.1\Assemblies\</OutputPath>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=2.0.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Lib.Harmony.2.0.0.5\lib\net35\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="HugsLib">
+      <HintPath>..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\818773962\Assemblies\HugsLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CEPatcher.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="hugsLibSettings\Presets.cs" />
+    <Compile Include="hugsLibSettings\SettingsUIs.cs" />
+    <Compile Include="hugsLibSettings\StringHashSetHandler.cs" />
+    <Compile Include="hugsLibSettings\ThingDefHashSetHandler.cs" />
+    <Compile Include="intercepts\Intercepts_AI.cs" />
+    <Compile Include="intercepts\Intercepts_Generators.cs" />
+    <Compile Include="intercepts\Intercepts_UI.cs" />
+    <Compile Include="intercepts\Intercepts_Verbs.cs" />
+    <Compile Include="rimworld\alerts\Alert_MissingPrimary.cs" />
+    <Compile Include="rimworld\alerts\Alert_MissingSidearm.cs" />
+    <Compile Include="rimworld\Gizmo_Brainscope.cs" />
+    <Compile Include="rimworld\Gizmo_SidearmsList.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="rimworld\GoldfishModule.cs" />
+    <Compile Include="rimworld\JobDriver_EquipSidearm.cs" />
+    <Compile Include="rimworld\JobDriver_ReequipSidearm.cs" />
+    <Compile Include="rimworld\JobDriver_ReequipSidearmCombat.cs" />
+    <Compile Include="rimworld\JobGiver_RetrieveWeapon.cs" />
+    <Compile Include="rimworld\MassComparer.cs" />
+    <Compile Include="rimworld\PawnSidearmsGenerator.cs" />
+    <Compile Include="rimworld\SidearmsDefOf.cs" />
+    <Compile Include="rimworld\SidearmWeaponTagMapDef.cs" />
+    <Compile Include="rimworld\SimpleSidearmsData.cs" />
+    <Compile Include="rimworld\ThingStuffPairComparer.cs" />
+    <Compile Include="rimworld\ThingStuffPairExposable.cs" />
+    <Compile Include="SimpleSidearms.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnsafeUtilities.cs" />
+    <Compile Include="utilities\GettersFilters.cs" />
+    <Compile Include="utilities\StatCalculator.cs" />
+    <Compile Include="utilities\MiscUtils.cs" />
+    <Compile Include="TextureResources.cs" />
+    <Compile Include="utilities\WeaponAssingment.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "C:\SimpleSidearms\SimpleSidearms" "C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\SimpleSidearms" /y /i /s
+
+"C:\Program Files (x86)\Steam\Steam.exe" -applaunch 294100</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
