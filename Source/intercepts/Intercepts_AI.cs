@@ -16,12 +16,12 @@ namespace SimpleSidearms.intercepts
 {
 
     [HarmonyPatch(typeof(AutoUndrafter), "AutoUndraftTick")]
-    static class AutoUndrafter_AutoUndraftTick_Postfix
+    public static class AutoUndrafter_AutoUndraftTick_Postfix
     {
-        private const int autoRetrieveDelay = 300;
+        public const int autoRetrieveDelay = 300;
 
         [HarmonyPostfix]
-        private static void AutoUndraftTick(AutoUndrafter __instance)
+        public static void AutoUndraftTick(AutoUndrafter __instance)
         {
             Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
             int tick = Find.TickManager.TicksGame;
@@ -48,10 +48,10 @@ namespace SimpleSidearms.intercepts
     }
 
     [HarmonyPatch(typeof(Pawn_DraftController), "Drafted", MethodType.Setter)]
-    static class Pawn_DraftController_Drafted_Setter_Postfix
+    public static class Pawn_DraftController_Drafted_Setter_Postfix
     {
         [HarmonyPostfix()]
-        private static void DraftedSetter(Pawn_DraftController __instance)
+        public static void DraftedSetter(Pawn_DraftController __instance)
         {
             //Log.Message("undraft intercept: " + __instance.Drafted);
             if (!__instance.Drafted)
@@ -66,10 +66,10 @@ namespace SimpleSidearms.intercepts
     }
 
     [HarmonyPatch(typeof(Stance_Warmup), "StanceTick")]
-    static class Stance_Warmup_StanceTick_Postfix
+    public static class Stance_Warmup_StanceTick_Postfix
     {
-        private static Type ceRangedVerb;
-        private static Type CERangedVerb {
+        public static Type ceRangedVerb;
+        public static Type CERangedVerb {
             get {
                 if(ceRangedVerb == null)
                     ceRangedVerb = AccessTools.TypeByName("CombatExtended.Verb_ShootCE");
@@ -78,7 +78,7 @@ namespace SimpleSidearms.intercepts
         }
 
         [HarmonyPostfix]
-        private static void StanceTick(Stance_Warmup __instance)
+        public static void StanceTick(Stance_Warmup __instance)
         {
 
             if (SimpleSidearms.RangedCombatAutoSwitch == false)
@@ -103,7 +103,7 @@ namespace SimpleSidearms.intercepts
             WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, target, MiscUtils.shouldDrop(DroppingModeEnum.Combat), pawn.IsColonistPlayerControlled);
         }
 
-        private static bool IsHunting(Pawn pawn)
+        public static bool IsHunting(Pawn pawn)
         {
             if (pawn.CurJob == null)
             {
@@ -117,13 +117,13 @@ namespace SimpleSidearms.intercepts
 
 
     [HarmonyPatch(typeof(Pawn_EquipmentTracker), "AddEquipment")]
-    static class Pawn_EquipmentTracker_AddEquipment_Postfix
+    public static class Pawn_EquipmentTracker_AddEquipment_Postfix
     {
         //EW EW EW GLOBAL FLAG EW EW
         public static bool sourcedBySimpleSidearms = false;
 
         [HarmonyPostfix]
-        private static void AddEquipment(Pawn_EquipmentTracker __instance, ThingWithComps newEq)
+        public static void AddEquipment(Pawn_EquipmentTracker __instance, ThingWithComps newEq)
         {
             if (!sourcedBySimpleSidearms)
             {
@@ -139,9 +139,9 @@ namespace SimpleSidearms.intercepts
     }
 
     [HarmonyPatch(typeof(JobDriver_AttackMelee), "TryMakePreToilReservations")]
-    static class JobDriver_AttackMelee_TryMakePreToilReservations
+    public static class JobDriver_AttackMelee_TryMakePreToilReservations
     {
-        private static void Postfix(JobDriver_AttackMelee __instance)
+        public static void Postfix(JobDriver_AttackMelee __instance)
         {
             Pawn caster = ((__instance.GetType()).GetField("pawn").GetValue(__instance) as Pawn);
             Job job = ((__instance.GetType()).GetField("job").GetValue(__instance) as Job);
@@ -155,7 +155,7 @@ namespace SimpleSidearms.intercepts
 
     [HarmonyPatch(typeof(Pawn_InventoryTracker))]
     [HarmonyPatch("FirstUnloadableThing", MethodType.Getter)]
-    static class Pawn_InventoryTracker_FirstUnloadableThing
+    public static class Pawn_InventoryTracker_FirstUnloadableThing
     {
 
         [HarmonyPostfix]

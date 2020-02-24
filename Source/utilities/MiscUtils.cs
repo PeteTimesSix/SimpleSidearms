@@ -16,7 +16,7 @@ namespace SimpleSidearms.utilities
     public static class MiscUtils
     {
 
-        internal static bool shouldDrop(DroppingModeEnum mode)
+        public static bool shouldDrop(DroppingModeEnum mode)
         {
             switch (SimpleSidearms.DropMode.Value)
             {
@@ -38,11 +38,11 @@ namespace SimpleSidearms.utilities
             }
         }
 
-        internal static void DoNothing()
+        public static void DoNothing()
         {
         }
 
-        internal static WeaponSearchType LimitTypeToListType(WeaponListKind type)
+        public static WeaponSearchType LimitTypeToListType(WeaponListKind type)
         {
             switch (type)
             {

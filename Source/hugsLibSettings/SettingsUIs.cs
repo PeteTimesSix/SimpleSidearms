@@ -13,29 +13,29 @@ using Verse;
 
 namespace SimpleSidearms.hugsLibSettings
 {
-    internal static class SettingsUIs
+    public static class SettingsUIs
     {
-        internal enum WeaponListKind { Both, Melee, Ranged }
+        public enum WeaponListKind { Both, Melee, Ranged }
 
-        private const float ContentPadding = 5f;
-        private const float IconSize = 32f;
-        private const float IconGap = 1f;
-        private const float TextMargin = 20f;
-        private const float BottomMargin = 2f;
+        public const float ContentPadding = 5f;
+        public const float IconSize = 32f;
+        public const float IconGap = 1f;
+        public const float TextMargin = 20f;
+        public const float BottomMargin = 2f;
 
-        private static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
-        private static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
+        public static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+        public static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
 
-        private static readonly Color SelectedOptionColor = new Color(0.5f, 1f, 0.5f, 1f);
-        private static readonly Color constGrey = new Color(0.8f, 0.8f, 0.8f, 1f);
+        public static readonly Color SelectedOptionColor = new Color(0.5f, 1f, 0.5f, 1f);
+        public static readonly Color constGrey = new Color(0.8f, 0.8f, 0.8f, 1f);
 
-        private static float averageCarryCapacity = 35f;
+        public static float averageCarryCapacity = 35f;
 
-        internal enum ExpansionMode { None, Vertical, Horizontal};
+        public enum ExpansionMode { None, Vertical, Horizontal};
         
         //Copied these here since the default ones seem to not allow changing through code (probably for a sensible reason of some description).
 
-        private static void drawBackground(Rect rect, Color background)
+        public static void drawBackground(Rect rect, Color background)
         {
             Color save = GUI.color;
             GUI.color = background;
@@ -74,9 +74,9 @@ namespace SimpleSidearms.hugsLibSettings
             }
         }
 
-        private static readonly Color BadValueOutlineColor = new Color(.9f, .1f, .1f, 1f);
+        public static readonly Color BadValueOutlineColor = new Color(.9f, .1f, .1f, 1f);
 
-        private static void DrawBadTextValueOutline(Rect rect)
+        public static void DrawBadTextValueOutline(Rect rect)
         {
             var prevColor = GUI.color;
             GUI.color = BadValueOutlineColor;
@@ -239,7 +239,7 @@ namespace SimpleSidearms.hugsLibSettings
             return change;
         }
 
-        internal static bool CustomDrawer_Enumlist(SettingHandle handle, Rect controlRect, string[] enumNames, float[] forcedWidths, ExpansionMode expansionMode, Color background)
+        public static bool CustomDrawer_Enumlist(SettingHandle handle, Rect controlRect, string[] enumNames, float[] forcedWidths, ExpansionMode expansionMode, Color background)
         {
             drawBackground(controlRect, background);
             if (enumNames == null) return false;
@@ -304,8 +304,8 @@ namespace SimpleSidearms.hugsLibSettings
             }
             return changed;
         }
-        
-        internal static bool CustomDrawer_ButtonExportConfig(Rect rect, string label, SimpleSidearms instance, Color background)
+
+        public static bool CustomDrawer_ButtonExportConfig(Rect rect, string label, SimpleSidearms instance, Color background)
         {
             drawBackground(rect, background);
             Rect buttonRect = new Rect(rect);
@@ -322,7 +322,7 @@ namespace SimpleSidearms.hugsLibSettings
             return false; 
         }
 
-        internal static bool CustomDrawer_ButtonLoadConfig(Rect rect, SettingHandle<Preset> setting, string label, SimpleSidearms instance, Color background)
+        public static bool CustomDrawer_ButtonLoadConfig(Rect rect, SettingHandle<Preset> setting, string label, SimpleSidearms instance, Color background)
         {
             drawBackground(rect, background);
             Rect buttonRect = new Rect(rect);
@@ -339,12 +339,12 @@ namespace SimpleSidearms.hugsLibSettings
             return clicked;
         }
 
-        internal static bool CustomDrawer_RighthandSideLine(Rect wholeRect, SettingHandle setting, Color background)
+        public static bool CustomDrawer_RighthandSideLine(Rect wholeRect, SettingHandle setting, Color background)
         {
             return CustomDrawer_RighthandSideLine(wholeRect, setting, constGrey, background);
         }
 
-        internal static bool CustomDrawer_RighthandSideLine(Rect wholeRect, SettingHandle setting, Color color, Color background)
+        public static bool CustomDrawer_RighthandSideLine(Rect wholeRect, SettingHandle setting, Color color, Color background)
         {
             drawBackground(wholeRect, background);
             wholeRect.position = new Vector2(wholeRect.position.x, wholeRect.position.y + (wholeRect.height - 1f) / 2f);
@@ -355,14 +355,14 @@ namespace SimpleSidearms.hugsLibSettings
             return false;
         }
 
-        internal static bool CustomDrawer_RighthandSideLabel(Rect wholeRect, string label, Color background)
+        public static bool CustomDrawer_RighthandSideLabel(Rect wholeRect, string label, Color background)
         {
             drawBackground(wholeRect, background);
             DrawLabel(label, wholeRect, TextMargin);
             return false;
         }
 
-        internal static bool CustomDrawer_MatchingWeapons_passiveRelative(Rect wholeRect, SettingHandle<WeaponListKind> setting, Color background)
+        public static bool CustomDrawer_MatchingWeapons_passiveRelative(Rect wholeRect, SettingHandle<WeaponListKind> setting, Color background)
         {
             float weightLimit = averageCarryCapacity;
             switch (setting.Value)
@@ -381,7 +381,7 @@ namespace SimpleSidearms.hugsLibSettings
             return CustomDrawer_MatchingWeapons_passive(wholeRect, setting, weightLimit, "Sidearms below avg. max. weight ("+weightLimit.ToString("F1")+"kg)", background);
         }
 
-        internal static bool CustomDrawer_MatchingWeapons_passiveAbsolute(Rect wholeRect, SettingHandle<WeaponListKind> setting, Color background)
+        public static bool CustomDrawer_MatchingWeapons_passiveAbsolute(Rect wholeRect, SettingHandle<WeaponListKind> setting, Color background)
         {
             float weightLimit = 0;
             switch (setting.Value)
@@ -401,7 +401,7 @@ namespace SimpleSidearms.hugsLibSettings
 
         }
 
-        private static bool CustomDrawer_MatchingWeapons_passive(Rect wholeRect, SettingHandle<WeaponListKind> setting, float weightLimit , string label, Color background)
+        public static bool CustomDrawer_MatchingWeapons_passive(Rect wholeRect, SettingHandle<WeaponListKind> setting, float weightLimit , string label, Color background)
         {
             drawBackground(wholeRect, background);
             Rect offsetRect = new Rect(wholeRect);
@@ -446,7 +446,7 @@ namespace SimpleSidearms.hugsLibSettings
             return false;
         }
 
-        private static void DrawLabel(string labelText, Rect textRect, float offset)
+        public static void DrawLabel(string labelText, Rect textRect, float offset)
         {
             var labelHeight = Text.CalcHeight(labelText, textRect.width);
             labelHeight -= 2f;
@@ -459,7 +459,7 @@ namespace SimpleSidearms.hugsLibSettings
             GUI.color = Color.white;
         }
 
-        internal static bool CustomDrawer_MatchingWeapons_active(Rect wholeRect, SettingHandle<ThingDefHashSetHandler> setting, WeaponListKind kind, Color background, string yesText = "Sidearms", string noText = "Not sidearms")
+        public static bool CustomDrawer_MatchingWeapons_active(Rect wholeRect, SettingHandle<ThingDefHashSetHandler> setting, WeaponListKind kind, Color background, string yesText = "Sidearms", string noText = "Not sidearms")
         {
             drawBackground(wholeRect, background);
             if (setting.Value == null)
@@ -547,13 +547,13 @@ namespace SimpleSidearms.hugsLibSettings
             return change;
         }
 
-        private static bool DrawIconForWeapon(ThingDef weaponDef, Rect contentRect, Vector2 iconOffset, int buttonID, bool isBackground = false)
+        public static bool DrawIconForWeapon(ThingDef weaponDef, Rect contentRect, Vector2 iconOffset, int buttonID, bool isBackground = false)
         {
             return DrawIconForWeapon(new ThingStuffPair(weaponDef, null), contentRect, iconOffset, buttonID, isBackground);
             
         }
 
-        private static bool DrawIconForWeapon(ThingStuffPair weapon, Rect contentRect, Vector2 iconOffset, int buttonID, bool isBackground = false)
+        public static bool DrawIconForWeapon(ThingStuffPair weapon, Rect contentRect, Vector2 iconOffset, int buttonID, bool isBackground = false)
         {
             var iconTex = weapon.thing.uiIcon;
             Graphic g = weapon.thing.graphicData.Graphic;

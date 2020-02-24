@@ -13,12 +13,12 @@ namespace SimpleSidearms.utilities
 {
     public static class StatCalculator
     {
-        internal static int countForLimitType(Pawn pawn, WeaponSearchType type)
+        public static int countForLimitType(Pawn pawn, WeaponSearchType type)
         {
             return GettersFilters.filterForWeaponKind(pawn.getCarriedWeapons(), type).Count();
         }
 
-        internal static float weightForLimitType(Pawn pawn, WeaponSearchType type)
+        public static float weightForLimitType(Pawn pawn, WeaponSearchType type)
         {
             float total = 0;
             IEnumerable<ThingWithComps> weapons = GettersFilters.filterForWeaponKind(pawn.getCarriedWeapons(), type);
@@ -56,7 +56,7 @@ namespace SimpleSidearms.utilities
             return total;
         }
 
-        internal static bool isValidSidearm(ThingStuffPair sidearm, out string errString)
+        public static bool isValidSidearm(ThingStuffPair sidearm, out string errString)
         {
             float sidearmWeight = sidearm.thing.GetStatValueAbstract(StatDefOf.Mass, sidearm.stuff);
 
@@ -136,7 +136,7 @@ namespace SimpleSidearms.utilities
             return true;
         }
 
-        internal static bool canCarrySidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
+        public static bool canCarrySidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
         {
 
             //nicked from EquipmentUtility.CanEquip 
@@ -156,7 +156,7 @@ namespace SimpleSidearms.utilities
             return canCarrySidearmType(sidearm, pawn, out errString);
         }
 
-        internal static bool canCarrySidearmType(ThingStuffPair sidearm, Pawn pawn, out string errString)
+        public static bool canCarrySidearmType(ThingStuffPair sidearm, Pawn pawn, out string errString)
         {
             float maxCapacity = MassUtility.Capacity(pawn);
             float freeCapacity = MassUtility.FreeSpace(pawn);
@@ -370,7 +370,7 @@ namespace SimpleSidearms.utilities
             return true;
         }
 
-        internal static float AdjustedAccuracy(VerbProperties props, RangeCategory cat, Thing equipment)
+        public static float AdjustedAccuracy(VerbProperties props, RangeCategory cat, Thing equipment)
         {
             if (equipment != null)
             {
@@ -407,7 +407,7 @@ namespace SimpleSidearms.utilities
             }
         }
 
-        internal static float RangedSpeed(ThingWithComps weapon)
+        public static float RangedSpeed(ThingWithComps weapon)
         {
             Verb atkVerb = (weapon.GetComp<CompEquippable>()).PrimaryVerb;
             VerbProperties atkProps = atkVerb.verbProps;
@@ -419,7 +419,7 @@ namespace SimpleSidearms.utilities
             return speedFactor;
         }
 
-        internal static float RangedDPSAverage(ThingWithComps weapon, float speedBias, float averageSpeed)
+        public static float RangedDPSAverage(ThingWithComps weapon, float speedBias, float averageSpeed)
         {
             if (weapon == null)
                 return 0;
@@ -444,7 +444,7 @@ namespace SimpleSidearms.utilities
             return DpsAvg / 3f;
         }
 
-        internal static float RangedDPS(ThingWithComps weapon, float speedBias, float averageSpeed, float range)
+        public static float RangedDPS(ThingWithComps weapon, float speedBias, float averageSpeed, float range)
         {
             Verb atkVerb = (weapon.GetComp<CompEquippable>()).PrimaryVerb;
             VerbProperties atkProps = atkVerb.verbProps;
@@ -468,7 +468,7 @@ namespace SimpleSidearms.utilities
             return Dps;
         }
 
-        internal static float MeleeSpeed(ThingWithComps weapon, Pawn pawn)
+        public static float MeleeSpeed(ThingWithComps weapon, Pawn pawn)
         {
             List<VerbProperties> verbProps;
             List<Tool> tools;
@@ -479,7 +479,7 @@ namespace SimpleSidearms.utilities
             return speed;
         }
 
-        internal static float getMeleeDPSBiased(ThingWithComps weapon, Pawn pawn, float speedBias, float averageSpeed)
+        public static float getMeleeDPSBiased(ThingWithComps weapon, Pawn pawn, float speedBias, float averageSpeed)
         {
             //nicked from StatWorker_MeleeAverageDPS
             List<VerbProperties> verbProps;
@@ -503,7 +503,7 @@ namespace SimpleSidearms.utilities
             return damage / speed;
         }
 
-        private static void GetVerbsAndTools(ThingWithComps weapon, out List<VerbProperties> verbs, out List<Tool> tools)
+        public static void GetVerbsAndTools(ThingWithComps weapon, out List<VerbProperties> verbs, out List<Tool> tools)
         {
             if (weapon.def.isTechHediff)
             {
@@ -531,7 +531,7 @@ namespace SimpleSidearms.utilities
             }
         }
 
-        private static HediffDef FindTechHediffHediff(ThingWithComps weapon)
+        public static HediffDef FindTechHediffHediff(ThingWithComps weapon)
         {
             List<RecipeDef> allDefsListForReading = DefDatabase<RecipeDef>.AllDefsListForReading;
             for (int i = 0; i < allDefsListForReading.Count; i++)

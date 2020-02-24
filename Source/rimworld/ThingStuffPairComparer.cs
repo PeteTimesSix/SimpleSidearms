@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SimpleSidearms.rimworld
 {
-    internal class ThingStuffPairComparer : IEqualityComparer<ThingStuffPair>
+    public class ThingStuffPairComparer : IEqualityComparer<ThingStuffPair>
     {
         public bool Equals(ThingStuffPair x, ThingStuffPair y)
         {

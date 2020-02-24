@@ -7,19 +7,19 @@ namespace SimpleSidearms
 {
     public static class Globals
     {
-        internal enum RangeCategory : byte{ Touch, Short, Medium, Long }
-        
+        public enum RangeCategory : byte{ Touch, Short, Medium, Long }
 
-        internal enum DroppingModeEnum { InDistress, Combat, Calm, UsedUp }
-        internal enum DroppingModeOptionsEnum { Never, InDistress, InCombat, Always }
 
-        internal enum WeaponSearchType { Both, Ranged, Melee, MeleeCapable }
+        public enum DroppingModeEnum { InDistress, Combat, Calm, UsedUp }
+        public enum DroppingModeOptionsEnum { Never, InDistress, InCombat, Always }
 
-        internal enum LimitModeSingleSidearm { None, RelativeWeight, AbsoluteWeight, Selection }
-        internal enum LimitModeAmountOfSidearms { MaximumCarryWeightOnly, RelativeWeight, AbsoluteWeight, Slots }
+        public enum WeaponSearchType { Both, Ranged, Melee, MeleeCapable }
 
-        internal enum Preset { NoneApplied, Custom, Lite, Disabled, LoadoutOnly, Basic, Advanced, Excessive, Brawler };
+        public enum LimitModeSingleSidearm { None, RelativeWeight, AbsoluteWeight, Selection }
+        public enum LimitModeAmountOfSidearms { MaximumCarryWeightOnly, RelativeWeight, AbsoluteWeight, Slots }
 
-        internal static readonly float ANTI_OSCILLATION_FACTOR = 0.1f;
+        public enum Preset { NoneApplied, Custom, Lite, Disabled, LoadoutOnly, Basic, Advanced, Excessive, Brawler };
+
+        public static readonly float ANTI_OSCILLATION_FACTOR = 0.1f;
     }
 }

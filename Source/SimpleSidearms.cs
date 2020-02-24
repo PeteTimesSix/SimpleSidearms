@@ -26,111 +26,111 @@ namespace SimpleSidearms
         
         public static SimpleSidearmsData saveData;
 
-        internal enum OptionsTab {Presets, Automation, Allowances, Spawning, Misc}
-        private float TabsNegativeOffset = 100f;
-        
-        internal static SettingHandle<OptionsTab> ActiveTab;
-        
-        internal static SettingHandle<Preset> ActivePreset;
+        public enum OptionsTab {Presets, Automation, Allowances, Spawning, Misc}
+        public float TabsNegativeOffset = 100f;
 
-        internal static SettingHandle<Preset> PresetCustom;
-        internal static SettingHandle<Preset> Preset0;
-        internal static SettingHandle<Preset> Preset1;
-        internal static SettingHandle<Preset> Preset1half;
-        internal static SettingHandle<Preset> Preset2;
-        internal static SettingHandle<Preset> Preset3;
-        internal static SettingHandle<Preset> Preset4;
-        internal static SettingHandle<Preset> Preset5;
-        internal static SettingHandle<bool> PresetExport;
+        public static SettingHandle<OptionsTab> ActiveTab;
 
-        internal static SettingHandle<bool> OptimalMelee;
-        internal static SettingHandle<bool> CQCAutoSwitch;
-        internal static SettingHandle<bool> CQCTargetOnly;
-        //internal static SettingHandle<bool> Underline0;
-        internal static SettingHandle<bool> RangedCombatAutoSwitch;
-        internal static SettingHandle<float> RangedCombatAutoSwitchMaxWarmup;
+        public static SettingHandle<Preset> ActivePreset;
 
-        internal static SettingHandle<float> SpeedSelectionBiasMelee;
-        internal static SettingHandle<float> SpeedSelectionBiasRanged;
+        public static SettingHandle<Preset> PresetCustom;
+        public static SettingHandle<Preset> Preset0;
+        public static SettingHandle<Preset> Preset1;
+        public static SettingHandle<Preset> Preset1half;
+        public static SettingHandle<Preset> Preset2;
+        public static SettingHandle<Preset> Preset3;
+        public static SettingHandle<Preset> Preset4;
+        public static SettingHandle<Preset> Preset5;
+        public static SettingHandle<bool> PresetExport;
 
-        internal static SettingHandle<bool> LimitCarryInfo;
-        internal static SettingHandle<bool> CEOverrideInfo;
+        public static SettingHandle<bool> OptimalMelee;
+        public static SettingHandle<bool> CQCAutoSwitch;
+        public static SettingHandle<bool> CQCTargetOnly;
+        //public static SettingHandle<bool> Underline0;
+        public static SettingHandle<bool> RangedCombatAutoSwitch;
+        public static SettingHandle<float> RangedCombatAutoSwitchMaxWarmup;
 
-        internal static SettingHandle<bool> SeparateModes;
-        internal static SettingHandle<LimitModeSingleSidearm> LimitModeSingle;
-        internal static SettingHandle<LimitModeAmountOfSidearms> LimitModeAmount;
+        public static SettingHandle<float> SpeedSelectionBiasMelee;
+        public static SettingHandle<float> SpeedSelectionBiasRanged;
 
-        internal static SettingHandle<LimitModeSingleSidearm> LimitModeSingleMelee;
-        internal static SettingHandle<LimitModeAmountOfSidearms> LimitModeAmountMelee;
-        //internal static SettingHandle<bool> Underline1;
-        internal static SettingHandle<LimitModeSingleSidearm> LimitModeSingleRanged;
-        internal static SettingHandle<LimitModeAmountOfSidearms> LimitModeAmountRanged;
-        //internal static SettingHandle<bool> Underline2;
-        internal static SettingHandle<LimitModeAmountOfSidearms> LimitModeAmountTotal;
+        public static SettingHandle<bool> LimitCarryInfo;
+        public static SettingHandle<bool> CEOverrideInfo;
+
+        public static SettingHandle<bool> SeparateModes;
+        public static SettingHandle<LimitModeSingleSidearm> LimitModeSingle;
+        public static SettingHandle<LimitModeAmountOfSidearms> LimitModeAmount;
+
+        public static SettingHandle<LimitModeSingleSidearm> LimitModeSingleMelee;
+        public static SettingHandle<LimitModeAmountOfSidearms> LimitModeAmountMelee;
+        //public static SettingHandle<bool> Underline1;
+        public static SettingHandle<LimitModeSingleSidearm> LimitModeSingleRanged;
+        public static SettingHandle<LimitModeAmountOfSidearms> LimitModeAmountRanged;
+        //public static SettingHandle<bool> Underline2;
+        public static SettingHandle<LimitModeAmountOfSidearms> LimitModeAmountTotal;
 
         #region LimitModeSingle
-        internal static SettingHandle<float> LimitModeSingle_Relative;
-        internal static SettingHandle<WeaponListKind> LimitModeSingle_RelativeMatches;
-        internal static SettingHandle<float> LimitModeSingle_Absolute;
-        internal static SettingHandle<WeaponListKind> LimitModeSingle_AbsoluteMatches;
-        internal static SettingHandle<ThingDefHashSetHandler> LimitModeSingle_Selection;
+        public static SettingHandle<float> LimitModeSingle_Relative;
+        public static SettingHandle<WeaponListKind> LimitModeSingle_RelativeMatches;
+        public static SettingHandle<float> LimitModeSingle_Absolute;
+        public static SettingHandle<WeaponListKind> LimitModeSingle_AbsoluteMatches;
+        public static SettingHandle<ThingDefHashSetHandler> LimitModeSingle_Selection;
         #endregion
         #region LimitModeAmount
-        internal static SettingHandle<float> LimitModeAmount_Relative;
-        internal static SettingHandle<float> LimitModeAmount_Absolute;
-        internal static SettingHandle<int> LimitModeAmount_Slots;
+        public static SettingHandle<float> LimitModeAmount_Relative;
+        public static SettingHandle<float> LimitModeAmount_Absolute;
+        public static SettingHandle<int> LimitModeAmount_Slots;
         #endregion
 
         #region LimitModeSingleMelee
-        internal static SettingHandle<float> LimitModeSingleMelee_Relative;
-        internal static SettingHandle<WeaponListKind> LimitModeSingleMelee_RelativeMatches;
-        internal static SettingHandle<float> LimitModeSingleMelee_Absolute;
-        internal static SettingHandle<WeaponListKind> LimitModeSingleMelee_AbsoluteMatches;
-        internal static SettingHandle<ThingDefHashSetHandler> LimitModeSingleMelee_Selection;
+        public static SettingHandle<float> LimitModeSingleMelee_Relative;
+        public static SettingHandle<WeaponListKind> LimitModeSingleMelee_RelativeMatches;
+        public static SettingHandle<float> LimitModeSingleMelee_Absolute;
+        public static SettingHandle<WeaponListKind> LimitModeSingleMelee_AbsoluteMatches;
+        public static SettingHandle<ThingDefHashSetHandler> LimitModeSingleMelee_Selection;
         #endregion
         #region LimitModeAmountMelee
-        internal static SettingHandle<float> LimitModeAmountMelee_Relative;
-        internal static SettingHandle<float> LimitModeAmountMelee_Absolute;
-        internal static SettingHandle<int> LimitModeAmountMelee_Slots;
+        public static SettingHandle<float> LimitModeAmountMelee_Relative;
+        public static SettingHandle<float> LimitModeAmountMelee_Absolute;
+        public static SettingHandle<int> LimitModeAmountMelee_Slots;
         #endregion
         #region LimitModeSingleRanged
-        internal static SettingHandle<float> LimitModeSingleRanged_Relative;
-        internal static SettingHandle<WeaponListKind> LimitModeSingleRanged_RelativeMatches;
-        internal static SettingHandle<float> LimitModeSingleRanged_Absolute;
-        internal static SettingHandle<WeaponListKind> LimitModeSingleRanged_AbsoluteMatches;
-        internal static SettingHandle<ThingDefHashSetHandler> LimitModeSingleRanged_Selection;
+        public static SettingHandle<float> LimitModeSingleRanged_Relative;
+        public static SettingHandle<WeaponListKind> LimitModeSingleRanged_RelativeMatches;
+        public static SettingHandle<float> LimitModeSingleRanged_Absolute;
+        public static SettingHandle<WeaponListKind> LimitModeSingleRanged_AbsoluteMatches;
+        public static SettingHandle<ThingDefHashSetHandler> LimitModeSingleRanged_Selection;
         #endregion
         #region LimitModeAmountRanged
-        internal static SettingHandle<float> LimitModeAmountRanged_Relative;
-        internal static SettingHandle<float> LimitModeAmountRanged_Absolute;
-        internal static SettingHandle<int> LimitModeAmountRanged_Slots;
+        public static SettingHandle<float> LimitModeAmountRanged_Relative;
+        public static SettingHandle<float> LimitModeAmountRanged_Absolute;
+        public static SettingHandle<int> LimitModeAmountRanged_Slots;
         #endregion
         #region LimitModeAmountTotal
-        internal static SettingHandle<float> LimitModeAmountTotal_Relative;
-        internal static SettingHandle<float> LimitModeAmountTotal_Absolute;
-        internal static SettingHandle<int> LimitModeAmountTotal_Slots;
+        public static SettingHandle<float> LimitModeAmountTotal_Relative;
+        public static SettingHandle<float> LimitModeAmountTotal_Absolute;
+        public static SettingHandle<int> LimitModeAmountTotal_Slots;
         #endregion
-        
-        internal static SettingHandle<float> SidearmSpawnChance;
-        internal static SettingHandle<float> SidearmSpawnChanceDropoff;
-        internal static SettingHandle<float> SidearmBudgetMultiplier;
-        internal static SettingHandle<float> SidearmBudgetDropoff;
 
-        internal static SettingHandle<GoldfishModule.PrimaryWeaponMode> ColonistDefaultWeaponMode;
-        internal static SettingHandle<GoldfishModule.PrimaryWeaponMode> NPCDefaultWeaponMode;
+        public static SettingHandle<float> SidearmSpawnChance;
+        public static SettingHandle<float> SidearmSpawnChanceDropoff;
+        public static SettingHandle<float> SidearmBudgetMultiplier;
+        public static SettingHandle<float> SidearmBudgetDropoff;
 
-        internal static SettingHandle<DroppingModeOptionsEnum> DropMode;
-        internal static SettingHandle<bool> ReEquipBest;
+        public static SettingHandle<GoldfishModule.PrimaryWeaponMode> ColonistDefaultWeaponMode;
+        public static SettingHandle<GoldfishModule.PrimaryWeaponMode> NPCDefaultWeaponMode;
 
-        private static Color noHighlight = new Color(0, 0, 0, 0);
-        private static Color highlight1 = new Color(0.5f, 0, 0, 0.1f);
-        private static Color highlight2 = new Color(0, 0.5f, 0, 0.1f);
-        private static Color highlight3 = new Color(0, 0, 0.5f, 0.1f);
-        private static Color highlight4 = new Color(0.5f, 0, 0.5f, 0.1f);
-        private static Color highlight5 = new Color(0.5f, 0.5f, 0, 0.1f);
-        private static Color highlight6 = new Color(0, 0.5f, 0.5f, 0.1f);
+        public static SettingHandle<DroppingModeOptionsEnum> DropMode;
+        public static SettingHandle<bool> ReEquipBest;
 
-        private static bool ceOverride = false;
+        public static Color noHighlight = new Color(0, 0, 0, 0);
+        public static Color highlight1 = new Color(0.5f, 0, 0, 0.1f);
+        public static Color highlight2 = new Color(0, 0.5f, 0, 0.1f);
+        public static Color highlight3 = new Color(0, 0, 0.5f, 0.1f);
+        public static Color highlight4 = new Color(0.5f, 0, 0.5f, 0.1f);
+        public static Color highlight5 = new Color(0.5f, 0.5f, 0, 0.1f);
+        public static Color highlight6 = new Color(0, 0.5f, 0.5f, 0.1f);
+
+        public static bool ceOverride = false;
         public static bool CEOverride { get { return ceOverride; } }
 
         public override void DefsLoaded()
@@ -461,7 +461,7 @@ namespace SimpleSidearms
                 CEPatcher.patchCE(this.HarmonyInst);*/
         }
 
-        private int delay = 0;
+        public int delay = 0;
         public override void Update()
         {
             base.Update();
@@ -490,7 +490,7 @@ namespace SimpleSidearms
                 LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_CEOverride, OpportunityType.Critical);
         }
 
-        internal void UpdateConfig(string config, bool resetFirst)
+        public void UpdateConfig(string config, bool resetFirst)
         {
             ModSettingsPack pack = HugsLibController.SettingsManager.GetModSettings(ModIdentifier);
             if (pack == null)

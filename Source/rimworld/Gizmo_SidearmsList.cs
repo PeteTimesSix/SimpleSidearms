@@ -11,40 +11,39 @@ using static SimpleSidearms.Globals;
 
 namespace SimpleSidearms.rimworld
 {
-    class Gizmo_SidearmsList : Command
+    public class Gizmo_SidearmsList : Command
     {
-        private const float ContentPadding = 2f;
-        private const float MinGizmoSize = 75f;
-        private const float IconSize = 32f;
-        private const float IconGap = 1f;
-        private const float SelectorPanelWidth = 32f + ContentPadding * 2;
-        private const float PreferenceIconHeight = 21f;
-        private const float PreferenceIconWidth = 32f;
-        //private const float LockPanelWidth = 24f + ContentPadding;
-        //private const float LockIconsOffset = 6f;
+        public const float ContentPadding = 2f;
+        public const float MinGizmoSize = 75f;
+        public const float IconSize = 32f;
+        public const float IconGap = 1f;
+        public const float SelectorPanelWidth = 32f + ContentPadding * 2;
+        public const float PreferenceIconHeight = 21f;
+        public const float PreferenceIconWidth = 32f;
 
-        private static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
-        private static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
 
-        private static readonly Color preferenceBase = new Color(0.5f, 0.5f, 0.5f, 1f);
-        private static readonly Color preferenceSet = new Color(0.5f, 1.0f, 0.5f, 1f);
-        private static readonly Color preferenceOfSkill = new Color(1.0f, 0.75f, 0.5f, 1f);
-        private static readonly Color preferenceHighlight = new Color(0.7f, 0.7f, 0.4f, 1f);
-        private static readonly Color preferenceHighlightSet = new Color(0.7f, 1.0f, 0.4f, 1f);
+        public static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+        public static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
+
+        public static readonly Color preferenceBase = new Color(0.5f, 0.5f, 0.5f, 1f);
+        public static readonly Color preferenceSet = new Color(0.5f, 1.0f, 0.5f, 1f);
+        public static readonly Color preferenceOfSkill = new Color(1.0f, 0.75f, 0.5f, 1f);
+        public static readonly Color preferenceHighlight = new Color(0.7f, 0.7f, 0.4f, 1f);
+        public static readonly Color preferenceHighlightSet = new Color(0.7f, 1.0f, 0.4f, 1f);
 
         //public Texture2D[] iconTextures;
         public Action hotkeyAction;
 
-        private Pawn parent;
-        private IEnumerable<ThingWithComps> carriedWeapons;
-        private IEnumerable<ThingWithComps> carriedRangedWeapons { get { return carriedWeapons.Where(w => w.def.IsRangedWeapon); } }
-        private IEnumerable<ThingWithComps> carriedMeleeWeapons { get { return carriedWeapons.Where(w => w.def.IsMeleeWeapon); } }
+        public Pawn parent;
+        public IEnumerable<ThingWithComps> carriedWeapons;
+        public IEnumerable<ThingWithComps> carriedRangedWeapons { get { return carriedWeapons.Where(w => w.def.IsRangedWeapon); } }
+        public IEnumerable<ThingWithComps> carriedMeleeWeapons { get { return carriedWeapons.Where(w => w.def.IsMeleeWeapon); } }
 
-        private IEnumerable<ThingStuffPair> weaponMemories;
-        private IEnumerable<ThingStuffPair> rangedWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsRangedWeapon); } }
-        private IEnumerable<ThingStuffPair> meleeWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsMeleeWeapon); } }
+        public IEnumerable<ThingStuffPair> weaponMemories;
+        public IEnumerable<ThingStuffPair> rangedWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsRangedWeapon); } }
+        public IEnumerable<ThingStuffPair> meleeWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsMeleeWeapon); } }
 
-        private enum SidearmsListInteraction
+        public enum SidearmsListInteraction
         {
             None,
             SelectorRanged,
@@ -54,10 +53,10 @@ namespace SimpleSidearms.rimworld
             WeaponMemory,
             Unarmed
         }
-        private SidearmsListInteraction interactedWith = SidearmsListInteraction.None;
-        private ThingWithComps interactionWeapon;
-        private ThingStuffPair? interactionWeaponType;
-        private bool interactionWeaponIsDuplicate;
+        public SidearmsListInteraction interactedWith = SidearmsListInteraction.None;
+        public ThingWithComps interactionWeapon;
+        public ThingStuffPair? interactionWeaponType;
+        public bool interactionWeaponIsDuplicate;
 
         public override float GetWidth(float maxWidth)
         {
@@ -204,7 +203,7 @@ namespace SimpleSidearms.rimworld
         }
 
 
-        private void DrawPreferenceSelector(Pawn pawn, GoldfishModule pawnMemory, Rect contentRect)
+        public void DrawPreferenceSelector(Pawn pawn, GoldfishModule pawnMemory, Rect contentRect)
         {
             var rangedIconRect = new Rect(contentRect.x, contentRect.y, PreferenceIconWidth, PreferenceIconHeight);
             var skillIconRect = new Rect(contentRect.x, contentRect.y+ PreferenceIconHeight + IconGap, PreferenceIconWidth, PreferenceIconHeight);
@@ -215,6 +214,7 @@ namespace SimpleSidearms.rimworld
             if (Mouse.IsOver(contentRect))
             {
                 LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SimpleSidearmsBasic, OpportunityType.Important);
+                LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SimpleSidearmsPreference, OpportunityType.Important);
             }
 
             if (Mouse.IsOver(rangedIconRect))
@@ -296,7 +296,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        private void DrawIconForWeaponMemory(Pawn pawn, GoldfishModule pawnMemory, ThingStuffPair weaponType, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForWeaponMemory(Pawn pawn, GoldfishModule pawnMemory, ThingStuffPair weaponType, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
         {
             Graphic g = weaponType.thing.graphicData.Graphic;
 
@@ -358,7 +358,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        private void DrawIconForWeapon(Pawn pawn, GoldfishModule pawnMemory, ThingWithComps weapon, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForWeapon(Pawn pawn, GoldfishModule pawnMemory, ThingWithComps weapon, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
         {
             if (weapon is null || weapon.def is null || weapon.def.uiIcon is null)
                 return;
@@ -486,7 +486,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        private void DrawIconForUnarmed(Pawn pawn, GoldfishModule pawnMemory, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForUnarmed(Pawn pawn, GoldfishModule pawnMemory, Rect contentRect, Vector2 iconOffset)
         {
             var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
             //var iconColor = iconBaseColor;
@@ -571,9 +571,9 @@ namespace SimpleSidearms.rimworld
         }
 
         //Ive rewritten this twice now and its still an ugly monster.
-        private const int LEFT_CLICK = 0;
-        private const int RIGHT_CLICK = 1;
-        private void handleInteraction(SidearmsListInteraction interaction, Event ev)
+        public const int LEFT_CLICK = 0;
+        public const int RIGHT_CLICK = 1;
+        public void handleInteraction(SidearmsListInteraction interaction, Event ev)
         {
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
             if (pawnMemory == null)
@@ -863,7 +863,7 @@ namespace SimpleSidearms.rimworld
         }
 
 
-        private void DrawGizmoLabel(string labelText, Rect gizmoRect)
+        public void DrawGizmoLabel(string labelText, Rect gizmoRect)
         {
             var labelHeight = Text.CalcHeight(labelText, gizmoRect.width);
             labelHeight -= 2f;
@@ -877,7 +877,7 @@ namespace SimpleSidearms.rimworld
         }
 
 
-        private int countMissingMeleeWeapons(GoldfishModule pawnMemory, Pawn pawn)
+        public int countMissingMeleeWeapons(GoldfishModule pawnMemory, Pawn pawn)
         {
             if (pawnMemory == null)
                 return 0;
@@ -900,7 +900,7 @@ namespace SimpleSidearms.rimworld
             return count;
         }
 
-        private int countMissingRangedWeapons(GoldfishModule pawnMemory, Pawn pawn)
+        public int countMissingRangedWeapons(GoldfishModule pawnMemory, Pawn pawn)
         {
             if (pawnMemory == null)
                 return 0;

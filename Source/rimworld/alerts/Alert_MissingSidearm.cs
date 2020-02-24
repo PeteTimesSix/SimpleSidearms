@@ -8,9 +8,9 @@ using Verse;
 
 namespace SimpleSidearms.rimworld.alerts
 {
-    class Alert_MissingSidearm : Alert
+    public class Alert_MissingSidearm : Alert
     {
-        protected string explanation;
+        public string explanation;
 
         public Alert_MissingSidearm()
         {
@@ -40,7 +40,7 @@ namespace SimpleSidearms.rimworld.alerts
         }
 
         [DebuggerHidden]
-        private IEnumerable<Pawn> AffectedPawns()
+        public IEnumerable<Pawn> AffectedPawns()
         {
             HashSet<Pawn> pawns = new HashSet<Pawn>();
             if(PawnsFinder.AllMaps_FreeColonistsSpawned != null)

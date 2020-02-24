@@ -10,10 +10,10 @@ using Verse;
 namespace SimpleSidearms.intercepts
 {
     [HarmonyPatch(typeof(PawnGenerator), "GenerateGearFor")]
-    static class PawnGenerator_GenerateGearFor_Postfix
+    public static class PawnGenerator_GenerateGearFor_Postfix
     {
         [HarmonyPostfix]
-        private static void GenerateGearFor(Pawn pawn, PawnGenerationRequest request)
+        public static void GenerateGearFor(Pawn pawn, PawnGenerationRequest request)
         {
 
 

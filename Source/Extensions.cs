@@ -83,7 +83,7 @@ namespace SimpleSidearms
                 return GoldfishModule.PrimaryWeaponMode.Ranged; //slight bias towards ranged but *shrug*
         }
 
-        internal static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true)
+        public static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true)
         {
             List<ThingWithComps> weapons = new List<ThingWithComps>();
 

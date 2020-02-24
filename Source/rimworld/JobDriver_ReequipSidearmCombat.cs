@@ -11,7 +11,7 @@ namespace SimpleSidearms.rimworld
 {
     public class JobDriver_ReequipSidearmCombat : JobDriver_ReequipSidearm
     {
-        internal override Toil OnFinish()
+        public override Toil OnFinish()
         {
             return Toils_Goto.Goto(TargetIndex.B, PathEndMode.OnCell);
         }

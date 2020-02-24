@@ -7,7 +7,7 @@ using Verse;
 
 namespace SimpleSidearms.hugsLibSettings
 {
-    internal class ThingDefHashSetHandler : SettingHandleConvertible
+    public class ThingDefHashSetHandler : SettingHandleConvertible
     {
         private HashSet<ThingDef> defs = new HashSet<ThingDef>();
         public HashSet<ThingDef> InnerList { get { return defs; } set { defs = value; } }

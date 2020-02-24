@@ -11,7 +11,7 @@ namespace SimpleSidearms.rimworld
     public static class PawnSidearmsGenerator
     {
 
-        private static void listWeapons(string prefix, IEnumerable<ThingStuffPair> weapons)
+        public static void listWeapons(string prefix, IEnumerable<ThingStuffPair> weapons)
         {
             string output = prefix;
             foreach(var pair in weapons)
@@ -114,7 +114,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        private static IEnumerable<string> generateWeaponTags(IEnumerable<string> sourceTags)
+        public static IEnumerable<string> generateWeaponTags(IEnumerable<string> sourceTags)
         {
             HashSet<string> resultTags = new HashSet<string>();
 
@@ -135,145 +135,5 @@ namespace SimpleSidearms.rimworld
             }
             return resultTags;
         }
-        /*
-public static void TryGenerateSidearmsFor(Pawn pawn)
-{
-   if (SimpleSidearms.SidearmSpawnChance.Value < 0.01f)
-       return;
-
-   if (Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) >= SimpleSidearms.SidearmSpawnChance.Value)
-   {
-       return;
-   }
-   if (pawn.kindDef.weaponTags == null || pawn.kindDef.weaponTags.Count == 0)
-   {
-       return;
-   }
-   if (!pawn.RaceProps.ToolUser)
-   {
-       return;
-   }
-   if (!pawn.RaceProps.Humanlike)
-   {
-       return;
-   }
-   if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-   {
-       return;
-   }
-   if (pawn.story != null && pawn.story.WorkTagIsDisabled(WorkTags.Violent))
-   {
-       return;
-   }
-   if (pawn.equipment.Primary == null)
-   {
-       return;
-   }
-
-   bool meleeOnly = pawn.equipment.Primary.def.IsMeleeWeapon || (pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler));
-   bool neolithic = true;
-   foreach(string wepTag in pawn.kindDef.weaponTags)
-   {
-       if(wepTag.Contains("Neolithic"))
-       {
-           neolithic = false;
-           break;
-       }
-   }
-
-   List<string> sidearmTags = GettersFilters.weaponTagsToSidearmTags(pawn.kindDef.weaponTags);
-
-   float money = pawn.kindDef.weaponMoney.min;
-   money /= 5f;
-
-   List<ThingDef> allWeapons = getAllWeapons();
-   allWeapons.Where(isViableWeapon)
-
-   for (int i = 0; i < possibleWeapons.Count; i++)
-   {
-       ThingStuffPair w = allWeaponPairs[i];
-
-       if (!StatCalculator.canCarrySidearm(w.thing, pawn))
-           continue;
-       if (w.Price > money)
-           continue;
-       if (meleeOnly && w.thing.IsRangedWeapon)
-           continue;
-       if (neolithic)
-       {
-           bool isNeolithic = true;
-           #region nestedMonstrosity
-           foreach (string wepTag in pawn.kindDef.weaponTags)
-           {
-               if (!wepTag.Contains("Neolithic"))
-               {
-                   //check if the weapon is allowed despite not being neolithic
-                   bool getsAPass = false;
-                   foreach (string weapon in SimpleSidearms.SidearmsNeolithicExtension.Value.InnerList)
-                   {
-                       if (weapon.Equals(w.thing.defName))
-                       {
-                           getsAPass = true;
-                           break;
-                       }
-                   }
-                   if (!getsAPass)
-                       isNeolithic = false;
-               }
-               if (!isNeolithic)
-                   break;
-           }
-           #endregion
-           if (!isNeolithic)
-               continue;
-       }
-
-       if (sidearmTags.Any((string tag) => w.thing.weaponTags.Contains(tag)))
-       {
-           if (w.thing.generateAllowChance >= 1f || Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824) <= w.thing.generateAllowChance)
-           {
-               workingWeapons.Add(w);
-           }
-       }
-
-   }
-   if (workingWeapons.Count == 0)
-   {
-       return;
-   }
-   ThingStuffPair thingStuffPair;
-   if (workingWeapons.TryRandomElementByWeight((ThingStuffPair w) => w.Commonality * w.Price / w.thing.BaseMass, out thingStuffPair))
-   {
-       ThingWithComps thingWithComps = (ThingWithComps)ThingMaker.MakeThing(thingStuffPair.thing, thingStuffPair.stuff);
-       PawnGenerator.PostProcessGeneratedGear(thingWithComps, pawn);
-       pawn.inventory.innerContainer.TryAdd(thingWithComps);
-       //pawn.equipment.AddEquipment(thingWithComps);
-   }
-   workingWeapons.Clear();
-}
-
-private static List<ThingStuffPair> getAllWeapons()
-{
-   Predicate<ThingDef> isWeapon = (ThingDef td) => td.equipmentType == EquipmentType.Primary && !td.weaponTags.NullOrEmpty<string>();
-   List <ThingStuffPair> allWeaponPairs = ThingStuffPair.AllWith(isWeapon);
-   foreach (ThingDef thingDef in from td in DefDatabase<ThingDef>.AllDefs
-                                 where isWeapon(td)
-                                 select td)
-   {
-       float num = allWeaponPairs.Where((ThingStuffPair pa) => pa.thing == thingDef).Sum((ThingStuffPair pa) => pa.Commonality);
-       float num2 = thingDef.generateCommonality / num;
-       if (num2 != 1f)
-       {
-           for (int i = 0; i < allWeaponPairs.Count; i++)
-           {
-               ThingStuffPair thingStuffPair = allWeaponPairs[i];
-               if (thingStuffPair.thing == thingDef)
-               {
-                   allWeaponPairs[i] = new ThingStuffPair(thingStuffPair.thing, thingStuffPair.stuff, thingStuffPair.commonalityMultiplier * num2);
-               }
-           }
-       }
-   }
-}*/
     }
 }

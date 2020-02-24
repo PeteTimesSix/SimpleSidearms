@@ -13,10 +13,10 @@ using SimpleSidearms.rimworld;
 namespace SimpleSidearms.intercepts
 {
     [HarmonyPatch(typeof(ITab_Pawn_Gear), "InterfaceDrop")]
-    static class ITab_Pawn_Gear_InterfaceDrop_Prefix
+    public static class ITab_Pawn_Gear_InterfaceDrop_Prefix
     {
         [HarmonyPrefix]
-        private static void InterfaceDrop(ITab_Pawn_Gear __instance, Thing t)
+        public static void InterfaceDrop(ITab_Pawn_Gear __instance, Thing t)
         {
             if (t.def.IsMeleeWeapon || t.def.IsRangedWeapon)
             {
@@ -42,10 +42,10 @@ namespace SimpleSidearms.intercepts
     }
 
     [HarmonyPatch(typeof(Pawn), "GetGizmos")]
-    static class Pawn_GetGizmos_Postfix
+    public static class Pawn_GetGizmos_Postfix
     {
         [HarmonyPostfix]
-        private static void GetGizmos(Pawn __instance, ref IEnumerable<Gizmo> __result)
+        public static void GetGizmos(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
             if ((__instance.IsColonistPlayerControlled && !__instance.story.DisabledWorkTagsBackstoryAndTraits.OverlapsWithOnAnyWorkType(WorkTags.Violent))
                 || DebugSettings.godMode)
@@ -101,10 +101,10 @@ namespace SimpleSidearms.intercepts
 
     [HarmonyPatch(typeof(FloatMenuMakerMap), "AddHumanlikeOrders")]
     [HarmonyPatch(new Type[] { typeof(Vector3), typeof(Pawn), typeof(List<FloatMenuOption>) })]
-    static class FloatMenuMakerMap_AddHumanLikeOrders_Postfix
+    public static class FloatMenuMakerMap_AddHumanLikeOrders_Postfix
     {
         [HarmonyPostfix]
-        private static void AddHumanlikeOrders(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
+        public static void AddHumanlikeOrders(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
             if (SimpleSidearms.CEOverride)
                 return;

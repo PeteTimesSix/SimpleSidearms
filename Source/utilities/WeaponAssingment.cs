@@ -92,7 +92,7 @@ namespace SimpleSidearms.utilities
         }
 
 
-        internal static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum drop, GoldfishModule.PrimaryWeaponMode? modeOverride = null, Pawn target = null)
+        public static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum drop, GoldfishModule.PrimaryWeaponMode? modeOverride = null, Pawn target = null)
         {
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
 
@@ -284,8 +284,8 @@ namespace SimpleSidearms.utilities
                 }
             }
         }
-        
-        internal static void chooseOptimalMeleeForAttack(Pawn pawn, Pawn target)
+
+        public static void chooseOptimalMeleeForAttack(Pawn pawn, Pawn target)
         {
             if (!OptimalMelee || target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))
                     return;
@@ -293,7 +293,7 @@ namespace SimpleSidearms.utilities
             tryCQCWeaponSwapToMelee(pawn, target, DroppingModeEnum.Combat);
         }
 
-        internal static bool tryCQCWeaponSwapToMelee(Pawn pawn, Pawn target, DroppingModeEnum drop)
+        public static bool tryCQCWeaponSwapToMelee(Pawn pawn, Pawn target, DroppingModeEnum drop)
         {
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
 
@@ -317,8 +317,8 @@ namespace SimpleSidearms.utilities
             return (current != pawn.equipment.Primary);
         }
 
-        
-        internal static bool trySwapToMoreAccurateRangedWeapon(Pawn pawn, LocalTargetInfo target, bool dropCurrent, bool skipDangerous = true)
+
+        public static bool trySwapToMoreAccurateRangedWeapon(Pawn pawn, LocalTargetInfo target, bool dropCurrent, bool skipDangerous = true)
         {
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
 
@@ -344,7 +344,7 @@ namespace SimpleSidearms.utilities
             return true;
         }
 
-        internal static void dropSidearm(Pawn pawn, Thing weapon, bool intentional)
+        public static void dropSidearm(Pawn pawn, Thing weapon, bool intentional)
         {
             if (weapon == null)
                 return;

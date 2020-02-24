@@ -11,9 +11,9 @@ namespace SimpleSidearms.rimworld
 {
     public class JobDriver_EquipSidearm : JobDriver
     {
-        internal virtual bool MemorizeOnPickup { get { return true; } }
+        public virtual bool MemorizeOnPickup { get { return true; } }
 
-        internal virtual Toil OnFinish() { return null; }
+        public virtual Toil OnFinish() { return null; }
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {

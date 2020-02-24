@@ -9,8 +9,8 @@ namespace SimpleSidearms.rimworld
 {
     public struct ThingStuffPairExposable : IExposable, IEquatable<ThingStuffPair>, IEquatable<ThingStuffPairExposable>
     {
-        private ThingDef thing;
-        private ThingDef stuff;
+        public ThingDef thing;
+        public ThingDef stuff;
         public ThingStuffPair Val { get { return new ThingStuffPair(thing, stuff); } }
 
         public ThingStuffPairExposable(ThingStuffPair val)

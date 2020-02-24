@@ -9,11 +9,11 @@ namespace SimpleSidearms.rimworld
 {
     class Gizmo_Brainscope : Gizmo
     {
-        private const float ContentPadding = 2f;
-        private Pawn parent;
+        public const float ContentPadding = 2f;
+        public Pawn parent;
 
-        internal static Dictionary<Pawn, string> curJobs = new Dictionary<Pawn, string>();
-        internal static Dictionary<Pawn, string> lastJobs = new Dictionary<Pawn, string>();
+        public static Dictionary<Pawn, string> curJobs = new Dictionary<Pawn, string>();
+        public static Dictionary<Pawn, string> lastJobs = new Dictionary<Pawn, string>();
 
         public Gizmo_Brainscope(Pawn parent)
         {
@@ -54,20 +54,20 @@ namespace SimpleSidearms.rimworld
             return new GizmoResult(GizmoState.Clear);
         }
 
-        private void printString(string str, Rect contentRect, float offset)
+        public void printString(string str, Rect contentRect, float offset)
         {
             var str1Rect = new Rect(contentRect.x, contentRect.y + offset - 3f, contentRect.width, 22f);
             GUI.color = Color.white;
             GUI.Label(str1Rect, str);
         }
 
-        private void printBool(string label, bool value, Rect contentRect, float offset)
+        public void printBool(string label, bool value, Rect contentRect, float offset)
         {
             Color color = value ? Color.green : Color.red;
             printStringPair(label, value.ToString(), color, contentRect, offset);
         }
 
-        private void printStringPair(string str1, string str2, Color secondStrColor, Rect contentRect, float offset)
+        public void printStringPair(string str1, string str2, Color secondStrColor, Rect contentRect, float offset)
         {
             var str1Rect = new Rect(contentRect.x, contentRect.y + offset - 3f, contentRect.width/4, 22f);
             var str2Rect = new Rect(contentRect.x + contentRect.width/4, contentRect.y + offset - 3f, (contentRect.width/4) * 3, 22f);

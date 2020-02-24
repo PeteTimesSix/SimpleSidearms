@@ -13,10 +13,10 @@ namespace SimpleSidearms.intercepts
 {
 
     [HarmonyPatch(typeof(Verb_ShootOneUse), "SelfConsume")]
-    static class Verb_ShootOneUse_SelfConsume_Postfix
+    public static class Verb_ShootOneUse_SelfConsume_Postfix
     {
         [HarmonyPostfix]
-        private static void SelfConsume(Verb_ShootOneUse __instance)
+        public static void SelfConsume(Verb_ShootOneUse __instance)
         {
             if (__instance.caster is Pawn)
             {
@@ -30,11 +30,11 @@ namespace SimpleSidearms.intercepts
     }
 
     [HarmonyPatch(typeof(Verb_MeleeAttack), "TryCastShot")]
-    static class Verb_MeleeAttack_TryCastShot_PostFix
+    public static class Verb_MeleeAttack_TryCastShot_PostFix
     {
 
         [HarmonyPostfix]
-        private static void TryCastShot(Verb_MeleeAttack __instance)
+        public static void TryCastShot(Verb_MeleeAttack __instance)
         {
             BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
             FieldInfo field = (__instance.GetType()).GetField("currentTarget", bindFlags);

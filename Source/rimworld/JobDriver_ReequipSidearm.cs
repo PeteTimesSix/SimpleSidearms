@@ -11,6 +11,6 @@ namespace SimpleSidearms.rimworld
 {
     public class JobDriver_ReequipSidearm : JobDriver_EquipSidearm
     {
-        internal override bool MemorizeOnPickup { get { return false; } }
+        public override bool MemorizeOnPickup { get { return false; } }
     }
 }

@@ -10,9 +10,9 @@ using Verse;
 
 namespace SimpleSidearms.hugsLibSettings
 {
-    static class Presets
+    public static class Presets
     {
-        internal static void presetChanged(Globals.Preset preset, SimpleSidearms mod)
+        public static void presetChanged(Globals.Preset preset, SimpleSidearms mod)
         {
             switch (preset)
             {
