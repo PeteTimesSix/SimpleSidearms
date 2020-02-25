@@ -55,6 +55,19 @@ namespace SimpleSidearms
         {
             return new ThingStuffPairExposable(pair);
         }
+        public static bool isSpeciallyDisallowed(this ThingStuffPair pair)
+        {
+            if (
+                pair == default ||
+                pair.thing == null ||
+                pair.thing.defName == "Gun_Fire_Ext" ||
+                pair.thing.defName == "VWE_Gun_FireExtinguisher"
+                )
+            {
+                return true;
+            }
+            return false;
+        }
 
         public static bool matchesThingStuffPair(this Thing thing, ThingStuffPair pair, bool allowPartialMatch = false)
         {
@@ -83,7 +96,7 @@ namespace SimpleSidearms
                 return GoldfishModule.PrimaryWeaponMode.Ranged; //slight bias towards ranged but *shrug*
         }
 
-        public static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true)
+        public static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeSpeciallyDisallowed = false)
         {
             List<ThingWithComps> weapons = new List<ThingWithComps>();
 
@@ -92,14 +105,19 @@ namespace SimpleSidearms
 
             if (includeEquipped)
             {
-                if (pawn.equipment.Primary != null)
+                if (pawn.equipment.Primary != null && (!pawn.equipment.Primary.toThingStuffPair().isSpeciallyDisallowed() || includeSpeciallyDisallowed))
                     weapons.Add(pawn.equipment.Primary);
             }
 
             foreach (Thing item in pawn.inventory.innerContainer)
             {
-                if (item is ThingWithComps && (item.def.IsRangedWeapon || item.def.IsMeleeWeapon))
+                if (
+                    item is ThingWithComps &&
+                    (!pawn.equipment.Primary.toThingStuffPair().isSpeciallyDisallowed() || includeSpeciallyDisallowed) &&
+                    (item.def.IsRangedWeapon || item.def.IsMeleeWeapon))
+                {
                     weapons.Add(item as ThingWithComps);
+                }
             }
             return weapons;
         }

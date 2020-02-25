@@ -15,8 +15,6 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         public static void GenerateGearFor(Pawn pawn, PawnGenerationRequest request)
         {
-
-
             float modifiedChance = SimpleSidearms.SidearmSpawnChance;
             float modifiedBudgetMultiplier = SimpleSidearms.SidearmBudgetMultiplier.Value;
             bool more = true;
