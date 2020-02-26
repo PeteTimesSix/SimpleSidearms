@@ -477,6 +477,13 @@ namespace SimpleSidearms
             }
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            //avoiding death to BetterLoading
+        }
+
+
         public override void WorldLoaded()
         {
             saveData = UtilityWorldObjectManager.GetUtilityWorldObject<SimpleSidearmsData>();

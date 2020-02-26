@@ -348,6 +348,8 @@ namespace SimpleSidearms.utilities
         {
             if (weapon == null)
                 return;
+            if (pawn.IsQuestLodger() && intentional)
+                return;
 
             ThingWithComps discarded1;
             Thing discarded2;

@@ -58,8 +58,6 @@ namespace SimpleSidearms
         public static bool isSpeciallyDisallowed(this ThingStuffPair pair)
         {
             if (
-                pair == default ||
-                pair.thing == null ||
                 pair.thing.defName == "Gun_Fire_Ext" ||
                 pair.thing.defName == "VWE_Gun_FireExtinguisher"
                 )
@@ -113,7 +111,7 @@ namespace SimpleSidearms
             {
                 if (
                     item is ThingWithComps &&
-                    (!pawn.equipment.Primary.toThingStuffPair().isSpeciallyDisallowed() || includeSpeciallyDisallowed) &&
+                    (!item.toThingStuffPair().isSpeciallyDisallowed() || includeSpeciallyDisallowed) &&
                     (item.def.IsRangedWeapon || item.def.IsMeleeWeapon))
                 {
                     weapons.Add(item as ThingWithComps);
