@@ -11,6 +11,7 @@
 			<li>ImprovisedMelee</li>
 		</resultTags>
 	</SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
+	
 	<SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
 		<defName>MedievalMeleeDecentMap</defName>
 		<sourceTag>MedievalMeleeDecent</sourceTag>
@@ -20,6 +21,7 @@
 			<li>ImprovisedMelee</li>
 		</resultTags>
 	</SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
+	
 	<SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
 		<defName>MedievalMeleeBasicMap</defName>
 		<sourceTag>MedievalMeleeBasic</sourceTag>
@@ -39,6 +41,7 @@
 			<li>ImprovisedMelee</li>
 		</resultTags>
 	</SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
+	
 	<SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
 		<defName>NeolithicMeleeDecentMap</defName>
 		<sourceTag>NeolithicMeleeDecent</sourceTag>
@@ -48,6 +51,7 @@
 			<li>ImprovisedMelee</li>
 		</resultTags>
 	</SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
+	
 	<SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
 		<defName>NeolithicMeleeBasicMap</defName>
 		<sourceTag>NeolithicMeleeBasic</sourceTag>
@@ -220,6 +224,26 @@
 			<li>GunSingleUse</li><!-- Mwa ha ha ha ha -->
 			<li>SimpleGun</li>
 			<li>Revolver</li>
+			<li>MedievalMeleeDecent</li>
+			<li>MedievalMeleeBasic</li>
+			<li>ImprovisedMelee</li>
+		</resultTags>
+	</SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
+	
+	<SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
+		<defName>BladelinkMap</defName>
+		<sourceTag>Bladelink</sourceTag>
+		<resultTags>
+			<!-- Nothing -->
+		</resultTags>
+	</SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
+	
+	<SimpleSidearms.rimworld.SidearmWeaponTagMapDef>
+		<defName>UltratechMeleeMap</defName>
+		<sourceTag>UltratechMelee</sourceTag>
+		<resultTags>
+			<li>UltratechMelee</li>
+			<li>MedievalMeleeAdvanced</li>
 			<li>MedievalMeleeDecent</li>
 			<li>MedievalMeleeBasic</li>
 			<li>ImprovisedMelee</li>

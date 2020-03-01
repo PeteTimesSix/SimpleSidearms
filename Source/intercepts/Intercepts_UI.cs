@@ -49,7 +49,7 @@ namespace SimpleSidearms.intercepts
         {
             try
             {
-                if ((__instance.IsColonistPlayerControlled && ((__instance.CombinedDisabledWorkTags & WorkTags.Violent) == 0))
+                if ((__instance.IsColonistPlayerControlled)
                     || DebugSettings.godMode)
                 {
                     if (__instance.equipment != null && __instance.inventory != null)
@@ -136,10 +136,10 @@ namespace SimpleSidearms.intercepts
                         string labelShort = equipment.LabelShort;
                         string errStr;
                         FloatMenuOption item3;
-                        if (equipment.def.IsWeapon && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0))
+                        /*if ((!equipment.toThingStuffPair().isToolNotWeapon()) && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0))
                         {
-                        }
-                        else if (!pawn.CanReach(equipment, PathEndMode.ClosestTouch, Danger.Deadly, false, TraverseMode.ByPawn))
+                        }*/
+                        if (!pawn.CanReach(equipment, PathEndMode.ClosestTouch, Danger.Deadly, false, TraverseMode.ByPawn))
                         {
                         }
                         else if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
@@ -156,7 +156,12 @@ namespace SimpleSidearms.intercepts
                         }
                         else
                         {
-                            string text2 = "Equip".Translate(labelShort) + "AsSidearm".Translate();
+                            string text2 = "Equip".Translate(labelShort);
+                            if(((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) || equipment.toThingStuffPair().isToolNotWeapon())
+                                text2 += "AsTool".Translate();
+                            else
+                                text2 += "AsSidearm".Translate();
+
 
                             if (equipment.def.IsRangedWeapon && pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler))
                             {

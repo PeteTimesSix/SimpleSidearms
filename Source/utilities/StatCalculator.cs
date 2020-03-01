@@ -162,6 +162,12 @@ namespace SimpleSidearms.utilities
             float freeCapacity = MassUtility.FreeSpace(pawn);
             float sidearmWeight = sidearm.thing.GetStatValueAbstract(StatDefOf.Mass, sidearm.stuff);
 
+            if (((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) && (!sidearm.isTool()))
+            {
+                errString = "SidearmPickupFail_NotAToolForPacifist".Translate(pawn.LabelShort);
+                return false;
+            }
+
             //this is duplicated in the switches later but Id rather not risk accidentaly deleting a case that might come up
             if (!isValidSidearm(sidearm, out errString))
                 return false;

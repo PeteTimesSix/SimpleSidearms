@@ -136,6 +136,8 @@ namespace SimpleSidearms
 
         public override void DefsLoaded()
         {
+            Settings.EntryName = "Simple Sidearms";
+
             float maxWeightMelee;
             float maxWeightRanged;
             GettersFilters.getHeaviestWeapons(out maxWeightMelee, out maxWeightRanged);

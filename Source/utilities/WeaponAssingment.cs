@@ -93,7 +93,7 @@ namespace SimpleSidearms.utilities
 
         public static bool equipBestWeaponFromInventoryByStatModifiers(Pawn pawn, List<StatDef> stats)
         {
-            Log.Message("looking for a stat booster for stats " + String.Join(",", stats.Select(s => s.label))); ;
+            //Log.Message("looking for a stat booster for stats " + String.Join(",", stats.Select(s => s.label))); ;
             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
 
             if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null || stats == null || stats.Count == 0 || pawn.Drafted)
@@ -125,6 +125,18 @@ namespace SimpleSidearms.utilities
                 return;
 
             GoldfishModule.PrimaryWeaponMode mode = modeOverride == null ? pawnMemory.primaryWeaponMode : modeOverride.Value;
+
+            if ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0)
+            {
+                if (pawn.equipment.Primary != null)
+                {
+                    bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(drop), false);
+                    if (success)
+                        return;
+                }
+                else
+                    return;
+            }
 
             if (pawn.Drafted && 
                 (pawnMemory.ForcedUnarmedWhileDrafted || pawnMemory.ForcedUnarmed && pawnMemory.ForcedWeaponWhileDrafted == null))

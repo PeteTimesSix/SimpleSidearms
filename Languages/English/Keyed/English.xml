@@ -3,6 +3,8 @@
 
 <ActiveTab_desc></ActiveTab_desc>
 <ActiveTab_title>Configuration tabs</ActiveTab_title>
+<ToolAutoSwitch_desc>Should pawns switch tools/weapons with statboosts for their current job?</ToolAutoSwitch_desc>
+<ToolAutoSwitch_title>Tool use autoswitch</ToolAutoSwitch_title>
 <OptimalMelee_desc>Should pawns automatically switch to a higher DPS melee weapon?</OptimalMelee_desc>
 <OptimalMelee_title>Use best melee weapon</OptimalMelee_title>
 <CQCAutoSwitch_desc>Should pawns switch to their melee sidearms when attacked in melee?</CQCAutoSwitch_desc>
@@ -158,8 +160,10 @@ absolute</LimitModeAmount_option_AbsoluteWeight>
 <SidearmPickupFail_AllSlotsFull>Slots full</SidearmPickupFail_AllSlotsFull>
 <SidearmPickupFail_MeleeSlotsFull>Melee slots full</SidearmPickupFail_MeleeSlotsFull>
 <SidearmPickupFail_RangedSlotsFull>Ranged slots full</SidearmPickupFail_RangedSlotsFull>
+<SidearmPickupFail_NotAToolForPacifist>Not a tool. {0} is incapable of violence.</SidearmPickupFail_NotAToolForPacifist>
 <SidearmPickupPass>No issue</SidearmPickupPass>
 <AsSidearm> as sidearm</AsSidearm>
+<AsTool> as tool</AsTool>
 
 <Preset_option_NoneApplied>None</Preset_option_NoneApplied>
 <Preset_option_Custom>Custom</Preset_option_Custom>

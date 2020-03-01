@@ -33,9 +33,31 @@ namespace SimpleSidearms.rimworld
                 !pawn.RaceProps.ToolUser ||
                 !pawn.RaceProps.Humanlike ||
                 !pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation) ||
-                (pawn.story != null && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) == 0))
+                (pawn.story != null && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0))
                 )
             {
+                /*
+                Log.Message("sidearm viability conditions not met");
+
+                if (pawn is null)
+                    Log.Message("pawn is null");
+                if (SimpleSidearms.configData is null)
+                    Log.Message("configData null");
+                if (chance < 0.01f)
+                    Log.Message("chance < 0.01");
+                if (pawn.kindDef.weaponTags == null || pawn.kindDef.weaponTags.Count == 0)
+                    Log.Message("weapon tags null or empty");
+                if (pawn.equipment == null || pawn.equipment.Primary == null)
+                    Log.Message("equipment null or no primary");
+                if (!pawn.RaceProps.ToolUser)
+                    Log.Message("not a toolUser");
+                if (!pawn.RaceProps.Humanlike)
+                    Log.Message("not humanlike");
+                if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+                    Log.Message("not capable of manipulation");
+                if ((pawn.story != null && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0)))
+                    Log.Message("disabled violent work tags, tags:"+pawn.CombinedDisabledWorkTags);
+                    */
                 return false;
             }
             else

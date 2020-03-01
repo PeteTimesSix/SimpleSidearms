@@ -335,6 +335,7 @@
     <Compile Include="rimworld\ThingStuffPairExposable.cs" />
     <Compile Include="SimpleSidearms.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkillStatMap.cs" />
     <Compile Include="UnsafeUtilities.cs" />
     <Compile Include="utilities\GettersFilters.cs" />
     <Compile Include="utilities\StatCalculator.cs" />

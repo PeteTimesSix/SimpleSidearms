@@ -95,7 +95,6 @@ namespace SimpleSidearms.hugsLibSettings
 
         public static string Preset_Basic =
 @"<PeteTimesSix.SimpleSidearms>
-  <SingleshotAutoSwitch>True</SingleshotAutoSwitch>
   <ActivePreset>Custom</ActivePreset>
   <ToolAutoSwitch>True</ToolAutoSwitch>
   <OptimalMelee>True</OptimalMelee>
@@ -105,7 +104,7 @@ namespace SimpleSidearms.hugsLibSettings
   <LimitModeSingle>RelativeWeight</LimitModeSingle>
   <LimitModeAmount>Slots</LimitModeAmount>
   <LimitModeSingleMelee>AbsoluteWeight</LimitModeSingleMelee>
-  <LimitModeSingleMelee_Absolute>1.3</LimitModeSingleMelee_Absolute>
+  <LimitModeSingleMelee_Absolute>1.9</LimitModeSingleMelee_Absolute>
   <LimitModeSingleMelee_Selection></LimitModeSingleMelee_Selection>
   <LimitModeAmountMelee>Slots</LimitModeAmountMelee>
   <LimitModeAmountMelee_Selection>2</LimitModeAmountMelee_Selection>
@@ -144,10 +143,10 @@ namespace SimpleSidearms.hugsLibSettings
   <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <RangedCombatAutoSwitch>True</RangedCombatAutoSwitch>
-  <SidearmSpawnChance>0.4970759</SidearmSpawnChance>
-  <SidearmSpawnChanceDropoff>0.245614</SidearmSpawnChanceDropoff>
-  <SidearmBudgetMultiplier>1</SidearmBudgetMultiplier>
-  <SidearmBudgetDropoff>0.5029241</SidearmBudgetDropoff>
+  <SidearmSpawnChance>0.75</SidearmSpawnChance>
+  <SidearmSpawnChanceDropoff>0.5</SidearmSpawnChanceDropoff>
+  <SidearmBudgetMultiplier>0.75</SidearmBudgetMultiplier>
+  <SidearmBudgetDropoff>0.5</SidearmBudgetDropoff>
   <DropMode>InDistress</DropMode>
 </PeteTimesSix.SimpleSidearms>";
 

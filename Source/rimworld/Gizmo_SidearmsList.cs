@@ -195,7 +195,7 @@ namespace SimpleSidearms.rimworld
 
             UIHighlighter.HighlightOpportunity(gizmoRect, "SidearmList");
 
-            if(parent.IsColonistPlayerControlled && ((parent.CombinedDisabledWorkTags & WorkTags.Violent) == 0))
+            if(parent.IsColonistPlayerControlled)
                 DrawGizmoLabel(defaultLabel, gizmoRect);
             else
                 DrawGizmoLabel(defaultLabel+" (godmode)", gizmoRect);

@@ -19,37 +19,6 @@ namespace SimpleSidearms.intercepts
     [HarmonyPatch(MethodType.Constructor)]
     public static class Toil_ctor_Postfix
     {
-        public static Dictionary<SkillDef, List<StatDef>> map;
-        public static Dictionary<SkillDef, List<StatDef>> Map { 
-            get
-            {
-                if (map == null)
-                    BuildMap();
-                return map;
-            } 
-        }
-        public static void BuildMap() 
-        {
-            map = new Dictionary<SkillDef, List<StatDef>>();
-
-            foreach (SkillDef skill in DefDatabase<SkillDef>.AllDefsListForReading)
-            {
-                map[skill] = new List<StatDef>();
-            }
-            foreach (StatDef stat in DefDatabase<StatDef>.AllDefsListForReading)
-            {
-                if (stat.skillNeedFactors == null)
-                {
-                    continue;
-                }
-                foreach (SkillNeed neededSkill in stat.skillNeedFactors) 
-                {
-                    if (!map[neededSkill.skill].Contains(stat))
-                        map[neededSkill.skill].Add(stat);
-                }
-            }
-        }
-
         [HarmonyPostfix]
         public static void _ctor(Toil __instance) 
         {
@@ -61,7 +30,7 @@ namespace SimpleSidearms.intercepts
                     if (toil.activeSkill != null && toil.activeSkill() != null && toil.GetActor() != null)
                     {
                         //Log.Message("Pawn " + toil.GetActor().Label + " initializing toil that uses skill " + toil.activeSkill().label);
-                        bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(toil.GetActor(), Map[toil.activeSkill()]);
+                        bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(toil.GetActor(), SkillStatMap.Map[toil.activeSkill()]);
                         if (usingAppropriateTool)
                         {
                             GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(toil.GetActor());

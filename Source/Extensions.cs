@@ -81,11 +81,23 @@ namespace SimpleSidearms
             return best;
         }
 
-        public static bool isToolNotWeapon(this ThingStuffPair pair)
+
+        public static bool isTool(this ThingStuffPair possibleTool)
+        {
+            if (isToolNotWeapon(possibleTool))
+                return true;
+
+            if (possibleTool.thing.equippedStatOffsets != null && possibleTool.thing.equippedStatOffsets.Count > 0)
+                return true;
+
+            return false;
+        }
+
+        public static bool isToolNotWeapon(this ThingStuffPair possibleTool)
         {
             if (
-                pair.thing.defName == "Gun_Fire_Ext" ||
-                pair.thing.defName == "VWE_Gun_FireExtinguisher"
+                possibleTool.thing.defName == "Gun_Fire_Ext" ||
+                possibleTool.thing.defName == "VWE_Gun_FireExtinguisher"
                 )
             {
                 return true;
