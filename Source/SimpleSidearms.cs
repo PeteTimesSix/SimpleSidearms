@@ -24,7 +24,7 @@ namespace SimpleSidearms
     {
         public override string ModIdentifier { get { return "PeteTimesSix.SimpleSidearms"; } }
         
-        public static SimpleSidearmsData saveData;
+        public static SimpleSidearmsConfigData configData;
 
         public enum OptionsTab {Presets, Automation, Allowances, Spawning, Misc}
         public float TabsNegativeOffset = 100f;
@@ -43,6 +43,7 @@ namespace SimpleSidearms
         public static SettingHandle<Preset> Preset5;
         public static SettingHandle<bool> PresetExport;
 
+        public static SettingHandle<bool> ToolAutoSwitch;
         public static SettingHandle<bool> OptimalMelee;
         public static SettingHandle<bool> CQCAutoSwitch;
         public static SettingHandle<bool> CQCTargetOnly;
@@ -185,6 +186,10 @@ namespace SimpleSidearms
             PresetExport.CustomDrawer = rect => { return CustomDrawer_ButtonExportConfig(rect, "PresetExport_label", this, noHighlight); };
 
             //OptionsTab.Automation
+            ToolAutoSwitch = Settings.GetHandle<bool>("ToolAutoSwitch", "ToolAutoSwitch_title".Translate(), "ToolAutoSwitch_desc".Translate(), false);
+            ToolAutoSwitch.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Automation; };
+            ToolAutoSwitch.CustomDrawer = rect => { return HugsDrawerRebuild_Checkbox(ToolAutoSwitch, rect, highlight6); };
+
             OptimalMelee = Settings.GetHandle<bool>("OptimalMelee", "OptimalMelee_title".Translate(), "OptimalMelee_desc".Translate(), false);
             CQCAutoSwitch = Settings.GetHandle<bool>("CQCAutoSwitch", "CQCAutoSwitch_title".Translate(), "CQCAutoSwitch_desc".Translate(), false);
             CQCTargetOnly = Settings.GetHandle<bool>("CQCTargetOnly", "CQCTargetOnly_title".Translate(), "CQCTargetOnly_desc".Translate(), false);
@@ -459,6 +464,7 @@ namespace SimpleSidearms
 
             if (CEOverride)
                 CEPatcher.patchCE(this.HarmonyInst);*/
+
         }
 
         public int delay = 0;
@@ -486,7 +492,8 @@ namespace SimpleSidearms
 
         public override void WorldLoaded()
         {
-            saveData = UtilityWorldObjectManager.GetUtilityWorldObject<SimpleSidearmsData>();
+            configData = Find.World.GetComponent<SimpleSidearmsConfigData>();
+            //saveData =   UtilityWorldObjectManager.GetUtilityWorldObject<SimpleSidearmsData>();
         }
 
         public override void MapLoaded(Map map)

@@ -26,13 +26,14 @@ namespace SimpleSidearms.rimworld
         {
             if (
                 pawn is null ||
-                SimpleSidearms.saveData is null || //not yet in game
+                SimpleSidearms.configData is null || //not yet in game
                 chance < 0.01f ||
                 pawn.kindDef.weaponTags == null || pawn.kindDef.weaponTags.Count == 0 ||
+                pawn.equipment == null || pawn.equipment.Primary == null ||
                 !pawn.RaceProps.ToolUser ||
                 !pawn.RaceProps.Humanlike ||
                 !pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation) ||
-                (pawn.story != null && pawn.story.DisabledWorkTagsBackstoryAndTraits.OverlapsWithOnAnyWorkType(WorkTags.Violent))
+                (pawn.story != null && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) == 0))
                 )
             {
                 return false;

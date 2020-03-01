@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Verse;
+using Verse.AI;
 
 namespace SimpleSidearms.rimworld
 {
@@ -38,6 +39,9 @@ namespace SimpleSidearms.rimworld
         public bool preferredUnarmedEx = false;
         public ThingStuffPairExposable? defaultRangedWeaponEx = null;
         public ThingStuffPairExposable? preferredMeleeWeaponEx = null;
+
+        public Toil autotoolToil = null;
+        public int delayIdleSwitchTimestamp = int.MinValue;
 
         public bool ForcedUnarmed
         {
@@ -187,7 +191,7 @@ namespace SimpleSidearms.rimworld
         public void generateRememberedWeaponsFromEquipped()
         {
             this.rememberedWeapons = new List<ThingStuffPairExposable>();
-            IEnumerable<ThingWithComps> carriedWeapons = Owner.getCarriedWeapons();
+            IEnumerable<ThingWithComps> carriedWeapons = Owner.getCarriedWeapons(includeTools: true);
             foreach (ThingWithComps weapon in carriedWeapons)
             {
                 ThingStuffPairExposable pair = new ThingStuffPairExposable(new ThingStuffPair(weapon.def, weapon.Stuff));
@@ -212,20 +216,20 @@ namespace SimpleSidearms.rimworld
             Scribe_Values.Look<PrimaryWeaponMode>(ref primaryWeaponMode, "primaryWeaponMode");
         }
 
-        public static GoldfishModule GetGoldfishForPawn(Pawn pawn, bool fillExistingIfCreating = false)
+        public static GoldfishModule GetGoldfishForPawn(Pawn pawn, bool fillExistingIfCreating = true)
         {
             if (pawn == null)
                 return null;
             if (SimpleSidearms.CEOverride)
                 return null;
-            if (SimpleSidearms.saveData == null)
+            if (SimpleSidearms.configData == null)
                 return null;
             var pawnId = pawn.thingIDNumber;
             GoldfishModule memory;
-            if (!SimpleSidearms.saveData.memories.TryGetValue(pawnId, out memory))
+            if (!SimpleSidearms.configData.memories.TryGetValue(pawnId, out memory))
             {
                 memory = new GoldfishModule(pawn, fillExistingIfCreating);
-                SimpleSidearms.saveData.memories.Add(pawnId, memory);
+                SimpleSidearms.configData.memories.Add(pawnId, memory);
             }
             else
             {
@@ -370,6 +374,7 @@ namespace SimpleSidearms.rimworld
         public void InformOfAddedPrimary(Thing weapon)
         {
             InformOfAddedSidearm(weapon);
+
             if (weapon.def.IsRangedWeapon)
                 SetRangedWeaponTypeAsDefault(weapon.toThingStuffPair());
             else
@@ -377,7 +382,12 @@ namespace SimpleSidearms.rimworld
         }
         public void InformOfAddedSidearm(Thing weapon)
         {
-            rememberedWeapons.Add(weapon.toThingStuffPair().toExposable());
+            ThingStuffPair weaponType = weapon.toThingStuffPair();
+            var carriedOfType = Owner.getCarriedWeapons(includeTools: true).Where(w => w.toThingStuffPair() == weaponType);
+            var rememberedOfType = rememberedWeapons.Where(w => w.Val == weaponType);
+
+            if(rememberedOfType.Count() < carriedOfType.Count())
+                rememberedWeapons.Add(weapon.toThingStuffPair().toExposable());
         }
 
         public void InformOfDroppedSidearm(Thing weapon, bool intentional)
@@ -393,6 +403,8 @@ namespace SimpleSidearms.rimworld
 
             if (!rememberedWeapons.Contains(weaponMemory.toExposable())) //only remove if this was the last instance
             {
+                if (weaponMemory == ForcedWeapon)
+                    ForcedWeapon = null;
                 if (weaponMemory == PreferredMeleeWeapon)
                     PreferredMeleeWeapon = null;
                 if (weaponMemory == DefaultRangedWeapon)
@@ -403,6 +415,7 @@ namespace SimpleSidearms.rimworld
 
 
         public bool nullchecked = false;
+
         public void NullChecks(Pawn owner)
         {
             if (nullchecked)

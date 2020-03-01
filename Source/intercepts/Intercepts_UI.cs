@@ -47,53 +47,60 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         public static void GetGizmos(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
-            if ((__instance.IsColonistPlayerControlled && !__instance.story.DisabledWorkTagsBackstoryAndTraits.OverlapsWithOnAnyWorkType(WorkTags.Violent))
-                || DebugSettings.godMode)
+            try
             {
-                if (__instance.equipment != null && __instance.inventory != null)
+                if ((__instance.IsColonistPlayerControlled && ((__instance.CombinedDisabledWorkTags & WorkTags.Violent) == 0))
+                    || DebugSettings.godMode)
                 {
-                    IEnumerable<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons();
-
-                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(__instance);
-
-                    //if (carriedWeapons.Count() > 0 || (pawnMemory != null && pawnMemory.RememberedWeapons.Count > 0))
+                    if (__instance.equipment != null && __instance.inventory != null)
                     {
-                        List<ThingStuffPair> rangedWeaponMemories = new List<ThingStuffPair>();
-                        List<ThingStuffPair> meleeWeaponMemories = new List<ThingStuffPair>();
+                        IEnumerable<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons(includeTools: true);
 
-                        if (pawnMemory != null)
+                        GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(__instance);
+
+                        //if (carriedWeapons.Count() > 0 || (pawnMemory != null && pawnMemory.RememberedWeapons.Count > 0))
                         {
-                            foreach (ThingStuffPair weapon in pawnMemory.RememberedWeapons)
+                            List<ThingStuffPair> rangedWeaponMemories = new List<ThingStuffPair>();
+                            List<ThingStuffPair> meleeWeaponMemories = new List<ThingStuffPair>();
+
+                            if (pawnMemory != null)
                             {
-                                if (weapon.thing.IsMeleeWeapon)
-                                    meleeWeaponMemories.Add(weapon);
-                                else if (weapon.thing.IsRangedWeapon)
-                                    rangedWeaponMemories.Add(weapon);
+                                foreach (ThingStuffPair weapon in pawnMemory.RememberedWeapons)
+                                {
+                                    if (weapon.thing.IsMeleeWeapon)
+                                        meleeWeaponMemories.Add(weapon);
+                                    else if (weapon.thing.IsRangedWeapon)
+                                        rangedWeaponMemories.Add(weapon);
+                                }
                             }
-                        }
 
-                        Gizmo_SidearmsList advanced = new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons);
+                            Gizmo_SidearmsList advanced = new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons);
 
-                        List<Gizmo> results = new List<Gizmo>();
-                        foreach (Gizmo gizmo in __result)
-                        {
-                            results.Add(gizmo);
+                            List<Gizmo> results = new List<Gizmo>();
+                            foreach (Gizmo gizmo in __result)
+                            {
+                                results.Add(gizmo);
+                            }
+                            results.Add(advanced);
+                            __result = results;
                         }
-                        results.Add(advanced);
-                        __result = results;
                     }
                 }
-            }
-            if (DebugSettings.godMode)
-            {
-                Gizmo_Brainscope brainscope = new Gizmo_Brainscope(__instance);
-                List<Gizmo> results = new List<Gizmo>();
-                foreach (Gizmo gizmo in __result)
+                if (DebugSettings.godMode)
                 {
-                    results.Add(gizmo);
+                    Gizmo_Brainscope brainscope = new Gizmo_Brainscope(__instance);
+                    List<Gizmo> results = new List<Gizmo>();
+                    foreach (Gizmo gizmo in __result)
+                    {
+                        results.Add(gizmo);
+                    }
+                    results.Add(brainscope);
+                    __result = results;
                 }
-                results.Add(brainscope);
-                __result = results;
+            }
+            catch(Exception e) 
+            {
+                Log.Error("Exception during SimpleSidearms gizmo intercept. Cancelling intercept. Exception: " + e.ToString());
             }
         }
     }
@@ -106,65 +113,72 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         public static void AddHumanlikeOrders(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> opts)
         {
-            if (SimpleSidearms.CEOverride)
-                return;
-
-            IntVec3 c = IntVec3.FromVector3(clickPos);
-            if (pawn.equipment != null)
+            try
             {
-                ThingWithComps equipment = null;
-                List<Thing> thingList = c.GetThingList(pawn.Map);
-                for (int i = 0; i < thingList.Count; i++)
-                {
-                    if (thingList[i].TryGetComp<CompEquippable>() != null)
-                    {
-                        equipment = (ThingWithComps)thingList[i];
-                        break;
-                    }
-                }
-                if (equipment != null)
-                {
-                    string labelShort = equipment.LabelShort;
-                    string errStr;
-                    FloatMenuOption item3;
-                    if (equipment.def.IsWeapon && pawn.story.DisabledWorkTagsBackstoryAndTraits.OverlapsWithOnAnyWorkType(WorkTags.Violent))
-                    {
-                    }
-                    else if (!pawn.CanReach(equipment, PathEndMode.ClosestTouch, Danger.Deadly, false, TraverseMode.ByPawn))
-                    {
-                    }
-                    else if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-                    {
-                    }
-                    else if (!equipment.def.IsWeapon)
-                    {
-                    }
-                    else if (!StatCalculator.canCarrySidearmInstance(equipment, pawn, out errStr))
-                    {
-                        "CannotEquip".Translate();
-                        item3 = new FloatMenuOption("CannotEquip".Translate(labelShort) + " (" + errStr + ")", null, MenuOptionPriority.Default, null, null, 0f, null, null);
-                        opts.Add(item3);
-                    }
-                    else
-                    {
-                        string text2 = "Equip".Translate(labelShort) + "AsSidearm".Translate();
+                if (SimpleSidearms.CEOverride)
+                    return;
 
-                        if (equipment.def.IsRangedWeapon && pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler))
+                IntVec3 c = IntVec3.FromVector3(clickPos);
+                if (pawn.equipment != null)
+                {
+                    ThingWithComps equipment = null;
+                    List<Thing> thingList = c.GetThingList(pawn.Map);
+                    for (int i = 0; i < thingList.Count; i++)
+                    {
+                        if (thingList[i].TryGetComp<CompEquippable>() != null)
                         {
-                            text2 = text2 + " " + "EquipWarningBrawler".Translate();
+                            equipment = (ThingWithComps)thingList[i];
+                            break;
                         }
-
-                        item3 = FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text2, delegate
+                    }
+                    if (equipment != null)
+                    {
+                        string labelShort = equipment.LabelShort;
+                        string errStr;
+                        FloatMenuOption item3;
+                        if (equipment.def.IsWeapon && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0))
                         {
-                            equipment.SetForbidden(false, true);
-                            pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(SidearmsDefOf.EquipSecondary, equipment), JobTag.Misc);
-                            MoteMaker.MakeStaticMote(equipment.DrawPos, equipment.Map, ThingDefOf.Mote_FeedbackEquip, 1f);
+                        }
+                        else if (!pawn.CanReach(equipment, PathEndMode.ClosestTouch, Danger.Deadly, false, TraverseMode.ByPawn))
+                        {
+                        }
+                        else if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+                        {
+                        }
+                        else if (!equipment.def.IsWeapon)
+                        {
+                        }
+                        else if (!StatCalculator.canCarrySidearmInstance(equipment, pawn, out errStr))
+                        {
+                            "CannotEquip".Translate();
+                            item3 = new FloatMenuOption("CannotEquip".Translate(labelShort) + " (" + errStr + ")", null, MenuOptionPriority.Default, null, null, 0f, null, null);
+                            opts.Add(item3);
+                        }
+                        else
+                        {
+                            string text2 = "Equip".Translate(labelShort) + "AsSidearm".Translate();
+
+                            if (equipment.def.IsRangedWeapon && pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler))
+                            {
+                                text2 = text2 + " " + "EquipWarningBrawler".Translate();
+                            }
+
+                            item3 = FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text2, delegate
+                            {
+                                equipment.SetForbidden(false, true);
+                                pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(SidearmsDefOf.EquipSecondary, equipment), JobTag.Misc);
+                                MoteMaker.MakeStaticMote(equipment.DrawPos, equipment.Map, ThingDefOf.Mote_FeedbackEquip, 1f);
                             
-                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-                        }, MenuOptionPriority.High, null, null, 0f, null, null), pawn, equipment, "ReservedBy");
-                        opts.Add(item3);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+                            }, MenuOptionPriority.High, null, null, 0f, null, null), pawn, equipment, "ReservedBy");
+                            opts.Add(item3);
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Error("Exception during SimpleSidearms floatmenumaker intercept. Cancelling intercept. Exception: " + e.ToString());
             }
         }
     }

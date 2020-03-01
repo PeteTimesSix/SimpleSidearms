@@ -59,6 +59,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Lite =
 @"<PeteTimesSix.SimpleSidearms>
   <ActivePreset>Custom</ActivePreset>
+  <ToolAutoSwitch>True</ToolAutoSwitch>
   <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <RangedCombatAutoSwitch>True</RangedCombatAutoSwitch>
@@ -96,6 +97,7 @@ namespace SimpleSidearms.hugsLibSettings
 @"<PeteTimesSix.SimpleSidearms>
   <SingleshotAutoSwitch>True</SingleshotAutoSwitch>
   <ActivePreset>Custom</ActivePreset>
+  <ToolAutoSwitch>True</ToolAutoSwitch>
   <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <RangedCombatAutoSwitch>True</RangedCombatAutoSwitch>
@@ -119,6 +121,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Advanced =
 @"<PeteTimesSix.SimpleSidearms>
   <ActivePreset>Custom</ActivePreset>
+  <ToolAutoSwitch>True</ToolAutoSwitch>
   <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <RangedCombatAutoSwitch>True</RangedCombatAutoSwitch>
@@ -137,6 +140,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Excessive =
 @"<PeteTimesSix.SimpleSidearms>
   <ActivePreset>Custom</ActivePreset>
+  <ToolAutoSwitch>True</ToolAutoSwitch>
   <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <RangedCombatAutoSwitch>True</RangedCombatAutoSwitch>
@@ -150,6 +154,7 @@ namespace SimpleSidearms.hugsLibSettings
         public static string Preset_Brawler =
  @"<PeteTimesSix.SimpleSidearms>
   <ActivePreset>Custom</ActivePreset>
+  <ToolAutoSwitch>True</ToolAutoSwitch>
   <OptimalMelee>True</OptimalMelee>
   <CQCAutoSwitch>True</CQCAutoSwitch>
   <SeparateModes>True</SeparateModes>

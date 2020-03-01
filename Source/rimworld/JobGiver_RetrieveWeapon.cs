@@ -26,6 +26,9 @@ namespace SimpleSidearms.rimworld
                 if (pawnMemory == null)
                     return null;
 
+                if (SimpleSidearms.ToolAutoSwitch && Find.TickManager.TicksGame - pawnMemory.delayIdleSwitchTimestamp < 60)
+                    return null;
+
                 WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, Globals.DroppingModeEnum.Calm);
 
                 if (pawnMemory.RememberedWeapons is null)

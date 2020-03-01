@@ -55,7 +55,33 @@ namespace SimpleSidearms
         {
             return new ThingStuffPairExposable(pair);
         }
-        public static bool isSpeciallyDisallowed(this ThingStuffPair pair)
+
+        public static float getBestStatBoost(this ThingStuffPair tool, List<StatDef> stats, out bool found)
+        {
+            if (tool.thing.equippedStatOffsets == null || tool.thing.equippedStatOffsets.Count == 0)
+            {
+                found = false;
+                return 0;
+            }
+
+            //this is not great because not all stats are boosted equally
+            //but its something
+
+            float best = 0;
+            found = false;
+            foreach (StatModifier modifier in tool.thing.equippedStatOffsets)
+            {
+                if (stats.Contains(modifier.stat)) 
+                {
+                    found = true;
+                    if(best < modifier.value)
+                        best = modifier.value;
+                }
+            }
+            return best;
+        }
+
+        public static bool isToolNotWeapon(this ThingStuffPair pair)
         {
             if (
                 pair.thing.defName == "Gun_Fire_Ext" ||
@@ -81,6 +107,9 @@ namespace SimpleSidearms
 
         public static GoldfishModule.PrimaryWeaponMode getSkillWeaponPreference(this Pawn pawn)
         {
+            if (pawn.skills == null)
+                return GoldfishModule.PrimaryWeaponMode.Ranged;
+
             SkillRecord rangedSkill = pawn.skills.GetSkill(SkillDefOf.Shooting);
             SkillRecord meleeSkill = pawn.skills.GetSkill(SkillDefOf.Melee);
 
@@ -94,7 +123,7 @@ namespace SimpleSidearms
                 return GoldfishModule.PrimaryWeaponMode.Ranged; //slight bias towards ranged but *shrug*
         }
 
-        public static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeSpeciallyDisallowed = false)
+        public static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeTools = false)
         {
             List<ThingWithComps> weapons = new List<ThingWithComps>();
 
@@ -103,7 +132,7 @@ namespace SimpleSidearms
 
             if (includeEquipped)
             {
-                if (pawn.equipment.Primary != null && (!pawn.equipment.Primary.toThingStuffPair().isSpeciallyDisallowed() || includeSpeciallyDisallowed))
+                if (pawn.equipment.Primary != null && (!pawn.equipment.Primary.toThingStuffPair().isToolNotWeapon() || includeTools))
                     weapons.Add(pawn.equipment.Primary);
             }
 
@@ -111,7 +140,7 @@ namespace SimpleSidearms
             {
                 if (
                     item is ThingWithComps &&
-                    (!item.toThingStuffPair().isSpeciallyDisallowed() || includeSpeciallyDisallowed) &&
+                    (!item.toThingStuffPair().isToolNotWeapon() || includeTools) &&
                     (item.def.IsRangedWeapon || item.def.IsMeleeWeapon))
                 {
                     weapons.Add(item as ThingWithComps);

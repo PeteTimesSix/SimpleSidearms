@@ -195,7 +195,7 @@ namespace SimpleSidearms.rimworld
 
             UIHighlighter.HighlightOpportunity(gizmoRect, "SidearmList");
 
-            if(parent.IsColonistPlayerControlled && !parent.story.DisabledWorkTagsBackstoryAndTraits.OverlapsWithOnAnyWorkType(WorkTags.Violent))
+            if(parent.IsColonistPlayerControlled && ((parent.CombinedDisabledWorkTags & WorkTags.Violent) == 0))
                 DrawGizmoLabel(defaultLabel, gizmoRect);
             else
                 DrawGizmoLabel(defaultLabel+" (godmode)", gizmoRect);
@@ -250,11 +250,14 @@ namespace SimpleSidearms.rimworld
             }
             else
             {
-                if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.BySkill)
-                    GUI.color = preferenceSet;
-                else
-                    GUI.color = preferenceBase;
-                GUI.DrawTexture(skillIconRect, TextureResources.preferSkilled);
+                if (pawn.skills != null)
+                {
+                    if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.BySkill)
+                        GUI.color = preferenceSet;
+                    else
+                        GUI.color = preferenceBase;
+                    GUI.DrawTexture(skillIconRect, TextureResources.preferSkilled);
+                }
             }
 
             if (Mouse.IsOver(meleeIconRect))
@@ -616,7 +619,7 @@ namespace SimpleSidearms.rimworld
                             if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
                                 WeaponAssingment.equipSpecificWeaponTypeFromInventory(parent, weaponType, MiscUtils.shouldDrop(dropMode), false);
                         }
-                        else if (pawnMemory.DefaultRangedWeapon == weaponType || pawnMemory.PreferredMeleeWeapon == weaponType)
+                        else if (pawnMemory.DefaultRangedWeapon == weaponType || pawnMemory.PreferredMeleeWeapon == weaponType || weaponType.isToolNotWeapon())
                         {
                             if(weaponType.thing.IsRangedWeapon)
                                 PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);

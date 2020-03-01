@@ -15,15 +15,85 @@ using Verse.AI;
 namespace SimpleSidearms.intercepts
 {
 
+    [HarmonyPatch(typeof(Toil))]
+    [HarmonyPatch(MethodType.Constructor)]
+    public static class Toil_ctor_Postfix
+    {
+        public static Dictionary<SkillDef, List<StatDef>> map;
+        public static Dictionary<SkillDef, List<StatDef>> Map { 
+            get
+            {
+                if (map == null)
+                    BuildMap();
+                return map;
+            } 
+        }
+        public static void BuildMap() 
+        {
+            map = new Dictionary<SkillDef, List<StatDef>>();
+
+            foreach (SkillDef skill in DefDatabase<SkillDef>.AllDefsListForReading)
+            {
+                map[skill] = new List<StatDef>();
+            }
+            foreach (StatDef stat in DefDatabase<StatDef>.AllDefsListForReading)
+            {
+                if (stat.skillNeedFactors == null)
+                {
+                    continue;
+                }
+                foreach (SkillNeed neededSkill in stat.skillNeedFactors) 
+                {
+                    if (!map[neededSkill.skill].Contains(stat))
+                        map[neededSkill.skill].Add(stat);
+                }
+            }
+        }
+
+        [HarmonyPostfix]
+        public static void _ctor(Toil __instance) 
+        {
+            if (SimpleSidearms.ToolAutoSwitch == true) 
+            {
+                Toil toil = __instance;
+                toil.AddPreInitAction(delegate
+                {
+                    if (toil.activeSkill != null && toil.activeSkill() != null && toil.GetActor() != null)
+                    {
+                        //Log.Message("Pawn " + toil.GetActor().Label + " initializing toil that uses skill " + toil.activeSkill().label);
+                        bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(toil.GetActor(), Map[toil.activeSkill()]);
+                        if (usingAppropriateTool)
+                        {
+                            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(toil.GetActor());
+                            if (pawnMemory != null)
+                                pawnMemory.autotoolToil = toil;
+                        }
+                    }
+                });
+                toil.AddFinishAction(delegate
+                {
+                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(toil.GetActor());
+                    if (pawnMemory != null && pawnMemory.autotoolToil == toil)
+                        pawnMemory.delayIdleSwitchTimestamp = Find.TickManager.TicksGame;
+
+                    pawnMemory.autotoolToil = null;
+                });
+            }
+        }
+    }
+
+
+
     [HarmonyPatch(typeof(AutoUndrafter), "AutoUndraftTick")]
     public static class AutoUndrafter_AutoUndraftTick_Postfix
     {
         public const int autoRetrieveDelay = 300;
 
         [HarmonyPostfix]
-        public static void AutoUndraftTick(AutoUndrafter __instance)
+        public static void AutoUndraftTick(AutoUndrafter __instance, Pawn ___pawn)
         {
-            Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
+            //Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
+            Pawn pawn = ___pawn;
             int tick = Find.TickManager.TicksGame;
             if (tick % 100 == 0)
             {
@@ -117,17 +187,18 @@ namespace SimpleSidearms.intercepts
 
 
     [HarmonyPatch(typeof(Pawn_EquipmentTracker), "AddEquipment")]
-    public static class Pawn_EquipmentTracker_AddEquipment_Postfix
+    public static class Pawn_EquipmentTracker_AddEquipment
     {
         //EW EW EW GLOBAL FLAG EW EW
-        public static bool sourcedBySimpleSidearms = false;
+        public static bool addEquipmentSourcedBySimpleSidearms = false;
+
 
         [HarmonyPostfix]
-        public static void AddEquipment(Pawn_EquipmentTracker __instance, ThingWithComps newEq)
+        public static void AddEquipment_Postfix(Pawn_EquipmentTracker __instance, ThingWithComps newEq)
         {
-            if (!sourcedBySimpleSidearms)
+            if (!addEquipmentSourcedBySimpleSidearms)
             {
-                Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
+                Pawn pawn = __instance.pawn;
                 if (pawn == null)
                     return;
                 GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
@@ -143,8 +214,8 @@ namespace SimpleSidearms.intercepts
     {
         public static void Postfix(JobDriver_AttackMelee __instance)
         {
-            Pawn caster = ((__instance.GetType()).GetField("pawn").GetValue(__instance) as Pawn);
-            Job job = ((__instance.GetType()).GetField("job").GetValue(__instance) as Job);
+            Pawn caster = __instance.pawn;
+            Job job = __instance.job;
             Thing target = job?.targetA.Thing;
             if (caster != null && target != null && target is Pawn && !caster.Dead/* && caster.def.race.Humanlike*/)
             {
@@ -166,10 +237,19 @@ namespace SimpleSidearms.intercepts
             {
                 return;
             }
-            else 
+            else
             {
                 Pawn pawn = __instance.pawn;
                 GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+                if (
+                    pawnMemory == null ||
+                    !pawn.IsColonist ||
+                    pawn.equipment == null ||
+                    __instance.innerContainer == null
+                    )
+                {
+                    return;
+                }
                 List<ThingStuffPair> desiredSidearms = pawnMemory.RememberedWeapons.ListFullCopy();
                 if (desiredSidearms.Contains(pawn.equipment.Primary.toThingStuffPair()))
                     desiredSidearms.Remove(pawn.equipment.Primary.toThingStuffPair());

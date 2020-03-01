@@ -74,9 +74,9 @@ namespace SimpleSidearms.utilities
                 if (weapon.stackCount > 1)
                     weapon = weapon.SplitOff(1) as ThingWithComps; //if this cast doesnt work the world has gone mad
 
-                Pawn_EquipmentTracker_AddEquipment_Postfix.sourcedBySimpleSidearms = true;
+                Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.AddEquipment(weapon as ThingWithComps);
-                Pawn_EquipmentTracker_AddEquipment_Postfix.sourcedBySimpleSidearms = false;
+                Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = false;
 
                 if (weapon.def.soundInteract != null)
                 {
@@ -91,6 +91,31 @@ namespace SimpleSidearms.utilities
             return true;
         }
 
+        public static bool equipBestWeaponFromInventoryByStatModifiers(Pawn pawn, List<StatDef> stats)
+        {
+            Log.Message("looking for a stat booster for stats " + String.Join(",", stats.Select(s => s.label))); ;
+            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+
+            if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null || stats == null || stats.Count == 0 || pawn.Drafted)
+                return false;
+
+            ThingWithComps bestBooster = pawn.getCarriedWeapons(includeTools: true).Where(t =>
+            {
+                _ = t.toThingStuffPair().getBestStatBoost(stats, out bool found); return found;
+            }).OrderBy(t =>
+            {
+                return t.toThingStuffPair().getBestStatBoost(stats, out _);
+            }).FirstOrDefault();
+
+            if (bestBooster == default(ThingWithComps))
+                return false;
+
+            if (bestBooster == pawn.equipment.Primary)
+                return true;
+
+            bool success = equipSpecificWeaponFromInventory(pawn, bestBooster, false, false);
+            return success;
+        }
 
         public static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum drop, GoldfishModule.PrimaryWeaponMode? modeOverride = null, Pawn target = null)
         {
