@@ -63,7 +63,7 @@ namespace SimpleSidearms.rimworld.alerts
                         GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
                         if (pawnMemory != null)
                         {
-                            foreach (ThingStuffPair weaponMemory in pawnMemory.RememberedWeapons)
+                            foreach (ThingDefStuffDefPair weaponMemory in pawnMemory.RememberedWeapons)
                             {
                                 if (!pawn.hasWeaponSomewhere(weaponMemory))
                                 {

@@ -56,7 +56,7 @@ namespace SimpleSidearms.utilities
             return total;
         }
 
-        public static bool isValidSidearm(ThingStuffPair sidearm, out string errString)
+        public static bool isValidSidearm(ThingDefStuffDefPair sidearm, out string errString)
         {
             float sidearmWeight = sidearm.thing.GetStatValueAbstract(StatDefOf.Mass, sidearm.stuff);
 
@@ -152,11 +152,11 @@ namespace SimpleSidearms.utilities
                 return false;
             }
 
-            ThingStuffPair sidearm = sidearmThing.toThingStuffPair();
+            ThingDefStuffDefPair sidearm = sidearmThing.toThingDefStuffDefPair();
             return canCarrySidearmType(sidearm, pawn, out errString);
         }
 
-        public static bool canCarrySidearmType(ThingStuffPair sidearm, Pawn pawn, out string errString)
+        public static bool canCarrySidearmType(ThingDefStuffDefPair sidearm, Pawn pawn, out string errString)
         {
             float maxCapacity = MassUtility.Capacity(pawn);
             float freeCapacity = MassUtility.FreeSpace(pawn);

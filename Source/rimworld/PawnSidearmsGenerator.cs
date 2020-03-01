@@ -11,7 +11,7 @@ namespace SimpleSidearms.rimworld
     public static class PawnSidearmsGenerator
     {
 
-        public static void listWeapons(string prefix, IEnumerable<ThingStuffPair> weapons)
+        public static void listWeapons(string prefix, IEnumerable<ThingDefStuffDefPair> weapons)
         {
             string output = prefix;
             foreach(var pair in weapons)
@@ -64,13 +64,13 @@ namespace SimpleSidearms.rimworld
             {
                 //bool primarySingleUse = pawn.equipment.Primary.GetComp<CompEquippable>().PrimaryVerb is Verb_ShootOneUse;
 
-                ThingStuffPair primaryBase = new ThingStuffPair(pawn.equipment.Primary.def, pawn.equipment.Primary.Stuff);
+                ThingDefStuffDefPair primaryBase = new ThingDefStuffDefPair(pawn.equipment.Primary.def, pawn.equipment.Primary.Stuff);
 
                 var sidearmChanceRoll = Rand.ValueSeeded(pawn.thingIDNumber ^ 28554824);
                 if (sidearmChanceRoll >= chance)
                     return false; //rolled no sidearm
 
-                IEnumerable<ThingStuffPair> validSidearms = GettersFilters.getValidSidearms();
+                IEnumerable<ThingDefStuffDefPair> validSidearms = GettersFilters.getValidSidearms();
 
                 IEnumerable<string> weaponTags = generateWeaponTags(pawn.kindDef.weaponTags);
 
@@ -110,11 +110,11 @@ namespace SimpleSidearms.rimworld
                 if (validSidearms.Count() == 0)
                     return false;
 
-                ThingStuffPair rolledWeaponThingStuff;
+                ThingDefStuffDefPair rolledWeaponThingDefStuffDefPair;
 
-                validSidearms.TryRandomElementByWeight(t => {return t.Commonality * t.Price;}, out rolledWeaponThingStuff);
+                validSidearms.TryRandomElementByWeight(t => {return t.Commonality * t.Price;}, out rolledWeaponThingDefStuffDefPair);
 
-                ThingWithComps rolledWeaponFinal = (ThingWithComps)ThingMaker.MakeThing(rolledWeaponThingStuff.thing, rolledWeaponThingStuff.stuff);
+                ThingWithComps rolledWeaponFinal = (ThingWithComps)ThingMaker.MakeThing(rolledWeaponThingDefStuffDefPair.thing, rolledWeaponThingDefStuffDefPair.stuff);
                 PawnGenerator.PostProcessGeneratedGear(rolledWeaponFinal, pawn);
 
                 float num = (request.BiocodeWeaponChance > 0f) ? request.BiocodeWeaponChance : pawn.kindDef.biocodeWeaponChance;

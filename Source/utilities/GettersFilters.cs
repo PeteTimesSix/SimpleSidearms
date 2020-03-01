@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RimWorld;
+using SimpleSidearms.rimworld;
 using Verse;
 using static SimpleSidearms.Globals;
 using static SimpleSidearms.hugsLibSettings.SettingsUIs;
@@ -16,7 +17,7 @@ namespace SimpleSidearms.utilities
         {
             weightMelee = float.MinValue;
             weightRanged = float.MinValue;
-            foreach (ThingStuffPair weapon in ThingStuffPair.AllWith(t => t.IsWeapon))
+            foreach (ThingDefStuffDefPair weapon in ThingStuffPair.AllWith(t => t.IsWeapon).Select(t => new ThingDefStuffDefPair(t)))
             {
                 if (!weapon.thing.PlayerAcquirable)
                     continue;
@@ -34,12 +35,12 @@ namespace SimpleSidearms.utilities
             }
         }
 
-        public static IEnumerable<ThingStuffPair> pregenedValidWeapons;
+        public static IEnumerable<ThingDefStuffDefPair> pregenedValidWeapons;
 
-        public static IEnumerable<ThingStuffPair> getValidWeapons()
+        public static IEnumerable<ThingDefStuffDefPair> getValidWeapons()
         {
             if (pregenedValidWeapons == null)
-                pregenedValidWeapons = ThingStuffPair.AllWith(t => t.IsWeapon && t.weaponTags != null && t.PlayerAcquirable);
+                pregenedValidWeapons = ThingStuffPair.AllWith(t => t.IsWeapon && t.weaponTags != null && t.PlayerAcquirable).Select(t => new ThingDefStuffDefPair(t));
             return pregenedValidWeapons;
         }
 
@@ -48,7 +49,7 @@ namespace SimpleSidearms.utilities
             return getValidWeapons().ToList().ConvertAll(t => t.thing).Distinct();
         }
 
-        public static IEnumerable<ThingStuffPair> getValidSidearms()
+        public static IEnumerable<ThingDefStuffDefPair> getValidSidearms()
         {
             return getValidWeapons().Where(w => StatCalculator.isValidSidearm(w, out _));
         }
@@ -58,7 +59,7 @@ namespace SimpleSidearms.utilities
             return getValidSidearms().ToList().ConvertAll(t => t.thing).Distinct();
         }
 
-        public static IEnumerable<ThingStuffPair> filterForWeaponKind(IEnumerable<ThingStuffPair> options, WeaponSearchType type)
+        public static IEnumerable<ThingDefStuffDefPair> filterForWeaponKind(IEnumerable<ThingDefStuffDefPair> options, WeaponSearchType type)
         {
             switch (type)
             {
@@ -111,10 +112,7 @@ namespace SimpleSidearms.utilities
             if (pawn == null || pawn.Dead || pawn.equipment == null || pawn.inventory == null)
                 return (null,-1, 0);
 
-            IEnumerable<ThingWithComps> options = pawn.getCarriedWeapons(includeEquipped).Where(t =>
-            {
-                return t.def.IsRangedWeapon;
-            });
+            IEnumerable<ThingWithComps> options = pawn.getCarriedWeapons(includeEquipped).Where(t => t.def.IsRangedWeapon);
 
             if (options.Count() == 0)
                 return (null, -1, 0);
@@ -123,13 +121,25 @@ namespace SimpleSidearms.utilities
 
             if (target.HasValue)
             {
-                //TODO: handle DPS vs. armor?
                 CellRect cellRect = (!target.Value.HasThing) ? CellRect.SingleCell(target.Value.Cell) : target.Value.Thing.OccupiedRect();
-                float range = cellRect.ClosestDistSquaredTo(pawn.Position);
+                float targetDistance = cellRect.ClosestDistSquaredTo(pawn.Position);
+
+                options = options.Where(t =>
+                {
+                    VerbProperties atkProps = (t.GetComp<CompEquippable>())?.PrimaryVerb?.verbProps;
+                    if (atkProps == null)
+                        return false;
+                    return atkProps.range >= targetDistance;
+                });
+
+                if (options.Count() == 0)
+                    return (null, -1, 0);
+
+                //TODO: handle DPS vs. armor?
                 (ThingWithComps thing, float dps, float averageSpeed) best = (null, -1 , averageSpeed);
                 foreach(ThingWithComps candidate in options) 
                 {
-                    float dps = StatCalculator.RangedDPS(candidate, SpeedSelectionBiasRanged.Value, averageSpeed, range);
+                    float dps = StatCalculator.RangedDPS(candidate, SpeedSelectionBiasRanged.Value, averageSpeed, targetDistance);
                     if(dps > best.dps) 
                     {
                         best = (candidate, dps, averageSpeed);

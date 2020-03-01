@@ -26,17 +26,17 @@ namespace SimpleSidearms.rimworld
                 if (pawnMemory == null)
                     return null;
 
-                if (SimpleSidearms.ToolAutoSwitch && Find.TickManager.TicksGame - pawnMemory.delayIdleSwitchTimestamp < 60)
+                if (SimpleSidearms.ToolAutoSwitch && ((Find.TickManager.TicksGame - pawnMemory.delayIdleSwitchTimestamp) < 60))
                     return null;
 
                 WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, Globals.DroppingModeEnum.Calm);
 
                 if (pawnMemory.RememberedWeapons is null)
-                    Log.Message("pawnMemory is missing remembered weapons");
+                    Log.Warning("pawnMemory of "+pawn.Label+" is missing remembered weapons");
 
-                Dictionary<ThingStuffPair, int> dupeCounters = new Dictionary<ThingStuffPair, int>();
+                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
 
-                foreach (ThingStuffPair weaponMemory in pawnMemory.RememberedWeapons)
+                foreach (ThingDefStuffDefPair weaponMemory in pawnMemory.RememberedWeapons)
                 {
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;

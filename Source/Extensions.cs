@@ -11,12 +11,12 @@ namespace SimpleSidearms
 {
     public static class Extensions
     {
-        public static string getLabelCap(this ThingStuffPair pair)
+        public static string getLabelCap(this ThingDefStuffDefPair pair)
         {
             return pair.getLabel().CapitalizeFirst();
         }
 
-        public static string getLabel(this ThingStuffPair pair)
+        public static string getLabel(this ThingDefStuffDefPair pair)
         {
             if (pair.stuff != null)
                 return pair.stuff.LabelAsStuff + " " + pair.thing.label;
@@ -24,7 +24,7 @@ namespace SimpleSidearms
                 return pair.thing.label;
         }
 
-        public static Color getDrawColor(this ThingStuffPair pair)
+        public static Color getDrawColor(this ThingDefStuffDefPair pair)
         {
             if (pair.stuff != null)
             {
@@ -37,7 +37,7 @@ namespace SimpleSidearms
             return Color.white;
         }
 
-        public static Color getDrawColorTwo(this ThingStuffPair pair)
+        public static Color getDrawColorTwo(this ThingDefStuffDefPair pair)
         {
             if (pair.thing.graphicData != null)
             {
@@ -46,17 +46,12 @@ namespace SimpleSidearms
             return Color.white;
         }
 
-        public static ThingStuffPair toThingStuffPair(this Thing thing)
+        public static ThingDefStuffDefPair toThingDefStuffDefPair(this Thing thing)
         {
-            return new ThingStuffPair(thing.def, thing.Stuff);
+            return new ThingDefStuffDefPair(thing.def, thing.Stuff);
         }
 
-        public static ThingStuffPairExposable toExposable(this ThingStuffPair pair)
-        {
-            return new ThingStuffPairExposable(pair);
-        }
-
-        public static float getBestStatBoost(this ThingStuffPair tool, List<StatDef> stats, out bool found)
+        public static float getBestStatBoost(this ThingDefStuffDefPair tool, List<StatDef> stats, out bool found)
         {
             if (tool.thing.equippedStatOffsets == null || tool.thing.equippedStatOffsets.Count == 0)
             {
@@ -82,7 +77,7 @@ namespace SimpleSidearms
         }
 
 
-        public static bool isTool(this ThingStuffPair possibleTool)
+        public static bool isTool(this ThingDefStuffDefPair possibleTool)
         {
             if (isToolNotWeapon(possibleTool))
                 return true;
@@ -93,7 +88,7 @@ namespace SimpleSidearms
             return false;
         }
 
-        public static bool isToolNotWeapon(this ThingStuffPair possibleTool)
+        public static bool isToolNotWeapon(this ThingDefStuffDefPair possibleTool)
         {
             if (
                 possibleTool.thing.defName == "Gun_Fire_Ext" ||
@@ -105,10 +100,10 @@ namespace SimpleSidearms
             return false;
         }
 
-        public static bool matchesThingStuffPair(this Thing thing, ThingStuffPair pair, bool allowPartialMatch = false)
+        public static bool matchesThingDefStuffDefPair(this Thing thing, ThingDefStuffDefPair pair, bool allowPartialMatch = false)
         {
             bool retVal = false;
-            var thisPair = thing.toThingStuffPair();
+            var thisPair = thing.toThingDefStuffDefPair();
             if(thisPair.thing == pair.thing && thisPair.stuff == pair.stuff)
                 retVal = true;
             else if(allowPartialMatch && thisPair.thing == pair.thing)
@@ -144,7 +139,7 @@ namespace SimpleSidearms
 
             if (includeEquipped)
             {
-                if (pawn.equipment.Primary != null && (!pawn.equipment.Primary.toThingStuffPair().isToolNotWeapon() || includeTools))
+                if (pawn.equipment.Primary != null && (!pawn.equipment.Primary.toThingDefStuffDefPair().isToolNotWeapon() || includeTools))
                     weapons.Add(pawn.equipment.Primary);
             }
 
@@ -152,7 +147,7 @@ namespace SimpleSidearms
             {
                 if (
                     item is ThingWithComps &&
-                    (!item.toThingStuffPair().isToolNotWeapon() || includeTools) &&
+                    (!item.toThingDefStuffDefPair().isToolNotWeapon() || includeTools) &&
                     (item.def.IsRangedWeapon || item.def.IsMeleeWeapon))
                 {
                     weapons.Add(item as ThingWithComps);
@@ -161,7 +156,7 @@ namespace SimpleSidearms
             return weapons;
         }
 
-        public static bool hasWeaponSomewhere(this Pawn pawn, ThingStuffPair weapon, int duplicatesToSkip = 0)
+        public static bool hasWeaponSomewhere(this Pawn pawn, ThingDefStuffDefPair weapon, int duplicatesToSkip = 0)
         {
             if (pawn == null)
             {
@@ -173,7 +168,7 @@ namespace SimpleSidearms
 
             if (pawn.equipment != null)
                 if (pawn.equipment.Primary != null)
-                    if (pawn.equipment.Primary.matchesThingStuffPair(weapon))
+                    if (pawn.equipment.Primary.matchesThingDefStuffDefPair(weapon))
                         dupesSoFar++;
 
             if (duplicatesToSkip < dupesSoFar)
@@ -185,7 +180,7 @@ namespace SimpleSidearms
                 {
                     foreach (Thing thing in pawn.inventory.innerContainer)
                     {
-                        if (thing.matchesThingStuffPair(weapon))
+                        if (thing.matchesThingDefStuffDefPair(weapon))
                         {
                             dupesSoFar++;
                             if (duplicatesToSkip < dupesSoFar)

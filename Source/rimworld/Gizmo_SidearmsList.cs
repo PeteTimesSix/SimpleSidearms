@@ -39,9 +39,9 @@ namespace SimpleSidearms.rimworld
         public IEnumerable<ThingWithComps> carriedRangedWeapons { get { return carriedWeapons.Where(w => w.def.IsRangedWeapon); } }
         public IEnumerable<ThingWithComps> carriedMeleeWeapons { get { return carriedWeapons.Where(w => w.def.IsMeleeWeapon); } }
 
-        public IEnumerable<ThingStuffPair> weaponMemories;
-        public IEnumerable<ThingStuffPair> rangedWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsRangedWeapon); } }
-        public IEnumerable<ThingStuffPair> meleeWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsMeleeWeapon); } }
+        public IEnumerable<ThingDefStuffDefPair> weaponMemories;
+        public IEnumerable<ThingDefStuffDefPair> rangedWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsRangedWeapon); } }
+        public IEnumerable<ThingDefStuffDefPair> meleeWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsMeleeWeapon); } }
 
         public enum SidearmsListInteraction
         {
@@ -55,7 +55,7 @@ namespace SimpleSidearms.rimworld
         }
         public SidearmsListInteraction interactedWith = SidearmsListInteraction.None;
         public ThingWithComps interactionWeapon;
-        public ThingStuffPair? interactionWeaponType;
+        public ThingDefStuffDefPair? interactionWeaponType;
         public bool interactionWeaponIsDuplicate;
 
         public override float GetWidth(float maxWidth)
@@ -71,7 +71,7 @@ namespace SimpleSidearms.rimworld
             return Math.Min(Math.Max(width, MinGizmoSize), maxWidth);
         }
 
-        public Gizmo_SidearmsList(Pawn parent, IEnumerable<ThingWithComps> carriedWeapons, IEnumerable<ThingStuffPair> weaponMemories)
+        public Gizmo_SidearmsList(Pawn parent, IEnumerable<ThingWithComps> carriedWeapons, IEnumerable<ThingDefStuffDefPair> weaponMemories)
         {
             this.parent = parent;
 
@@ -102,12 +102,12 @@ namespace SimpleSidearms.rimworld
 
             int i = 0;
             {
-                Dictionary<ThingStuffPair, int> dupeCounters = new Dictionary<ThingStuffPair, int>();
+                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
                 var rangedWeapons = carriedRangedWeapons.ToList();
                 rangedWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
                 for (i = 0; i < rangedWeapons.Count(); i++)
                 {
-                    ThingStuffPair weaponMemory = rangedWeapons[i].toThingStuffPair();
+                    ThingDefStuffDefPair weaponMemory = rangedWeapons[i].toThingDefStuffDefPair();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
@@ -122,10 +122,10 @@ namespace SimpleSidearms.rimworld
             int j = 0;
             if (pawnMemory != null)
             {
-                Dictionary<ThingStuffPair, int> dupeCounters = new Dictionary<ThingStuffPair, int>();
+                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
                 var rangedWeaponMemoriesSorted = rangedWeaponMemories.ToList();
                 rangedWeaponMemoriesSorted.SortStable((a, b) => { return (int)((b.Price - a.Price) * 1000); });
-                foreach (ThingStuffPair weaponMemory in rangedWeaponMemoriesSorted)
+                foreach (ThingDefStuffDefPair weaponMemory in rangedWeaponMemoriesSorted)
                 {
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
@@ -143,12 +143,12 @@ namespace SimpleSidearms.rimworld
             }
 
             {
-                Dictionary<ThingStuffPair, int> dupeCounters = new Dictionary<ThingStuffPair, int>();
+                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
                 var meleeWeapons = carriedMeleeWeapons.ToList();
                 meleeWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
                 for (i = 0; i < meleeWeapons.Count(); i++)
                 {
-                    ThingStuffPair weaponMemory = meleeWeapons[i].toThingStuffPair();
+                    ThingDefStuffDefPair weaponMemory = meleeWeapons[i].toThingDefStuffDefPair();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
@@ -165,10 +165,10 @@ namespace SimpleSidearms.rimworld
             j = 0;
             if (pawnMemory != null)
             {
-                Dictionary<ThingStuffPair, int> dupeCounters = new Dictionary<ThingStuffPair, int>();
+                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
                 var meleeWeaponMemoriesSorted = meleeWeaponMemories.ToList();
                 meleeWeaponMemoriesSorted.SortStable((a, b) => { return (int)((b.Price - a.Price) * 1000); });
-                foreach (ThingStuffPair weaponMemory in meleeWeaponMemoriesSorted)
+                foreach (ThingDefStuffDefPair weaponMemory in meleeWeaponMemoriesSorted)
                 {
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
@@ -299,7 +299,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        public void DrawIconForWeaponMemory(Pawn pawn, GoldfishModule pawnMemory, ThingStuffPair weaponType, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForWeaponMemory(Pawn pawn, GoldfishModule pawnMemory, ThingDefStuffDefPair weaponType, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
         {
             Graphic g = weaponType.thing.graphicData.Graphic;
 
@@ -366,7 +366,7 @@ namespace SimpleSidearms.rimworld
             if (weapon is null || weapon.def is null || weapon.def.uiIcon is null)
                 return;
 
-            ThingStuffPair weaponType = weapon.toThingStuffPair();
+            ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
 
             var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
             //var iconColor = iconBaseColor;
@@ -374,14 +374,14 @@ namespace SimpleSidearms.rimworld
             string hoverText;
             if (pawn.Drafted)
             {
-                if (pawnMemory.ForcedWeaponWhileDrafted == weapon.toThingStuffPair())
+                if (pawnMemory.ForcedWeaponWhileDrafted == weapon.toThingDefStuffDefPair())
                     hoverText = "DrawSidearm_gizmoTooltipForcedWhileDrafted";
                 else
                     hoverText = "DrawSidearm_gizmoTooltipWhileDrafted";
             }
             else
             {
-                if (pawnMemory.ForcedWeapon == weapon.toThingStuffPair())
+                if (pawnMemory.ForcedWeapon == weapon.toThingDefStuffDefPair())
                     hoverText = "DrawSidearm_gizmoTooltipForced";
                 else 
                 {
@@ -402,11 +402,11 @@ namespace SimpleSidearms.rimworld
                 }
             }
 
-            TooltipHandler.TipRegion(iconRect, string.Format(hoverText.Translate(), weapon.toThingStuffPair().getLabel()));
+            TooltipHandler.TipRegion(iconRect, string.Format(hoverText.Translate(), weapon.toThingDefStuffDefPair().getLabel()));
             MouseoverSounds.DoRegion(iconRect, SoundDefOf.Mouseover_Command);
 
             Texture2D drawPocket;
-            if (pawnMemory.RememberedWeapons.Contains(weapon.toThingStuffPair()))
+            if (pawnMemory.RememberedWeapons.Contains(weapon.toThingDefStuffDefPair()))
             {
                 drawPocket = TextureResources.drawPocket;
             }
@@ -609,7 +609,7 @@ namespace SimpleSidearms.rimworld
                         break;
                     case SidearmsListInteraction.Weapon:
                         Thing weapon = interactionWeapon;
-                        ThingStuffPair weaponType = weapon.toThingStuffPair();
+                        ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
                         if (parent.Drafted)
                         {
                             PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
@@ -648,7 +648,7 @@ namespace SimpleSidearms.rimworld
                         break;
                     case SidearmsListInteraction.WeaponMemory:
 
-                        ThingStuffPair weaponMemory = interactionWeaponType.Value;
+                        ThingDefStuffDefPair weaponMemory = interactionWeaponType.Value;
                         if (parent.Drafted)
                         {
                             //allow nothing
@@ -714,7 +714,7 @@ namespace SimpleSidearms.rimworld
                         break;
                     case SidearmsListInteraction.Weapon:
                         Thing weapon = interactionWeapon;
-                        ThingStuffPair weaponType = weapon.toThingStuffPair();
+                        ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
 
                         if (interactionWeaponIsDuplicate)
                         {
@@ -773,7 +773,7 @@ namespace SimpleSidearms.rimworld
 
                         break;
                     case SidearmsListInteraction.WeaponMemory:
-                        ThingStuffPair weaponMemory = interactionWeaponType.Value;
+                        ThingDefStuffDefPair weaponMemory = interactionWeaponType.Value;
 
                         if (interactionWeaponIsDuplicate)
                         {
@@ -887,8 +887,8 @@ namespace SimpleSidearms.rimworld
 
             int count = 0;
 
-            Dictionary<ThingStuffPair, int> dupeCounters = new Dictionary<ThingStuffPair, int>();
-            foreach (ThingStuffPair weapon in pawnMemory.RememberedWeapons)
+            Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
+            foreach (ThingDefStuffDefPair weapon in pawnMemory.RememberedWeapons)
             {
                 if (!dupeCounters.ContainsKey(weapon))
                     dupeCounters[weapon] = 0;
@@ -910,8 +910,8 @@ namespace SimpleSidearms.rimworld
 
             int count = 0;
 
-            Dictionary<ThingStuffPair, int> dupeCounters = new Dictionary<ThingStuffPair, int>();
-            foreach (ThingStuffPair weapon in pawnMemory.RememberedWeapons)
+            Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
+            foreach (ThingDefStuffDefPair weapon in pawnMemory.RememberedWeapons)
             {
                 if (!dupeCounters.ContainsKey(weapon))
                     dupeCounters[weapon] = 0;

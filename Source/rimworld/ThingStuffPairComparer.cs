@@ -6,19 +6,19 @@ using System.Text;
 
 namespace SimpleSidearms.rimworld
 {
-    public class ThingStuffPairComparer : IEqualityComparer<ThingStuffPair>
+    public class ThingDefStuffDefComparer : IEqualityComparer<ThingDefStuffDefPair>
     {
-        public bool Equals(ThingStuffPair x, ThingStuffPair y)
+        public bool Equals(ThingDefStuffDefPair x, ThingDefStuffDefPair y)
         {
-            if (x.thing.Equals(y.thing) & x.stuff.Equals(y.stuff))
+            if (x == y)
                 return true;
             else
                 return false;
         }
 
-        public int GetHashCode(ThingStuffPair obj)
+        public int GetHashCode(ThingDefStuffDefPair obj)
         {
-            return obj.stuff.GetHashCode()+ obj.thing.GetHashCode();
+            return obj.GetHashCode();
         }
     }
 }

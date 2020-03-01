@@ -8,6 +8,7 @@ using System.Text;
 using Verse;
 using SimpleSidearms.utilities;
 using static SimpleSidearms.Globals;
+using SimpleSidearms.rimworld;
 
 namespace SimpleSidearms.intercepts
 {
@@ -21,7 +22,7 @@ namespace SimpleSidearms.intercepts
             if (__instance.caster is Pawn)
             {
                 Pawn pawn = (__instance.caster as Pawn);
-                ThingStuffPair weapon = __instance.EquipmentSource.toThingStuffPair();
+                ThingDefStuffDefPair weapon = __instance.EquipmentSource.toThingDefStuffDefPair();
                 bool anotherFound = WeaponAssingment.equipSpecificWeaponTypeFromInventory(pawn, weapon, false, false);
                 if (!anotherFound)
                     WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, DroppingModeEnum.UsedUp);

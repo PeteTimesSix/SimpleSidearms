@@ -60,12 +60,12 @@ namespace SimpleSidearms.intercepts
 
                         //if (carriedWeapons.Count() > 0 || (pawnMemory != null && pawnMemory.RememberedWeapons.Count > 0))
                         {
-                            List<ThingStuffPair> rangedWeaponMemories = new List<ThingStuffPair>();
-                            List<ThingStuffPair> meleeWeaponMemories = new List<ThingStuffPair>();
+                            List<ThingDefStuffDefPair> rangedWeaponMemories = new List<ThingDefStuffDefPair>();
+                            List<ThingDefStuffDefPair> meleeWeaponMemories = new List<ThingDefStuffDefPair>();
 
                             if (pawnMemory != null)
                             {
-                                foreach (ThingStuffPair weapon in pawnMemory.RememberedWeapons)
+                                foreach (ThingDefStuffDefPair weapon in pawnMemory.RememberedWeapons)
                                 {
                                     if (weapon.thing.IsMeleeWeapon)
                                         meleeWeaponMemories.Add(weapon);
@@ -157,7 +157,7 @@ namespace SimpleSidearms.intercepts
                         else
                         {
                             string text2 = "Equip".Translate(labelShort);
-                            if(((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) || equipment.toThingStuffPair().isToolNotWeapon())
+                            if(((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) || equipment.toThingDefStuffDefPair().isToolNotWeapon())
                                 text2 += "AsTool".Translate();
                             else
                                 text2 += "AsSidearm".Translate();

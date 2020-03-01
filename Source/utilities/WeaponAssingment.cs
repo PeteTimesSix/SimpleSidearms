@@ -16,9 +16,9 @@ namespace SimpleSidearms.utilities
     public static class WeaponAssingment
     {
 
-        public static bool equipSpecificWeaponTypeFromInventory(Pawn pawn, ThingStuffPair weapon, bool dropCurrent, bool intentionalDrop)
+        public static bool equipSpecificWeaponTypeFromInventory(Pawn pawn, ThingDefStuffDefPair weapon, bool dropCurrent, bool intentionalDrop)
         {
-            ThingWithComps match = pawn.inventory.innerContainer.Where(t => { return t is ThingWithComps && t.toThingStuffPair() == weapon; }).OrderByDescending(t => t.MarketValue).FirstOrDefault() as ThingWithComps;
+            ThingWithComps match = pawn.inventory.innerContainer.Where(t => { return t is ThingWithComps && t.toThingDefStuffDefPair() == weapon; }).OrderByDescending(t => t.MarketValue).FirstOrDefault() as ThingWithComps;
             if (match != null)
                 return equipSpecificWeaponFromInventory(pawn, match, dropCurrent, intentionalDrop);
             else
@@ -101,10 +101,10 @@ namespace SimpleSidearms.utilities
 
             ThingWithComps bestBooster = pawn.getCarriedWeapons(includeTools: true).Where(t =>
             {
-                _ = t.toThingStuffPair().getBestStatBoost(stats, out bool found); return found;
+                _ = t.toThingDefStuffDefPair().getBestStatBoost(stats, out bool found); return found;
             }).OrderBy(t =>
             {
-                return t.toThingStuffPair().getBestStatBoost(stats, out _);
+                return t.toThingDefStuffDefPair().getBestStatBoost(stats, out _);
             }).FirstOrDefault();
 
             if (bestBooster == default(ThingWithComps))
@@ -153,7 +153,7 @@ namespace SimpleSidearms.utilities
             }
             if (pawn.Drafted && pawnMemory.ForcedWeaponWhileDrafted != null)
             {
-                if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingStuffPair() != pawnMemory.ForcedWeaponWhileDrafted.Value)
+                if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.ForcedWeaponWhileDrafted.Value)
                 {
                     var requiredWeapon = pawnMemory.ForcedWeaponWhileDrafted.Value;
                     bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(drop), false);
@@ -176,7 +176,7 @@ namespace SimpleSidearms.utilities
             }
             if (pawnMemory.ForcedWeapon != null)
             {
-                if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingStuffPair() != pawnMemory.ForcedWeapon.Value)
+                if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.ForcedWeapon.Value)
                 {
                     var requiredWeapon = pawnMemory.ForcedWeapon.Value;
                     bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(drop), false);
@@ -193,7 +193,7 @@ namespace SimpleSidearms.utilities
 
                 if (pawnMemory.DefaultRangedWeapon != null && pawn.hasWeaponSomewhere(pawnMemory.DefaultRangedWeapon.Value))
                 {
-                    if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingStuffPair() != pawnMemory.DefaultRangedWeapon.Value)
+                    if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.DefaultRangedWeapon.Value)
                     {
                         var requiredWeapon = pawnMemory.DefaultRangedWeapon.Value;
                         bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(drop), false);
@@ -245,7 +245,7 @@ namespace SimpleSidearms.utilities
                 {
                     if (pawnMemory.PreferredMeleeWeapon != null && pawn.hasWeaponSomewhere(pawnMemory.PreferredMeleeWeapon.Value))
                     {
-                        if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingStuffPair() != pawnMemory.PreferredMeleeWeapon.Value)
+                        if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.PreferredMeleeWeapon.Value)
                         {
                             var requiredWeapon = pawnMemory.PreferredMeleeWeapon.Value;
                             bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(drop), false);

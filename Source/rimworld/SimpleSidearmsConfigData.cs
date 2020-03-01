@@ -23,7 +23,8 @@ namespace SimpleSidearms.rimworld
             Scribe_Collections.Look<int, GoldfishModule>(ref memories, "memories", LookMode.Value, LookMode.Deep);
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
-                if (memories == null) memories = new Dictionary<int, GoldfishModule>();
+                if (memories == null) 
+                    memories = new Dictionary<int, GoldfishModule>();
             }
         }
     }

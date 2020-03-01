@@ -412,13 +412,13 @@ namespace SimpleSidearms.hugsLibSettings
 
             offsetRect.position = new Vector2(offsetRect.position.x, offsetRect.position.y + TextMargin);
 
-            IEnumerable<ThingStuffPair> validSidearms = GettersFilters.getValidSidearms();
+            IEnumerable<ThingDefStuffDefPair> validSidearms = GettersFilters.getValidSidearms();
 
-            List<ThingStuffPair> matchingSidearms = GettersFilters.filterForWeaponKind(validSidearms, MiscUtils.LimitTypeToListType(setting.Value)).ToList();
+            List<ThingDefStuffDefPair> matchingSidearms = GettersFilters.filterForWeaponKind(validSidearms, MiscUtils.LimitTypeToListType(setting.Value)).ToList();
 
             matchingSidearms = matchingSidearms.OrderBy(t => t.thing.GetStatValueAbstract(StatDefOf.Mass, t.stuff)).ToList();
 
-            List<ThingStuffPair> matchingSidearmsUnderLimit =  new List<ThingStuffPair>();
+            List<ThingDefStuffDefPair> matchingSidearmsUnderLimit =  new List<ThingDefStuffDefPair>();
             for (int i = 0; i < matchingSidearms.Count; i++)
             {
                 float mass = matchingSidearms[i].thing.GetStatValueAbstract(StatDefOf.Mass);
@@ -549,11 +549,11 @@ namespace SimpleSidearms.hugsLibSettings
 
         public static bool DrawIconForWeapon(ThingDef weaponDef, Rect contentRect, Vector2 iconOffset, int buttonID, bool isBackground = false)
         {
-            return DrawIconForWeapon(new ThingStuffPair(weaponDef, null), contentRect, iconOffset, buttonID, isBackground);
+            return DrawIconForWeapon(new ThingDefStuffDefPair(weaponDef, null), contentRect, iconOffset, buttonID, isBackground);
             
         }
 
-        public static bool DrawIconForWeapon(ThingStuffPair weapon, Rect contentRect, Vector2 iconOffset, int buttonID, bool isBackground = false)
+        public static bool DrawIconForWeapon(ThingDefStuffDefPair weapon, Rect contentRect, Vector2 iconOffset, int buttonID, bool isBackground = false)
         {
             var iconTex = weapon.thing.uiIcon;
             Graphic g = weapon.thing.graphicData.Graphic;

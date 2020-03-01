@@ -43,7 +43,9 @@ namespace SimpleSidearms.intercepts
                 {
                     GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(toil.GetActor());
                     if (pawnMemory != null && pawnMemory.autotoolToil == toil)
+                    {
                         pawnMemory.delayIdleSwitchTimestamp = Find.TickManager.TicksGame;
+                    }
 
                     pawnMemory.autotoolToil = null;
                 });
@@ -219,9 +221,9 @@ namespace SimpleSidearms.intercepts
                 {
                     return;
                 }
-                List<ThingStuffPair> desiredSidearms = pawnMemory.RememberedWeapons.ListFullCopy();
-                if (desiredSidearms.Contains(pawn.equipment.Primary.toThingStuffPair()))
-                    desiredSidearms.Remove(pawn.equipment.Primary.toThingStuffPair());
+                List<ThingDefStuffDefPair> desiredSidearms = pawnMemory.RememberedWeapons.ListFullCopy();
+                if (desiredSidearms.Contains(pawn.equipment.Primary.toThingDefStuffDefPair()))
+                    desiredSidearms.Remove(pawn.equipment.Primary.toThingDefStuffDefPair());
 
                 int inventoryOffset = 0;
 
@@ -229,9 +231,9 @@ namespace SimpleSidearms.intercepts
                 while (inventoryOffset < __instance.innerContainer.Count)
                 {
                     Thing candidate = __instance.innerContainer[inventoryOffset];
-                    if (candidate.def.IsWeapon & desiredSidearms.Contains(candidate.toThingStuffPair()))
+                    if (candidate.def.IsWeapon & desiredSidearms.Contains(candidate.toThingDefStuffDefPair()))
                     {
-                        desiredSidearms.Remove(candidate.toThingStuffPair());
+                        desiredSidearms.Remove(candidate.toThingDefStuffDefPair());
                     }
                     else
                     {
