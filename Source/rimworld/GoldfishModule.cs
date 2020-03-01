@@ -211,11 +211,11 @@ namespace SimpleSidearms.rimworld
             Scribe_Values.Look<bool>(ref forcedUnarmedWhileDraftedEx, "forcedUnarmedWhileDrafted");
 
             Scribe_Values.Look<bool>(ref preferredUnarmedEx, "preferredUnarmed");
-            Scribe_Deep.Look<ThingDefStuffDefPair?>(ref defaultRangedWeaponEx, "prefferedRangedWeapon");
-            Scribe_Deep.Look<ThingDefStuffDefPair?>(ref preferredMeleeWeaponEx, "prefferedMeleeWeapon");
+            Scribe_Deep.Look<ThingDefStuffDefPair?>(ref defaultRangedWeaponEx, "defaultRangedWeapon");
+            Scribe_Deep.Look<ThingDefStuffDefPair?>(ref preferredMeleeWeaponEx, "preferredMeleeWeapon");
             Scribe_Values.Look<PrimaryWeaponMode>(ref primaryWeaponMode, "primaryWeaponMode");
 
-            if(Scribe.mode == LoadSaveMode.PostLoadInit)
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 NullChecks(this.Owner);
             }
