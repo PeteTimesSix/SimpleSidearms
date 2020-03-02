@@ -375,27 +375,36 @@ namespace SimpleSidearms.rimworld
 
         public void InformOfAddedPrimary(Thing weapon)
         {
-            InformOfAddedSidearm(weapon);
+            if (weapon != null)
+            {
+                InformOfAddedSidearm(weapon);
 
-            if (weapon.def.IsRangedWeapon)
-                SetRangedWeaponTypeAsDefault(weapon.toThingDefStuffDefPair());
-            else
-                SetMeleeWeaponTypeAsPreferred(weapon.toThingDefStuffDefPair());
+                if (weapon.def.IsRangedWeapon)
+                    SetRangedWeaponTypeAsDefault(weapon.toThingDefStuffDefPair());
+                else
+                    SetMeleeWeaponTypeAsPreferred(weapon.toThingDefStuffDefPair());
+            }
         }
         public void InformOfAddedSidearm(Thing weapon)
         {
-            ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
-            var carriedOfType = Owner.getCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
-            var rememberedOfType = rememberedWeapons.Where(w => w == weaponType);
+            if (weapon != null)
+            {
+                ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
+                var carriedOfType = Owner.getCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
+                var rememberedOfType = rememberedWeapons.Where(w => w == weaponType);
 
-            if(rememberedOfType.Count() < carriedOfType.Count())
-                rememberedWeapons.Add(weapon.toThingDefStuffDefPair());
+                if (rememberedOfType.Count() < carriedOfType.Count())
+                    rememberedWeapons.Add(weapon.toThingDefStuffDefPair());
+            }
         }
 
         public void InformOfDroppedSidearm(Thing weapon, bool intentional)
         {
-            if (intentional)
-                ForgetSidearmMemory(weapon.toThingDefStuffDefPair());
+            if (weapon != null)
+            {
+                if (intentional)
+                    ForgetSidearmMemory(weapon.toThingDefStuffDefPair());
+            }
         }
 
         public void ForgetSidearmMemory(ThingDefStuffDefPair weaponMemory)

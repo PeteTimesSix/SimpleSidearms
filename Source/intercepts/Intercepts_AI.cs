@@ -240,8 +240,13 @@ namespace SimpleSidearms.intercepts
                     return;
                 }
                 List<ThingDefStuffDefPair> desiredSidearms = pawnMemory.RememberedWeapons.ListFullCopy();
-                if (desiredSidearms.Contains(pawn.equipment.Primary.toThingDefStuffDefPair()))
-                    desiredSidearms.Remove(pawn.equipment.Primary.toThingDefStuffDefPair());
+
+                if (pawn.equipment.Primary != null)
+                {
+                    if (desiredSidearms.Contains(pawn.equipment.Primary.toThingDefStuffDefPair()))
+                        desiredSidearms.Remove(pawn.equipment.Primary.toThingDefStuffDefPair());
+                }
+
 
                 int inventoryOffset = 0;
 

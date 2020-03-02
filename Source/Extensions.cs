@@ -48,6 +48,8 @@ namespace SimpleSidearms
 
         public static ThingDefStuffDefPair toThingDefStuffDefPair(this Thing thing)
         {
+            if (thing == null)
+                return default(ThingDefStuffDefPair);
             return new ThingDefStuffDefPair(thing.def, thing.Stuff);
         }
 
@@ -103,6 +105,8 @@ namespace SimpleSidearms
         public static bool matchesThingDefStuffDefPair(this Thing thing, ThingDefStuffDefPair pair, bool allowPartialMatch = false)
         {
             bool retVal = false;
+            if (thing == null)
+                return false;
             var thisPair = thing.toThingDefStuffDefPair();
             if(thisPair.thing == pair.thing && thisPair.stuff == pair.stuff)
                 retVal = true;

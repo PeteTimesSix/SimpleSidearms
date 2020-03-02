@@ -138,6 +138,8 @@ namespace SimpleSidearms.utilities
 
         public static bool canCarrySidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
         {
+            if (sidearmThing == null)
+                return false;
 
             //nicked from EquipmentUtility.CanEquip 
             CompBladelinkWeapon compBladelinkWeapon = sidearmThing.TryGetComp<CompBladelinkWeapon>();
