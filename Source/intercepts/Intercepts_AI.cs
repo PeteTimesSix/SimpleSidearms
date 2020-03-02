@@ -53,7 +53,23 @@ namespace SimpleSidearms.intercepts
         }
     }
 
-
+    [HarmonyPatch(typeof(PawnRenderer), "CarryWeaponOpenly")]
+    public static class PawnRenderer_CarryWeaponOpenly_Postfix
+    {
+        [HarmonyPostfix]
+        public static void CarryWeaponOpenly(ref PawnRenderer __instance, ref Pawn ___pawn, ref bool __result)
+        {
+            if (__result == true)
+                return;
+            else 
+            {
+                if(GoldfishModule.GetGoldfishForPawn(___pawn).autotoolToil != null) 
+                {
+                    __result = true;
+                }
+            }
+        }
+    }
 
     [HarmonyPatch(typeof(AutoUndrafter), "AutoUndraftTick")]
     public static class AutoUndrafter_AutoUndraftTick_Postfix
@@ -127,10 +143,12 @@ namespace SimpleSidearms.intercepts
             Pawn pawn = __instance.stanceTracker.pawn;
             if (IsHunting(pawn))
                 return;
-            if (!SimpleSidearms.CEOverride && !(__instance.verb is Verb_Shoot))
+            if (__instance.verb is Verb_Shoot)
+                return;
+            /*if (!SimpleSidearms.CEOverride && !(__instance.verb is Verb_Shoot))
                 return;
             if (SimpleSidearms.CEOverride && !(CERangedVerb.IsAssignableFrom(__instance.verb.GetType())))
-                return;
+                return;*/
             float statValue = pawn.GetStatValue(StatDefOf.AimingDelayFactor, true);
             int ticks = (__instance.verb.verbProps.warmupTime * statValue).SecondsToTicks();
             

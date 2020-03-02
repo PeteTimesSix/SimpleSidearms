@@ -225,8 +225,6 @@ namespace SimpleSidearms.rimworld
         {
             if (pawn == null)
                 return null;
-            if (SimpleSidearms.CEOverride)
-                return null;
             if (SimpleSidearms.configData == null)
                 return null;
             var pawnId = pawn.thingIDNumber;
@@ -417,7 +415,7 @@ namespace SimpleSidearms.rimworld
         }
 
 
-
+        public static bool warnedOfMissingReference = false;
         public bool nullchecked = false;
 
         public void NullChecks(Pawn owner)
@@ -426,7 +424,11 @@ namespace SimpleSidearms.rimworld
                 return;
             if(Owner == null)
             {
-                Log.Warning("goldfish module didnt know what pawn it belongs to!");
+                if (!warnedOfMissingReference)
+                {
+                    Log.Warning("(SimpleSidearms) Found a GoldfishModule with a missing owner reference, regenerating... (additional occurences will be silent)");
+                    warnedOfMissingReference = true;
+                }
                 this.Owner = owner;
             }
             if(rememberedWeapons == null)
