@@ -2,6 +2,7 @@
 <LanguageData>
 
   <EquipSecondary.reportString>正在将TargetA装备为副武器。</EquipSecondary.reportString>
+  <EquipSecondaryCombat.reportString>正在将TargetA装备为副武器。</EquipSecondaryCombat.reportString>
 
 
 </LanguageData>
