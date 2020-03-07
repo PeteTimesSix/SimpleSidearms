@@ -60,7 +60,7 @@ namespace SimpleSidearms.rimworld.alerts
                         if (pawn.CurJob != null && pawn.CurJob.def != null && (pawn.CurJob.def == SidearmsDefOf.EquipSecondary))
                             continue;
 
-                        GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+                        CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                         if (pawnMemory != null)
                         {
                             foreach (ThingDefStuffDefPair weaponMemory in pawnMemory.RememberedWeapons)

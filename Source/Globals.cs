@@ -10,6 +10,8 @@ namespace SimpleSidearms
         public enum RangeCategory : byte{ Touch, Short, Medium, Long }
 
 
+        public enum PrimaryWeaponMode { Ranged, Melee, BySkill, ByGenerated }
+
         public enum DroppingModeEnum { InDistress, Combat, Calm, UsedUp }
         public enum DroppingModeOptionsEnum { Never, InDistress, InCombat, Always }
 

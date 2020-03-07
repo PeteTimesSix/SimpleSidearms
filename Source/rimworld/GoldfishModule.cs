@@ -6,20 +6,13 @@ using System.Linq;
 using System.Text;
 using Verse;
 using Verse.AI;
+using static SimpleSidearms.Globals;
 
 namespace SimpleSidearms.rimworld
 {
     [StaticConstructorOnStartup]
     public class GoldfishModule : IExposable
     {
-        public enum PrimaryWeaponMode
-        {
-            Ranged,
-            Melee, 
-            BySkill,
-            ByGenerated
-        }
-
         public List<ThingDefStuffDefPair> rememberedWeapons = new List<ThingDefStuffDefPair>();
         public List<ThingDefStuffDefPair> RememberedWeapons { get
             {
@@ -40,6 +33,8 @@ namespace SimpleSidearms.rimworld
         public ThingDefStuffDefPair? defaultRangedWeaponEx = null;
         public ThingDefStuffDefPair? preferredMeleeWeaponEx = null;
 
+        public bool currentJobWeaponReequipDelayed;
+        public JobDef autotoolJob = null;
         public Toil autotoolToil = null;
         public int delayIdleSwitchTimestamp = -60;
 
@@ -155,49 +150,7 @@ namespace SimpleSidearms.rimworld
         public Pawn ownerEx;
         public Pawn Owner { get { return ownerEx; } set { ownerEx = value; } }
 
-        public GoldfishModule() : this(null, false) { }
-
-        public GoldfishModule(Pawn owner) : this(owner, false) { }
-
-        public GoldfishModule(Pawn owner, bool fillExisting)
-        {
-            this.rememberedWeapons = new List<ThingDefStuffDefPair>();
-            this.Owner = owner;
-            if (fillExisting)
-            {
-                generateRememberedWeaponsFromEquipped();
-            }
-            if (owner != null) //null owner should only come up when loading from savegames
-            {
-                if (owner.IsColonist)
-                    primaryWeaponMode = SimpleSidearms.ColonistDefaultWeaponMode.Value;
-                else
-                    primaryWeaponMode = SimpleSidearms.NPCDefaultWeaponMode.Value;
-
-                if (primaryWeaponMode == PrimaryWeaponMode.ByGenerated)
-                {
-                    if (Owner == null || Owner.equipment == null || owner.equipment.Primary == null)
-                        primaryWeaponMode = PrimaryWeaponMode.BySkill;
-                    else if (owner.equipment.Primary.def.IsRangedWeapon)
-                        primaryWeaponMode = PrimaryWeaponMode.Ranged;
-                    else if (owner.equipment.Primary.def.IsMeleeWeapon)
-                        primaryWeaponMode = PrimaryWeaponMode.Melee;
-                    else
-                        primaryWeaponMode = PrimaryWeaponMode.BySkill;
-                }
-            }
-        }
-
-        public void generateRememberedWeaponsFromEquipped()
-        {
-            this.rememberedWeapons = new List<ThingDefStuffDefPair>();
-            IEnumerable<ThingWithComps> carriedWeapons = Owner.getCarriedWeapons(includeTools: true);
-            foreach (ThingWithComps weapon in carriedWeapons)
-            {
-                ThingDefStuffDefPair pair = new ThingDefStuffDefPair(weapon.def, weapon.Stuff);
-                rememberedWeapons.Add(pair);
-            }
-        }
+        public GoldfishModule() { }
 
         public void ExposeData()
         {
@@ -221,209 +174,6 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        public static GoldfishModule GetGoldfishForPawn(Pawn pawn, bool fillExistingIfCreating = true)
-        {
-            if (pawn == null)
-                return null;
-            if (SimpleSidearms.configData == null)
-                return null;
-            var pawnId = pawn.thingIDNumber;
-            GoldfishModule memory;
-            if (!SimpleSidearms.configData.memories.TryGetValue(pawnId, out memory))
-            {
-                memory = new GoldfishModule(pawn, fillExistingIfCreating);
-                SimpleSidearms.configData.memories.Add(pawnId, memory);
-            }
-            else
-            {
-                memory.NullChecks(pawn);
-            }
-            return memory;
-        }
-
-        public bool IsCurrentWeaponForced(bool alsoCountPreferredOrDefault)
-        {
-            if (Owner == null || Owner.Dead || Owner.equipment == null)
-                return false;
-            ThingDefStuffDefPair? currentWeapon = Owner.equipment.Primary?.toThingDefStuffDefPair();
-            if (currentWeapon == null)
-            {
-                if (Owner.Drafted && ForcedUnarmedWhileDrafted)
-                    return true;
-                else if (ForcedUnarmed)
-                    return true;
-                else if (alsoCountPreferredOrDefault && PreferredUnarmed)
-                    return true;
-                else
-                    return false;
-            }
-            else
-            {
-                if (Owner.Drafted && ForcedWeaponWhileDrafted == currentWeapon)
-                    return true;
-                else if (ForcedWeapon == currentWeapon)
-                    return true;
-                else if (alsoCountPreferredOrDefault)
-                {
-                    if (currentWeapon.Value.thing.IsMeleeWeapon && PreferredMeleeWeapon == currentWeapon)
-                        return true;
-                    else if (currentWeapon.Value.thing.IsRangedWeapon && DefaultRangedWeapon == currentWeapon)
-                        return true;
-                    else
-                        return false;
-                }
-                else
-                    return false;
-            }
-        }
-
-        public void SetUnarmedAsForced(bool drafted)
-        {
-            if (drafted)
-            {
-                ForcedUnarmedWhileDrafted = true;
-                ForcedWeaponWhileDrafted = null;
-            }
-            else
-            {
-                ForcedUnarmed = true;
-                ForcedWeapon = null;
-            }
-        }
-
-        public void SetWeaponAsForced(ThingDefStuffDefPair weapon, bool drafted)
-        {
-            if (drafted)
-            {
-                ForcedUnarmedWhileDrafted = false;
-                ForcedWeaponWhileDrafted = weapon;
-            }
-            else
-            {
-                ForcedUnarmed = false;
-                ForcedWeapon = weapon;
-            }
-        }
-
-
-        public void UnsetUnarmedAsForced(bool drafted)
-        {
-            if (drafted)
-            {
-                ForcedUnarmedWhileDrafted = false;
-                ForcedWeaponWhileDrafted = null;
-            }
-            else
-            {
-                ForcedUnarmed = false;
-                ForcedWeapon = null;
-            }
-        }
-
-        public void UnsetForcedWeapon(bool drafted)
-        {
-            if(drafted)
-            {
-                ForcedUnarmedWhileDrafted = false;
-                ForcedWeaponWhileDrafted = null;
-            }
-            else
-            {
-                ForcedUnarmed = false;
-                ForcedWeapon = null;
-            }
-        }
-
-        public void SetRangedWeaponTypeAsDefault(ThingDefStuffDefPair rangedWeapon)
-        {
-            this.DefaultRangedWeapon = rangedWeapon;
-            if (this.ForcedWeapon != null && this.ForcedWeapon != rangedWeapon && this.ForcedWeapon.Value.thing.IsRangedWeapon)
-                UnsetForcedWeapon(false);
-        }
-        public void SetMeleeWeaponTypeAsPreferred(ThingDefStuffDefPair meleeWeapon)
-        {
-            this.preferredUnarmedEx = false;
-            this.PreferredMeleeWeapon = meleeWeapon;
-            if (this.ForcedWeapon != null && this.ForcedWeapon != meleeWeapon && this.ForcedWeapon.Value.thing.IsMeleeWeapon)
-                UnsetForcedWeapon(false);
-            if (ForcedUnarmed)
-                UnsetUnarmedAsForced(false);
-        }
-        public void SetUnarmedAsPreferredMelee()
-        {
-            PreferredUnarmed = true;
-            PreferredMeleeWeapon = null;
-            if (this.ForcedWeapon != null && this.ForcedWeapon.Value.thing.IsMeleeWeapon)
-                UnsetForcedWeapon(false);
-        }
-
-        public void UnsetRangedWeaponDefault()
-        {
-            DefaultRangedWeapon = null;
-        }
-        public void UnsetMeleeWeaponPreference()
-        {
-            PreferredMeleeWeapon = null;
-            PreferredUnarmed = false;
-        }
-
-        public void InformOfUndraft()
-        {
-            ForcedWeaponWhileDrafted = null;
-            ForcedUnarmedWhileDrafted = false;
-        }
-
-        public void InformOfAddedPrimary(Thing weapon)
-        {
-            if (weapon != null)
-            {
-                InformOfAddedSidearm(weapon);
-
-                if (weapon.def.IsRangedWeapon)
-                    SetRangedWeaponTypeAsDefault(weapon.toThingDefStuffDefPair());
-                else
-                    SetMeleeWeaponTypeAsPreferred(weapon.toThingDefStuffDefPair());
-            }
-        }
-        public void InformOfAddedSidearm(Thing weapon)
-        {
-            if (weapon != null)
-            {
-                ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
-                var carriedOfType = Owner.getCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
-                var rememberedOfType = rememberedWeapons.Where(w => w == weaponType);
-
-                if (rememberedOfType.Count() < carriedOfType.Count())
-                    rememberedWeapons.Add(weapon.toThingDefStuffDefPair());
-            }
-        }
-
-        public void InformOfDroppedSidearm(Thing weapon, bool intentional)
-        {
-            if (weapon != null)
-            {
-                if (intentional)
-                    ForgetSidearmMemory(weapon.toThingDefStuffDefPair());
-            }
-        }
-
-        public void ForgetSidearmMemory(ThingDefStuffDefPair weaponMemory)
-        {
-            if (rememberedWeapons.Contains(weaponMemory))
-                rememberedWeapons.Remove(weaponMemory);
-
-            if (!rememberedWeapons.Contains(weaponMemory)) //only remove if this was the last instance
-            {
-                if (weaponMemory == ForcedWeapon)
-                    ForcedWeapon = null;
-                if (weaponMemory == PreferredMeleeWeapon)
-                    PreferredMeleeWeapon = null;
-                if (weaponMemory == DefaultRangedWeapon)
-                    PreferredMeleeWeapon = null;
-            }
-        }
-
-
         public static bool warnedOfMissingReference = false;
         public bool nullchecked = false;
 
@@ -431,18 +181,18 @@ namespace SimpleSidearms.rimworld
         {
             if (nullchecked)
                 return;
-            if(Owner == null)
+            if (Owner == null)
             {
                 if (!warnedOfMissingReference)
                 {
-                    Log.Warning("(SimpleSidearms) Found a GoldfishModule with a missing owner reference, regenerating... (additional occurences will be silent)");
+                    //Log.Warning("(SimpleSidearms) Found a GoldfishModule with a missing owner reference, regenerating... (additional occurences will be silent)");
                     warnedOfMissingReference = true;
                 }
                 this.Owner = owner;
             }
-            if(rememberedWeapons == null)
+            if (rememberedWeapons == null)
             {
-                Log.Warning("Remembered weapons list of " + this.Owner.LabelCap + " was missing, regenerating...");
+                //Log.Warning("Remembered weapons list of " + this.Owner.LabelCap + " was missing, regenerating...");
                 generateRememberedWeaponsFromEquipped();
             }
             for (int i = rememberedWeapons.Count() - 1; i >= 0; i--)
@@ -453,7 +203,7 @@ namespace SimpleSidearms.rimworld
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning("A memorised weapon of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
+                    //Log.Warning("A memorised weapon of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
                     rememberedWeapons.RemoveAt(i);
                 }
             }
@@ -465,7 +215,7 @@ namespace SimpleSidearms.rimworld
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning("Melee weapon preference of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
+                    //Log.Warning("Melee weapon preference of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
                     PreferredMeleeWeapon = null;
                 }
             }
@@ -477,7 +227,7 @@ namespace SimpleSidearms.rimworld
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning("Ranged weapon preference of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
+                    //Log.Warning("Ranged weapon preference of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
                     DefaultRangedWeapon = null;
                 }
             }
@@ -489,7 +239,7 @@ namespace SimpleSidearms.rimworld
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning("Forced weapon of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
+                    //Log.Warning("Forced weapon of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
                     ForcedWeapon = null;
                 }
             }
@@ -501,11 +251,24 @@ namespace SimpleSidearms.rimworld
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning("Forced drafted weapon of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
+                    //Log.Warning("Forced drafted weapon of " + this.Owner.LabelCap + " had a missing def or malformed data, removing. Exception:" + ex.Message);
                     ForcedWeaponWhileDrafted = null;
                 }
             }
             nullchecked = true;
         }
+
+
+        public void generateRememberedWeaponsFromEquipped()
+        {
+            this.rememberedWeapons = new List<ThingDefStuffDefPair>();
+            IEnumerable<ThingWithComps> carriedWeapons = Owner.getCarriedWeapons(includeTools: true);
+            foreach (ThingWithComps weapon in carriedWeapons)
+            {
+                ThingDefStuffDefPair pair = new ThingDefStuffDefPair(weapon.def, weapon.Stuff);
+                rememberedWeapons.Add(pair);
+            }
+        }
     }
+
 }

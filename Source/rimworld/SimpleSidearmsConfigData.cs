@@ -10,7 +10,7 @@ namespace SimpleSidearms.rimworld
 {
     public class SimpleSidearmsConfigData : WorldComponent
     {
-        public Dictionary<int, GoldfishModule> memories = new Dictionary<int, GoldfishModule>();
+        public Dictionary<int, GoldfishModule> memories = null;
 
 
         public SimpleSidearmsConfigData(World world) : base(world)
@@ -20,11 +20,16 @@ namespace SimpleSidearms.rimworld
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Collections.Look<int, GoldfishModule>(ref memories, "memories", LookMode.Value, LookMode.Deep);
-            if (Scribe.mode == LoadSaveMode.LoadingVars)
+            if (Scribe.mode != LoadSaveMode.Saving)
             {
-                if (memories == null) 
-                    memories = new Dictionary<int, GoldfishModule>();
+                Scribe_Collections.Look<int, GoldfishModule>(ref memories, "memories", LookMode.Value, LookMode.Deep);
+                if (memories != null && memories.Count < 1)
+                    memories = null;
+            }
+            else
+            {
+                Dictionary<int, GoldfishModule> no_memories = new Dictionary<int, GoldfishModule>();
+                Scribe_Collections.Look<int, GoldfishModule>(ref no_memories, "memories", LookMode.Value, LookMode.Deep);
             }
         }
     }

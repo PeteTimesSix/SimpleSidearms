@@ -60,7 +60,7 @@ namespace SimpleSidearms.rimworld
 
         public override float GetWidth(float maxWidth)
         {
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
             //if (pawnMemory == null)
             //    return 75;
             int biggerCount = Math.Max(
@@ -98,7 +98,7 @@ namespace SimpleSidearms.rimworld
             var contentRect = gizmoRect.ContractedBy(ContentPadding);
             Widgets.DrawWindowBackground(gizmoRect);
 
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
 
             int i = 0;
             {
@@ -203,7 +203,7 @@ namespace SimpleSidearms.rimworld
         }
 
 
-        public void DrawPreferenceSelector(Pawn pawn, GoldfishModule pawnMemory, Rect contentRect)
+        public void DrawPreferenceSelector(Pawn pawn, CompSidearmMemory pawnMemory, Rect contentRect)
         {
             var rangedIconRect = new Rect(contentRect.x, contentRect.y, PreferenceIconWidth, PreferenceIconHeight);
             var skillIconRect = new Rect(contentRect.x, contentRect.y+ PreferenceIconHeight + IconGap, PreferenceIconWidth, PreferenceIconHeight);
@@ -219,7 +219,7 @@ namespace SimpleSidearms.rimworld
 
             if (Mouse.IsOver(rangedIconRect))
             {
-                if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.Ranged)
+                if (pawnMemory.primaryWeaponMode == PrimaryWeaponMode.Ranged)
                     GUI.color = preferenceHighlightSet;
                 else
                     GUI.color = preferenceHighlight;
@@ -229,9 +229,9 @@ namespace SimpleSidearms.rimworld
             }
             else
             {
-                if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.Ranged)
+                if (pawnMemory.primaryWeaponMode == PrimaryWeaponMode.Ranged)
                     GUI.color = preferenceSet;
-                else if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.BySkill && skillPref == GoldfishModule.PrimaryWeaponMode.Ranged)
+                else if (pawnMemory.primaryWeaponMode == PrimaryWeaponMode.BySkill && skillPref == PrimaryWeaponMode.Ranged)
                     GUI.color = preferenceOfSkill;
                 else
                     GUI.color = preferenceBase;
@@ -240,7 +240,7 @@ namespace SimpleSidearms.rimworld
 
             if (Mouse.IsOver(skillIconRect))
             {
-                if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.BySkill)
+                if (pawnMemory.primaryWeaponMode == PrimaryWeaponMode.BySkill)
                     GUI.color = preferenceHighlightSet;
                 else
                     GUI.color = preferenceHighlight;
@@ -252,7 +252,7 @@ namespace SimpleSidearms.rimworld
             {
                 if (pawn.skills != null)
                 {
-                    if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.BySkill)
+                    if (pawnMemory.primaryWeaponMode == PrimaryWeaponMode.BySkill)
                         GUI.color = preferenceSet;
                     else
                         GUI.color = preferenceBase;
@@ -262,7 +262,7 @@ namespace SimpleSidearms.rimworld
 
             if (Mouse.IsOver(meleeIconRect))
             {
-                if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.Melee)
+                if (pawnMemory.primaryWeaponMode == PrimaryWeaponMode.Melee)
                     GUI.color = preferenceHighlightSet;
                 else
                     GUI.color = preferenceHighlight;
@@ -272,9 +272,9 @@ namespace SimpleSidearms.rimworld
             }
             else
             {
-                if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.Melee)
+                if (pawnMemory.primaryWeaponMode == PrimaryWeaponMode.Melee)
                     GUI.color = preferenceSet;
-                else if (pawnMemory.primaryWeaponMode == GoldfishModule.PrimaryWeaponMode.BySkill && skillPref == GoldfishModule.PrimaryWeaponMode.Melee)
+                else if (pawnMemory.primaryWeaponMode == PrimaryWeaponMode.BySkill && skillPref == PrimaryWeaponMode.Melee)
                     GUI.color = preferenceOfSkill;
                 else
                     GUI.color = preferenceBase;
@@ -299,7 +299,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        public void DrawIconForWeaponMemory(Pawn pawn, GoldfishModule pawnMemory, ThingDefStuffDefPair weaponType, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForWeaponMemory(Pawn pawn, CompSidearmMemory pawnMemory, ThingDefStuffDefPair weaponType, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
         {
             Graphic g = weaponType.thing.graphicData.Graphic;
 
@@ -330,8 +330,11 @@ namespace SimpleSidearms.rimworld
                 GUI.DrawTexture(iconRect, drawPocket);
             }
 
-            Texture resolvedIcon = weaponType.thing.uiIcon;
-
+            Graphic outerGraphic = weaponType.thing.graphic;
+            if (outerGraphic is Graphic_StackCount)
+                outerGraphic = (outerGraphic as Graphic_StackCount).SubGraphicForStackCount(1, weaponType.thing);
+            Material material = outerGraphic.ExtractInnerGraphicFor(null).MatAt(weaponType.thing.defaultPlacingRot, null);
+            Texture resolvedIcon = (Texture2D)material.mainTexture;
             GUI.color = weaponType.getDrawColor();
             GUI.DrawTexture(iconRect, resolvedIcon);
             GUI.color = Color.white;
@@ -361,7 +364,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        public void DrawIconForWeapon(Pawn pawn, GoldfishModule pawnMemory, ThingWithComps weapon, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForWeapon(Pawn pawn, CompSidearmMemory pawnMemory, ThingWithComps weapon, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
         {
             if (weapon is null || weapon.def is null || weapon.def.uiIcon is null)
                 return;
@@ -442,7 +445,8 @@ namespace SimpleSidearms.rimworld
                 //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconBaseColor);
             }
 
-            Texture resolvedIcon;
+            /*Texture resolvedIcon;
+
             if (!weapon.def.uiIconPath.NullOrEmpty())
             {
                 resolvedIcon = weapon.def.uiIcon;
@@ -453,8 +457,16 @@ namespace SimpleSidearms.rimworld
             }
             GUI.color = weapon.DrawColor;
             GUI.DrawTexture(iconRect, resolvedIcon);
-            GUI.color = Color.white;
+            GUI.color = Color.white;*/
 
+            Graphic outerGraphic = weaponType.thing.graphic;
+            if (outerGraphic is Graphic_StackCount)
+                outerGraphic = (outerGraphic as Graphic_StackCount).SubGraphicForStackCount(1, weaponType.thing);
+            Material material = outerGraphic.ExtractInnerGraphicFor(null).MatAt(weaponType.thing.defaultPlacingRot, null);
+            Texture resolvedIcon = (Texture2D)material.mainTexture;
+            GUI.color = weapon.DrawColor;
+            GUI.DrawTexture(iconRect, resolvedIcon);
+            GUI.color = Color.white;
 
             if (!isDuplicate)
             {
@@ -489,7 +501,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        public void DrawIconForUnarmed(Pawn pawn, GoldfishModule pawnMemory, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForUnarmed(Pawn pawn, CompSidearmMemory pawnMemory, Rect contentRect, Vector2 iconOffset)
         {
             var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
             //var iconColor = iconBaseColor;
@@ -578,7 +590,7 @@ namespace SimpleSidearms.rimworld
         public const int RIGHT_CLICK = 1;
         public void handleInteraction(SidearmsListInteraction interaction, Event ev)
         {
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(parent);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
             if (pawnMemory == null)
                 return;
 
@@ -593,19 +605,19 @@ namespace SimpleSidearms.rimworld
                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsPreference, KnowledgeAmount.SpecificInteraction);
                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
-                        pawnMemory.primaryWeaponMode = GoldfishModule.PrimaryWeaponMode.Ranged;
+                        pawnMemory.primaryWeaponMode = PrimaryWeaponMode.Ranged;
                         break;
                     case SidearmsListInteraction.SelectorSkill:
                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsPreference, KnowledgeAmount.SpecificInteraction);
                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
-                        pawnMemory.primaryWeaponMode = GoldfishModule.PrimaryWeaponMode.BySkill;
+                        pawnMemory.primaryWeaponMode = PrimaryWeaponMode.BySkill;
                         break;
                     case SidearmsListInteraction.SelectorMelee:
                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsPreference, KnowledgeAmount.SpecificInteraction);
                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
-                        pawnMemory.primaryWeaponMode = GoldfishModule.PrimaryWeaponMode.Melee;
+                        pawnMemory.primaryWeaponMode = PrimaryWeaponMode.Melee;
                         break;
                     case SidearmsListInteraction.Weapon:
                         Thing weapon = interactionWeapon;
@@ -880,7 +892,7 @@ namespace SimpleSidearms.rimworld
         }
 
 
-        public int countMissingMeleeWeapons(GoldfishModule pawnMemory, Pawn pawn)
+        public int countMissingMeleeWeapons(CompSidearmMemory pawnMemory, Pawn pawn)
         {
             if (pawnMemory == null)
                 return 0;
@@ -903,7 +915,7 @@ namespace SimpleSidearms.rimworld
             return count;
         }
 
-        public int countMissingRangedWeapons(GoldfishModule pawnMemory, Pawn pawn)
+        public int countMissingRangedWeapons(CompSidearmMemory pawnMemory, Pawn pawn)
         {
             if (pawnMemory == null)
                 return 0;

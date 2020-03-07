@@ -161,6 +161,7 @@ absolute</LimitModeAmount_option_AbsoluteWeight>
 <SidearmPickupFail_MeleeSlotsFull>Melee slots full</SidearmPickupFail_MeleeSlotsFull>
 <SidearmPickupFail_RangedSlotsFull>Ranged slots full</SidearmPickupFail_RangedSlotsFull>
 <SidearmPickupFail_NotAToolForPacifist>Not a tool. {0} is incapable of violence.</SidearmPickupFail_NotAToolForPacifist>
+<SidearmPickupFail_NotYetBladelinkBonded>Not yet bonded</SidearmPickupFail_NotYetBladelinkBonded>
 <SidearmPickupPass>No issue</SidearmPickupPass>
 <AsSidearm> as sidearm</AsSidearm>
 <AsTool> as tool</AsTool>

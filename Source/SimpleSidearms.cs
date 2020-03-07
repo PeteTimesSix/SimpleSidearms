@@ -117,8 +117,8 @@ namespace SimpleSidearms
         public static SettingHandle<float> SidearmBudgetMultiplier;
         public static SettingHandle<float> SidearmBudgetDropoff;
 
-        public static SettingHandle<GoldfishModule.PrimaryWeaponMode> ColonistDefaultWeaponMode;
-        public static SettingHandle<GoldfishModule.PrimaryWeaponMode> NPCDefaultWeaponMode;
+        public static SettingHandle<PrimaryWeaponMode> ColonistDefaultWeaponMode;
+        public static SettingHandle<PrimaryWeaponMode> NPCDefaultWeaponMode;
 
         public static SettingHandle<DroppingModeOptionsEnum> DropMode;
         public static SettingHandle<bool> ReEquipBest;
@@ -398,11 +398,11 @@ namespace SimpleSidearms
             SidearmBudgetDropoff.CustomDrawer = rect => { return CustomDrawer_FloatSlider(rect, SidearmBudgetDropoff, true, noHighlight); };
             SidearmBudgetDropoff.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Spawning; };
 
-            ColonistDefaultWeaponMode = Settings.GetHandle<GoldfishModule.PrimaryWeaponMode>("ColonistDefaultWeaponMode", "ColonistDefaultWeaponMode_title".Translate(), "ColonistDefaultWeaponMode_desc".Translate(), GoldfishModule.PrimaryWeaponMode.BySkill, null, "PrimaryWeaponMode_option_");
+            ColonistDefaultWeaponMode = Settings.GetHandle<PrimaryWeaponMode>("ColonistDefaultWeaponMode", "ColonistDefaultWeaponMode_title".Translate(), "ColonistDefaultWeaponMode_desc".Translate(), PrimaryWeaponMode.BySkill, null, "PrimaryWeaponMode_option_");
             ColonistDefaultWeaponMode.CustomDrawer = rect => { string[] names = Enum.GetNames(ColonistDefaultWeaponMode.Value.GetType()); float[] forcedWidths = new float[names.Length]; return CustomDrawer_Enumlist(ColonistDefaultWeaponMode, rect, names, forcedWidths, ExpansionMode.Vertical, noHighlight); };
             ColonistDefaultWeaponMode.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Spawning; };
 
-            NPCDefaultWeaponMode = Settings.GetHandle<GoldfishModule.PrimaryWeaponMode>("NPCDefaultWeaponMode", "NPCDefaultWeaponMode_title".Translate(), "NPCDefaultWeaponMode_desc".Translate(), GoldfishModule.PrimaryWeaponMode.ByGenerated, null, "PrimaryWeaponMode_option_");
+            NPCDefaultWeaponMode = Settings.GetHandle<PrimaryWeaponMode>("NPCDefaultWeaponMode", "NPCDefaultWeaponMode_title".Translate(), "NPCDefaultWeaponMode_desc".Translate(), PrimaryWeaponMode.ByGenerated, null, "PrimaryWeaponMode_option_");
             NPCDefaultWeaponMode.CustomDrawer = rect => { string[] names = Enum.GetNames(NPCDefaultWeaponMode.Value.GetType()); float[] forcedWidths = new float[names.Length]; return CustomDrawer_Enumlist(NPCDefaultWeaponMode, rect, names, forcedWidths, ExpansionMode.Vertical, noHighlight); };
             NPCDefaultWeaponMode.VisibilityPredicate = delegate { return ActiveTab == OptionsTab.Spawning; };
 
@@ -496,6 +496,20 @@ namespace SimpleSidearms
         {
             configData = Find.World.GetComponent<SimpleSidearmsConfigData>();
             //saveData =   UtilityWorldObjectManager.GetUtilityWorldObject<SimpleSidearmsData>();
+
+            if (SimpleSidearms.configData != null && SimpleSidearms.configData.memories != null)
+            {
+                Log.Warning("Loaded data contains obsolete sidearms memory modules, converting...");
+                foreach (var obsolete in SimpleSidearms.configData.memories) 
+                {
+                    GoldfishModule obsoleteMemory = obsolete.Value;
+                    if(obsoleteMemory.Owner != null) 
+                    {
+                        CompSidearmMemory.GetMemoryCompForPawn(obsoleteMemory.Owner).backfillFromGoldfish(obsoleteMemory);
+                    }
+                }
+                SimpleSidearms.configData.memories = null;
+            }
         }
 
         public override void MapLoaded(Map map)

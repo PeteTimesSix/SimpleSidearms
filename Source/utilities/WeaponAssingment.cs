@@ -39,7 +39,7 @@ namespace SimpleSidearms.utilities
 
         public static bool equipSpecificWeapon(Pawn pawn, ThingWithComps weapon, bool dropCurrent, bool intentionalDrop)
         {
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
             if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null)
                 return false;
@@ -94,7 +94,7 @@ namespace SimpleSidearms.utilities
         public static bool equipBestWeaponFromInventoryByStatModifiers(Pawn pawn, List<StatDef> stats)
         {
             //Log.Message("looking for a stat booster for stats " + String.Join(",", stats.Select(s => s.label))); ;
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
             if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null || stats == null || stats.Count == 0 || pawn.Drafted)
                 return false;
@@ -117,14 +117,14 @@ namespace SimpleSidearms.utilities
             return success;
         }
 
-        public static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum drop, GoldfishModule.PrimaryWeaponMode? modeOverride = null, Pawn target = null)
+        public static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum drop, PrimaryWeaponMode? modeOverride = null, Pawn target = null)
         {
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
             if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null)
                 return;
 
-            GoldfishModule.PrimaryWeaponMode mode = modeOverride == null ? pawnMemory.primaryWeaponMode : modeOverride.Value;
+            PrimaryWeaponMode mode = modeOverride == null ? pawnMemory.primaryWeaponMode : modeOverride.Value;
 
             if ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0)
             {
@@ -187,8 +187,8 @@ namespace SimpleSidearms.utilities
                     return;
             }
             
-            if (mode == GoldfishModule.PrimaryWeaponMode.Ranged ||
-                ((mode == GoldfishModule.PrimaryWeaponMode.BySkill) && (pawn.getSkillWeaponPreference() == GoldfishModule.PrimaryWeaponMode.Ranged)))
+            if (mode == PrimaryWeaponMode.Ranged ||
+                ((mode == PrimaryWeaponMode.BySkill) && (pawn.getSkillWeaponPreference() == PrimaryWeaponMode.Ranged)))
             {
 
                 if (pawnMemory.DefaultRangedWeapon != null && pawn.hasWeaponSomewhere(pawnMemory.DefaultRangedWeapon.Value))
@@ -332,7 +332,7 @@ namespace SimpleSidearms.utilities
 
         public static bool tryCQCWeaponSwapToMelee(Pawn pawn, Pawn target, DroppingModeEnum drop)
         {
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
             if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null)
                 return false;
@@ -350,14 +350,14 @@ namespace SimpleSidearms.utilities
                 return false;
 
             var current = pawn.equipment.Primary;
-            equipBestWeaponFromInventoryByPreference(pawn, drop, GoldfishModule.PrimaryWeaponMode.Melee, target: target);
+            equipBestWeaponFromInventoryByPreference(pawn, drop, PrimaryWeaponMode.Melee, target: target);
             return (current != pawn.equipment.Primary);
         }
 
 
         public static bool trySwapToMoreAccurateRangedWeapon(Pawn pawn, LocalTargetInfo target, bool dropCurrent, bool skipDangerous = true)
         {
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
             if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null)
                 return false;
@@ -395,7 +395,7 @@ namespace SimpleSidearms.utilities
             else
                 pawn.inventory.innerContainer.TryDrop(weapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out discarded2, null);
 
-            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
             if (pawnMemory == null)
                 return;
             pawnMemory.InformOfDroppedSidearm(weapon, intentional);

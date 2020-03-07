@@ -129,7 +129,7 @@ namespace SimpleSidearms.rimworld
 
                 bool success = pawn.inventory.innerContainer.TryAdd(rolledWeaponFinal);
                 if (success)
-                    GoldfishModule.GetGoldfishForPawn(pawn).InformOfAddedSidearm(rolledWeaponFinal);
+                    CompSidearmMemory.GetMemoryCompForPawn(pawn).InformOfAddedSidearm(rolledWeaponFinal);
                 else
                     Log.Warning("Failed to add generated sidearm to inventory");
 

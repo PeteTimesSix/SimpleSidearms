@@ -13,7 +13,7 @@
     <reportString>re-equipping TargetA as sidearm.</reportString>
   </JobDef>
 
-<JobDef>
+  <JobDef>
     <defName>ReequipSecondaryCombat</defName>
     <driverClass>SimpleSidearms.rimworld.JobDriver_ReequipSidearmCombat</driverClass>
     <reportString>re-equipping TargetA as sidearm.</reportString>

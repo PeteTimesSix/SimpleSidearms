@@ -25,14 +25,14 @@ namespace SimpleSidearms.intercepts
                 IThingHolder actualOwner = thingOwner.Owner;
                 if (actualOwner is Pawn_InventoryTracker)
                 {
-                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_InventoryTracker).pawn);
+                    CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn((actualOwner as Pawn_InventoryTracker).pawn);
                     if (pawnMemory == null)
                         return;
                     pawnMemory.InformOfDroppedSidearm(thingWithComps, true);
                 }
                 else if (actualOwner is Pawn_EquipmentTracker)
                 {
-                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn((actualOwner as Pawn_EquipmentTracker).ParentHolder as Pawn);
+                    CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn((actualOwner as Pawn_EquipmentTracker).ParentHolder as Pawn);
                     if (pawnMemory == null)
                         return;
                     pawnMemory.InformOfDroppedSidearm(thingWithComps, true);
@@ -56,7 +56,7 @@ namespace SimpleSidearms.intercepts
                     {
                         IEnumerable<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons(includeTools: true);
 
-                        GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(__instance);
+                        CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(__instance);
 
                         //if (carriedWeapons.Count() > 0 || (pawnMemory != null && pawnMemory.RememberedWeapons.Count > 0))
                         {

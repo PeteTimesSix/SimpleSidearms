@@ -22,14 +22,14 @@ namespace SimpleSidearms.rimworld
                 if (equipment == null)
                     return null;
 
-                GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+                CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                 if (pawnMemory == null)
                     return null;
 
-                if (SimpleSidearms.ToolAutoSwitch && ((Find.TickManager.TicksGame - pawnMemory.delayIdleSwitchTimestamp) < 60))
-                    return null;
+                //if (pawnMemory.IsUsingAutotool(true))
+                //    return null;
 
-                WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, Globals.DroppingModeEnum.Calm);
+                //WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, Globals.DroppingModeEnum.Calm);
 
                 if (pawnMemory.RememberedWeapons is null)
                     Log.Warning("pawnMemory of "+pawn.Label+" is missing remembered weapons");
@@ -48,7 +48,31 @@ namespace SimpleSidearms.rimworld
                             maxDist = 30f;
                         if (inCombat)
                             maxDist = 12f;
-                        IEnumerable<Thing> matchingWeapons = pawn.Map.listerThings.ThingsOfDef(weaponMemory.thing).Where(t => t.Stuff == weaponMemory.stuff);
+
+                        bool bladelinkable = weaponMemory.thing.HasComp(typeof(CompBladelinkWeapon));
+                        bool biocodeable = weaponMemory.thing.HasComp(typeof(CompBiocodableWeapon));
+
+                        IEnumerable<ThingWithComps> matchingWeapons = pawn.Map.listerThings.ThingsOfDef(weaponMemory.thing).OfType<ThingWithComps>().Where(t => t.Stuff == weaponMemory.stuff);
+                        if (bladelinkable)
+                        {
+                            matchingWeapons = matchingWeapons.Where(t =>
+                            {
+                                CompBladelinkWeapon bladelink = t.GetComp<CompBladelinkWeapon>();
+                                return (bladelink != null && bladelink.bondedPawn == pawn);
+                            });
+                        }
+                        if (biocodeable)
+                        {
+                            matchingWeapons = matchingWeapons.Where(t =>
+                            {
+                                CompBiocodableWeapon biocode = t.GetComp<CompBiocodableWeapon>();
+                                if (biocode == null)
+                                    return true; //not sure how this could ever happen...
+                                if (biocode.Biocoded && biocode.CodedPawn != pawn)
+                                    return false;
+                                return true;
+                            });
+                        }
 
                         Thing thing = GenClosest.ClosestThing_Global_Reachable(pawn.Position, pawn.Map, matchingWeapons, PathEndMode.OnCell, TraverseParms.For(pawn), maxDist,
                             (Thing t) => !t.IsForbidden(pawn) && pawn.CanReserve(t),

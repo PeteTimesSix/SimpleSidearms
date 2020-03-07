@@ -27,21 +27,29 @@ namespace SimpleSidearms.intercepts
                 Toil toil = __instance;
                 toil.AddPreInitAction(delegate
                 {
-                    if (toil.activeSkill != null && toil.activeSkill() != null && toil.GetActor() != null)
+                    Pawn pawn = toil.GetActor();
+                    CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                    pawnMemory.CheckIfStillOnAutotoolJob();
+
+                    if (toil.activeSkill != null && toil.activeSkill() != null && pawn != null)
                     {
                         //Log.Message("Pawn " + toil.GetActor().Label + " initializing toil that uses skill " + toil.activeSkill().label);
                         bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(toil.GetActor(), SkillStatMap.Map[toil.activeSkill()]);
                         if (usingAppropriateTool)
                         {
-                            GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(toil.GetActor());
                             if (pawnMemory != null)
+                            {
                                 pawnMemory.autotoolToil = toil;
+                                pawnMemory.autotoolJob = pawn.CurJobDef;
+                            }
                         }
                     }
                 });
                 toil.AddFinishAction(delegate
                 {
-                    GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(toil.GetActor());
+
+                    Pawn pawn = toil.GetActor();
+                    CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if (pawnMemory != null && pawnMemory.autotoolToil == toil)
                     {
                         pawnMemory.delayIdleSwitchTimestamp = Find.TickManager.TicksGame;
@@ -61,9 +69,10 @@ namespace SimpleSidearms.intercepts
         {
             if (__result == true)
                 return;
-            else 
+            else
             {
-                if(GoldfishModule.GetGoldfishForPawn(___pawn).autotoolToil != null) 
+                CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(___pawn);
+                if (pawnMemory.autotoolToil != null) 
                 {
                     __result = true;
                 }
@@ -116,7 +125,7 @@ namespace SimpleSidearms.intercepts
                 Pawn pawn = __instance.pawn;
                 if (pawn != null && !pawn.Dead && pawn.IsColonist)
                 {
-                    GoldfishModule.GetGoldfishForPawn(pawn).InformOfUndraft();
+                    CompSidearmMemory.GetMemoryCompForPawn(pawn).InformOfUndraft();
                 }
             }
         }
@@ -175,12 +184,53 @@ namespace SimpleSidearms.intercepts
     }
 
 
+    [HarmonyPatch(typeof(Pawn_HealthTracker), "MakeDowned")]
+    public static class Pawn_HealthTracker_MakeDowned
+    {
+        //EW EW EW GLOBAL FLAG EW EW
+        public static bool beingDowned = false;
+
+        [HarmonyPrefix]
+        public static void MakeDowned_Prefix()
+        {
+            //Log.Message("makeDowned prefix");
+            Pawn_HealthTracker_MakeDowned.beingDowned = true;
+        }
+
+        [HarmonyFinalizer]
+        public static void MakeDowned_Finalizer()
+        {
+            //Log.Message("makeDowned finalizer");
+            Pawn_HealthTracker_MakeDowned.beingDowned = false;
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_EquipmentTracker), "TryDropEquipment")]
+    public static class Pawn_HealthTracker_TryDropEquipment
+    {
+        [HarmonyPostfix]
+        public static void TryDropEquipment_Postfix(Pawn_EquipmentTracker __instance, bool __result, ThingWithComps resultingEq)
+        {
+            if(__result == true && resultingEq != null) 
+            {
+                Pawn pawn = __instance.pawn;
+                if (pawn == null || pawn.Dead || !pawn.RaceProps.Humanlike)
+                    return;
+
+                if (!Pawn_HealthTracker_MakeDowned.beingDowned)
+                {
+                    CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                    pawnMemory.ForgetSidearmMemory(resultingEq.toThingDefStuffDefPair());
+                }
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(Pawn_EquipmentTracker), "AddEquipment")]
     public static class Pawn_EquipmentTracker_AddEquipment
     {
         //EW EW EW GLOBAL FLAG EW EW
         public static bool addEquipmentSourcedBySimpleSidearms = false;
-
 
         [HarmonyPostfix]
         public static void AddEquipment_Postfix(Pawn_EquipmentTracker __instance, ThingWithComps newEq)
@@ -190,7 +240,7 @@ namespace SimpleSidearms.intercepts
                 Pawn pawn = __instance.pawn;
                 if (pawn == null)
                     return;
-                GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+                CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                 if (pawnMemory == null)
                     return;
                 pawnMemory.InformOfAddedPrimary(newEq);
@@ -229,7 +279,7 @@ namespace SimpleSidearms.intercepts
             else
             {
                 Pawn pawn = __instance.pawn;
-                GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(pawn);
+                CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                 if (
                     pawnMemory == null ||
                     !pawn.IsColonist ||

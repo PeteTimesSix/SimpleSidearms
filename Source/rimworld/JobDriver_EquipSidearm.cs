@@ -48,7 +48,7 @@ namespace SimpleSidearms.rimworld
                     }
                     if (success)
                     {
-                        GoldfishModule pawnMemory = GoldfishModule.GetGoldfishForPawn(this.pawn);
+                        CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(this.pawn);
                         if (pawnMemory == null)
                             return;
                         if(MemorizeOnPickup)

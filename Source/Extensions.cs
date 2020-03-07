@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Verse;
+using static SimpleSidearms.Globals;
 
 namespace SimpleSidearms
 {
@@ -116,22 +117,22 @@ namespace SimpleSidearms
             return retVal;
         }
 
-        public static GoldfishModule.PrimaryWeaponMode getSkillWeaponPreference(this Pawn pawn)
+        public static PrimaryWeaponMode getSkillWeaponPreference(this Pawn pawn)
         {
             if (pawn.skills == null)
-                return GoldfishModule.PrimaryWeaponMode.Ranged;
+                return PrimaryWeaponMode.Ranged;
 
             SkillRecord rangedSkill = pawn.skills.GetSkill(SkillDefOf.Shooting);
             SkillRecord meleeSkill = pawn.skills.GetSkill(SkillDefOf.Melee);
 
             if (rangedSkill.passion > meleeSkill.passion)
-                return GoldfishModule.PrimaryWeaponMode.Ranged;
+                return PrimaryWeaponMode.Ranged;
             else if (meleeSkill.passion > rangedSkill.passion)
-                return GoldfishModule.PrimaryWeaponMode.Melee;
+                return PrimaryWeaponMode.Melee;
             else if (meleeSkill.Level > rangedSkill.Level)
-                return GoldfishModule.PrimaryWeaponMode.Melee;
+                return PrimaryWeaponMode.Melee;
             else
-                return GoldfishModule.PrimaryWeaponMode.Ranged; //slight bias towards ranged but *shrug*
+                return PrimaryWeaponMode.Ranged; //slight bias towards ranged but *shrug*
         }
 
         public static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeTools = false)
