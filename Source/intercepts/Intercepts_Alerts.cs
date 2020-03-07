@@ -22,7 +22,7 @@ namespace SimpleSidearms.intercepts
             foreach (Pawn pawn in __result)
             {
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-                if (pawnMemory.IsUsingAutotool(true, true))
+                if (pawnMemory != null && pawnMemory.IsUsingAutotool(true, true))
                 {
                     continue;
                 }

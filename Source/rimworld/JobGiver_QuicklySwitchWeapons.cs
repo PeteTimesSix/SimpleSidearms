@@ -37,7 +37,7 @@ namespace SimpleSidearms.rimworld
                     pawnMemory.currentJobWeaponReequipDelayed = false;
                 }
 
-                Log.Message(pawn.Label+" considering switching weapons on the run");
+                //Log.Message(pawn.Label+" considering switching weapons on the run");
                 WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, Globals.DroppingModeEnum.Calm);
 
                 //yes, I realise that this never actually results in a job.

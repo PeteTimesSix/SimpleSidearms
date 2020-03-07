@@ -29,6 +29,8 @@ namespace SimpleSidearms.intercepts
                 {
                     Pawn pawn = toil.GetActor();
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                    if (pawnMemory == null)
+                        return;
                     pawnMemory.CheckIfStillOnAutotoolJob();
 
                     if (toil.activeSkill != null && toil.activeSkill() != null && pawn != null)
@@ -50,12 +52,14 @@ namespace SimpleSidearms.intercepts
 
                     Pawn pawn = toil.GetActor();
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-                    if (pawnMemory != null && pawnMemory.autotoolToil == toil)
+                    if (pawnMemory != null)
                     {
-                        pawnMemory.delayIdleSwitchTimestamp = Find.TickManager.TicksGame;
+                        if(pawnMemory.autotoolToil == toil)
+                            pawnMemory.delayIdleSwitchTimestamp = Find.TickManager.TicksGame;
+                        else
+                            pawnMemory.autotoolToil = null;
                     }
 
-                    pawnMemory.autotoolToil = null;
                 });
             }
         }
@@ -72,7 +76,7 @@ namespace SimpleSidearms.intercepts
             else
             {
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(___pawn);
-                if (pawnMemory.autotoolToil != null) 
+                if (pawnMemory != null && pawnMemory.autotoolToil != null) 
                 {
                     __result = true;
                 }
@@ -125,7 +129,11 @@ namespace SimpleSidearms.intercepts
                 Pawn pawn = __instance.pawn;
                 if (pawn != null && !pawn.Dead && pawn.IsColonist)
                 {
-                    CompSidearmMemory.GetMemoryCompForPawn(pawn).InformOfUndraft();
+                    CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                    if (pawnMemory == null)
+                        return;
+
+                    pawnMemory.InformOfUndraft();
                 }
             }
         }
@@ -220,7 +228,8 @@ namespace SimpleSidearms.intercepts
                 if (!Pawn_HealthTracker_MakeDowned.beingDowned)
                 {
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-                    pawnMemory.ForgetSidearmMemory(resultingEq.toThingDefStuffDefPair());
+                    if(pawnMemory != null)
+                        pawnMemory.ForgetSidearmMemory(resultingEq.toThingDefStuffDefPair());
                 }
             }
         }

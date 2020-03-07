@@ -57,6 +57,8 @@ namespace SimpleSidearms.intercepts
                         IEnumerable<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons(includeTools: true);
 
                         CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(__instance);
+                        if (pawnMemory == null)
+                            return;
 
                         //if (carriedWeapons.Count() > 0 || (pawnMemory != null && pawnMemory.RememberedWeapons.Count > 0))
                         {

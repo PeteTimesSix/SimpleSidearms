@@ -61,8 +61,8 @@ namespace SimpleSidearms.rimworld
         public override float GetWidth(float maxWidth)
         {
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
-            //if (pawnMemory == null)
-            //    return 75;
+            if (pawnMemory == null)
+                return 75;
             int biggerCount = Math.Max(
                 carriedRangedWeapons.Count() + countMissingRangedWeapons(pawnMemory, parent),
                 carriedMeleeWeapons.Count() + countMissingMeleeWeapons(pawnMemory, parent) + 1
@@ -99,6 +99,8 @@ namespace SimpleSidearms.rimworld
             Widgets.DrawWindowBackground(gizmoRect);
 
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
+            if (pawnMemory == null)
+                return new GizmoResult(GizmoState.Clear);
 
             int i = 0;
             {

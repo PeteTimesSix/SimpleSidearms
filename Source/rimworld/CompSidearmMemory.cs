@@ -229,8 +229,6 @@ namespace SimpleSidearms.rimworld
             if (memory == null)
                 return null;
 
-            var pawnId = pawn.thingIDNumber;
-
             return memory;
         }
 

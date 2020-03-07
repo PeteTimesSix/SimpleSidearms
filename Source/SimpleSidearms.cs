@@ -505,7 +505,9 @@ namespace SimpleSidearms
                     GoldfishModule obsoleteMemory = obsolete.Value;
                     if(obsoleteMemory.Owner != null) 
                     {
-                        CompSidearmMemory.GetMemoryCompForPawn(obsoleteMemory.Owner).backfillFromGoldfish(obsoleteMemory);
+                        CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(obsoleteMemory.Owner);
+                        if (pawnMemory != null)
+                            pawnMemory.backfillFromGoldfish(obsoleteMemory);
                     }
                 }
                 SimpleSidearms.configData.memories = null;

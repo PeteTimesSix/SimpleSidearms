@@ -128,8 +128,13 @@ namespace SimpleSidearms.rimworld
                 }
 
                 bool success = pawn.inventory.innerContainer.TryAdd(rolledWeaponFinal);
-                if (success)
-                    CompSidearmMemory.GetMemoryCompForPawn(pawn).InformOfAddedSidearm(rolledWeaponFinal);
+                if (success) 
+                {
+
+                    CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                    if (pawnMemory != null)
+                        pawnMemory.InformOfAddedSidearm(rolledWeaponFinal);
+                }
                 else
                     Log.Warning("Failed to add generated sidearm to inventory");
 
