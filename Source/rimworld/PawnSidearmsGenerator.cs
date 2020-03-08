@@ -25,13 +25,11 @@ namespace SimpleSidearms.rimworld
         public static bool TryGenerateSidearmFor(Pawn pawn, float chance, float budgetMultiplier, PawnGenerationRequest request)
         {
             if (
-                pawn is null ||
+                !pawn.IsValidSidearmsCarrier() ||
                 SimpleSidearms.configData is null || //not yet in game
                 chance < 0.01f ||
                 pawn.kindDef.weaponTags == null || pawn.kindDef.weaponTags.Count == 0 ||
-                pawn.equipment == null || pawn.equipment.Primary == null ||
-                !pawn.RaceProps.ToolUser ||
-                !pawn.RaceProps.Humanlike ||
+                pawn.equipment.Primary == null ||
                 !pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation) ||
                 (pawn.story != null && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0))
                 )

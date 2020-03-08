@@ -47,6 +47,8 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         public static void GetGizmos(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
+            if (!__instance.IsValidSidearmsCarrier())
+                return;
             try
             {
                 if ((__instance.IsColonistPlayerControlled)

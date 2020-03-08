@@ -39,9 +39,11 @@ namespace SimpleSidearms.utilities
 
         public static bool equipSpecificWeapon(Pawn pawn, ThingWithComps weapon, bool dropCurrent, bool intentionalDrop)
         {
-            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+            if (!pawn.IsValidSidearmsCarrier())
+                return false;
 
-            if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null)
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+            if (pawnMemory == null)
                 return false;
 
             if (weapon == pawn.equipment.Primary) //attepmpting to equip already-equipped weapon
@@ -55,7 +57,9 @@ namespace SimpleSidearms.utilities
             {
                 pawnMemory.InformOfDroppedSidearm(weapon, intentionalDrop);
                 ThingWithComps discarded;
+                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out discarded, pawn.Position, false);
+                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
             }   
                 //or put it in inventory
             else if (pawn.equipment.Primary != null)
@@ -94,9 +98,12 @@ namespace SimpleSidearms.utilities
         public static bool equipBestWeaponFromInventoryByStatModifiers(Pawn pawn, List<StatDef> stats)
         {
             //Log.Message("looking for a stat booster for stats " + String.Join(",", stats.Select(s => s.label))); ;
-            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
-            if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null || stats == null || stats.Count == 0 || pawn.Drafted)
+            if (!pawn.IsValidSidearmsCarrier() || stats.Count == 0 || pawn.Drafted)
+                return false;
+
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+            if (pawnMemory == null)
                 return false;
 
             ThingWithComps bestBooster = pawn.getCarriedWeapons(includeTools: true).Where(t =>
@@ -119,9 +126,10 @@ namespace SimpleSidearms.utilities
 
         public static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum drop, PrimaryWeaponMode? modeOverride = null, Pawn target = null)
         {
+            if (!pawn.IsValidSidearmsCarrier())
+                return;
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-
-            if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null)
+            if (pawnMemory == null)
                 return;
 
             PrimaryWeaponMode mode = modeOverride == null ? pawnMemory.primaryWeaponMode : modeOverride.Value;
@@ -332,9 +340,12 @@ namespace SimpleSidearms.utilities
 
         public static bool tryCQCWeaponSwapToMelee(Pawn pawn, Pawn target, DroppingModeEnum drop)
         {
+            if (!pawn.IsValidSidearmsCarrier())
+                return false;
+
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
-            if (pawn == null || pawn.Dead || pawnMemory == null || pawn.equipment == null || pawn.inventory == null)
+            if (pawnMemory == null)
                 return false;
 
             if (!pawn.RaceProps.Humanlike)
@@ -391,7 +402,11 @@ namespace SimpleSidearms.utilities
             ThingWithComps discarded1;
             Thing discarded2;
             if (pawn.equipment.Primary == weapon)
+            {
+                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out discarded1, pawn.Position, false);
+                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
+            }
             else
                 pawn.inventory.innerContainer.TryDrop(weapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out discarded2, null);
 

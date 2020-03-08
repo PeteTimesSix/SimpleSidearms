@@ -19,8 +19,7 @@ namespace SimpleSidearms.rimworld
                 return null;
             else
             {
-                Pawn_EquipmentTracker equipment = pawn.equipment;
-                if (equipment == null)
+                if (!pawn.IsValidSidearmsCarrier())
                     return null;
 
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);

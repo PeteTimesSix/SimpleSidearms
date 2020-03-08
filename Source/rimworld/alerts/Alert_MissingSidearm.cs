@@ -47,9 +47,9 @@ namespace SimpleSidearms.rimworld.alerts
             {
                 foreach (Pawn pawn in PawnsFinder.AllMaps_FreeColonistsSpawned)
                 {
-                    if (pawn.health != null && pawn.Dead)
+                    if (!pawn.IsValidSidearmsCarrier())
                     {
-                        Log.Error("Dead pawn in PawnsFinder.AllMaps_FreeColonists:" + pawn);
+                        continue;
                     }
                     else
                     {

@@ -28,6 +28,8 @@ namespace SimpleSidearms.intercepts
                 toil.AddPreInitAction(delegate
                 {
                     Pawn pawn = toil.GetActor();
+                    if (!pawn.IsValidSidearmsCarrier())
+                        return;
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if (pawnMemory == null)
                         return;
@@ -49,8 +51,9 @@ namespace SimpleSidearms.intercepts
                 });
                 toil.AddFinishAction(delegate
                 {
-
                     Pawn pawn = toil.GetActor();
+                    if (!pawn.IsValidSidearmsCarrier())
+                        return;
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if (pawnMemory != null)
                     {
@@ -71,6 +74,8 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         public static void CarryWeaponOpenly(ref PawnRenderer __instance, ref Pawn ___pawn, ref bool __result)
         {
+            if (!___pawn.IsValidSidearmsCarrier())
+                return;
             if (__result == true)
                 return;
             else
@@ -127,7 +132,9 @@ namespace SimpleSidearms.intercepts
             if (!__instance.Drafted)
             {
                 Pawn pawn = __instance.pawn;
-                if (pawn != null && !pawn.Dead && pawn.IsColonist)
+                if (!pawn.IsValidSidearmsCarrier())
+                    return;
+                if (pawn.IsColonist)
                 {
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if (pawnMemory == null)
@@ -160,7 +167,9 @@ namespace SimpleSidearms.intercepts
             Pawn pawn = __instance.stanceTracker.pawn;
             if (IsHunting(pawn))
                 return;
-            if (__instance.verb is Verb_Shoot)
+            if (!pawn.IsValidSidearmsCarrier())
+                return;
+            if (!(__instance.verb is Verb_Shoot))
                 return;
             /*if (!SimpleSidearms.CEOverride && !(__instance.verb is Verb_Shoot))
                 return;
@@ -214,18 +223,21 @@ namespace SimpleSidearms.intercepts
     }
 
     [HarmonyPatch(typeof(Pawn_EquipmentTracker), "TryDropEquipment")]
-    public static class Pawn_HealthTracker_TryDropEquipment
+    public static class Pawn_EquipmentTracker_TryDropEquipment
     {
+        //EW EW EW GLOBAL FLAG EW EW
+        public static bool dropEquipmentSourcedBySimpleSidearms = false;
+
         [HarmonyPostfix]
         public static void TryDropEquipment_Postfix(Pawn_EquipmentTracker __instance, bool __result, ThingWithComps resultingEq)
         {
             if(__result == true && resultingEq != null) 
             {
                 Pawn pawn = __instance.pawn;
-                if (pawn == null || pawn.Dead || !pawn.RaceProps.Humanlike)
+                if (!pawn.IsValidSidearmsCarrier())
                     return;
 
-                if (!Pawn_HealthTracker_MakeDowned.beingDowned)
+                if (!(Pawn_HealthTracker_MakeDowned.beingDowned || dropEquipmentSourcedBySimpleSidearms))
                 {
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if(pawnMemory != null)
@@ -247,7 +259,7 @@ namespace SimpleSidearms.intercepts
             if (!addEquipmentSourcedBySimpleSidearms)
             {
                 Pawn pawn = __instance.pawn;
-                if (pawn == null)
+                if (!pawn.IsValidSidearmsCarrier())
                     return;
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                 if (pawnMemory == null)
@@ -288,11 +300,12 @@ namespace SimpleSidearms.intercepts
             else
             {
                 Pawn pawn = __instance.pawn;
+                if (!pawn.IsValidSidearmsCarrier())
+                    return;
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                 if (
                     pawnMemory == null ||
                     !pawn.IsColonist ||
-                    pawn.equipment == null ||
                     __instance.innerContainer == null
                     )
                 {

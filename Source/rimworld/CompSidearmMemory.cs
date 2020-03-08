@@ -224,7 +224,12 @@ namespace SimpleSidearms.rimworld
         {
             if (pawn == null)
                 return null;
+            if (!pawn.def.race.Humanlike)
+            {
+                Log.Warning("CompSidearmMemory accessed for non-humanlike pawn " + pawn.Label);
+                return null;
 
+            }
             CompSidearmMemory memory = pawn.TryGetComp<CompSidearmMemory>();
             if (memory == null)
                 return null;

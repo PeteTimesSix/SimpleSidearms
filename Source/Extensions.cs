@@ -117,6 +117,11 @@ namespace SimpleSidearms
             return retVal;
         }
 
+        public static bool IsValidSidearmsCarrier(this Pawn pawn) 
+        {
+            return pawn != null && !pawn.Dead && pawn.equipment != null && pawn.inventory != null && pawn.RaceProps.Humanlike;
+        }
+
         public static PrimaryWeaponMode getSkillWeaponPreference(this Pawn pawn)
         {
             if (pawn.skills == null)
