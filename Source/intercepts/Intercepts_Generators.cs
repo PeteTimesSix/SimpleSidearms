@@ -36,6 +36,6 @@ namespace SimpleSidearms.intercepts
                 Log.Error("Exception during pawn gear generation intercept. Cancelling intercept. Exception: " + e.ToString());
             }
 
-}
+        }
     }
 }

@@ -30,14 +30,21 @@ namespace SimpleSidearms
             }
             foreach (StatDef stat in DefDatabase<StatDef>.AllDefsListForReading)
             {
-                if (stat.skillNeedFactors == null)
+                if (stat.skillNeedFactors != null)
                 {
-                    continue;
+                    foreach (SkillNeed neededSkill in stat.skillNeedFactors)
+                    {
+                        if (!map[neededSkill.skill].Contains(stat))
+                            map[neededSkill.skill].Add(stat);
+                    }
                 }
-                foreach (SkillNeed neededSkill in stat.skillNeedFactors)
+                if (stat.skillNeedOffsets != null)
                 {
-                    if (!map[neededSkill.skill].Contains(stat))
-                        map[neededSkill.skill].Add(stat);
+                    foreach (SkillNeed neededSkill in stat.skillNeedOffsets)
+                    {
+                        if (!map[neededSkill.skill].Contains(stat))
+                            map[neededSkill.skill].Add(stat);
+                    }
                 }
             }
         }

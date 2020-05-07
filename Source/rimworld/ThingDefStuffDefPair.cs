@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine.Assertions;
 using Verse;
 
 namespace SimpleSidearms.rimworld
@@ -52,26 +53,24 @@ namespace SimpleSidearms.rimworld
 
         public ThingDefStuffDefPair(ThingDef thing, ThingDef stuff = null)
         {
+            if (thing == null) throw new ArgumentNullException(nameof(thing));
+
             this.thing = thing;
             this.stuff = stuff;
             cachedThingStuffPairLoaded = false;
             this.cachedThingStuffPair = null;
         }
 
-        public ThingDefStuffDefPair(ThingStuffPair? t) : this()
+        public ThingDefStuffDefPair(ThingStuffPair thingStuffPair) : this()
         {
-            if (t.HasValue)
-            {
-                this.thing = t.Value.thing;
-                this.stuff = t.Value.stuff;
-                this.cachedThingStuffPairLoaded = true;
-                this.cachedThingStuffPair = t;
-            }
-            else 
-            {
-                this.cachedThingStuffPairLoaded = true;
-                this.cachedThingStuffPair = null;
-            }
+            if (thingStuffPair == null) throw new ArgumentNullException(nameof(thingStuffPair));
+            if (thingStuffPair.thing == null) throw new ArgumentException(nameof(thingStuffPair)+".thing");
+
+
+            this.thing = thingStuffPair.thing;
+            this.stuff = thingStuffPair.stuff;
+            this.cachedThingStuffPairLoaded = true;
+            this.cachedThingStuffPair = thingStuffPair;
         }
 
         public void ExposeData()
@@ -93,7 +92,14 @@ namespace SimpleSidearms.rimworld
         public override int GetHashCode()
         {
             int num = 0;
-            num = Gen.HashCombineInt(num, (int)this.thing.shortHash);
+            if (this.thing != null)
+            {
+                num = Gen.HashCombineInt(num, (int)this.thing.shortHash);
+            }
+            else
+            {
+                Log.Warning("There is a ThingDefStuffDefPair with null thing!");
+            }
             if (this.stuff != null)
             {
                 num = Gen.HashCombineInt(num, (int)this.stuff.shortHash);

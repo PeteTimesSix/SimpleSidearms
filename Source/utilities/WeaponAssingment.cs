@@ -27,13 +27,6 @@ namespace SimpleSidearms.utilities
 
         public static bool equipSpecificWeaponFromInventory(Pawn pawn, ThingWithComps weapon, bool dropCurrent, bool intentionalDrop)
         {
-            if (weapon != null)
-            {
-                if (weapon.stackCount > 1)
-                    weapon = weapon.SplitOff(1) as ThingWithComps; //if this cast doesnt work the world has gone mad
-                else
-                    pawn.inventory.innerContainer.Remove(weapon);
-            }
             return equipSpecificWeapon(pawn, weapon, dropCurrent, intentionalDrop);
         }
 
@@ -52,21 +45,47 @@ namespace SimpleSidearms.utilities
                 return false;
             }
 
+            var currentPrimary = pawn.equipment.Primary;
+
                 //drop current on the ground
             if (dropCurrent && pawn.equipment.Primary != null)
             {
                 pawnMemory.InformOfDroppedSidearm(weapon, intentionalDrop);
-                ThingWithComps discarded;
                 Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
-                pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out discarded, pawn.Position, false);
+                pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out ThingWithComps droppedItem, pawn.Position, false);
                 Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
             }   
                 //or put it in inventory
             else if (pawn.equipment.Primary != null)
             {
                 ThingWithComps oldPrimary = pawn.equipment.Primary;
-                pawn.equipment.Remove(oldPrimary);
-                pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
+                bool addedToInventory = pawn.inventory.innerContainer.TryAddOrTransfer(oldPrimary, true);
+                //pawn.equipment.Remove(oldPrimary);
+                //bool addedToInventory = pawn.inventory.innerContainer.TryAdd(oldPrimary, true);
+                if(!addedToInventory)
+                    Log.Warning(String.Format("Failed to place primary equipment {0} (initially was {1}) into inventory when swapping to {2} on pawn {3} (colonist: {4}) (dropping: {5}, current drop mode: {6}). Aborting swap. Please report this!",
+                       pawn.equipment.Primary != null ? pawn.equipment.Primary.LabelCap : "NULL",
+                       currentPrimary != null ? currentPrimary.LabelCap : "NULL",
+                       weapon != null ? weapon.LabelCap : "NULL",
+                       pawn?.LabelCap,
+                       pawn?.IsColonist,
+                       dropCurrent,
+                       SimpleSidearms.DropMode
+                    ));
+            }
+
+            if (pawn.equipment.Primary != null) 
+            {
+                Log.Warning(String.Format("Failed to remove current primary equipment {0} (initially was {1}) when swapping to {2} on pawn {3} (colonist: {4}) (dropping: {5}, current drop mode: {6}). Aborting swap. Please report this!", 
+                    pawn.equipment.Primary != null ? pawn.equipment.Primary.LabelCap : "NULL", 
+                    currentPrimary != null ? currentPrimary.LabelCap : "NULL", 
+                    weapon != null ? weapon.LabelCap : "NULL", 
+                    pawn?.LabelCap,
+                    pawn?.IsColonist,
+                    dropCurrent,
+                    SimpleSidearms.DropMode
+                    ));
+                return false;
             }
 
             if (weapon == null)
@@ -78,6 +97,8 @@ namespace SimpleSidearms.utilities
                 if (weapon.stackCount > 1)
                     weapon = weapon.SplitOff(1) as ThingWithComps; //if this cast doesnt work the world has gone mad
 
+                if (weapon.holdingOwner != null)
+                    weapon.holdingOwner.Remove(weapon);
                 Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.AddEquipment(weapon as ThingWithComps);
                 Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = false;

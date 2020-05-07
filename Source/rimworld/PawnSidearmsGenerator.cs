@@ -155,7 +155,7 @@ namespace SimpleSidearms.rimworld
 
             if (!foundAnyMap) 
             {
-                Log.Message("SimpleSidearms warning: no weaponTag sidearm map found for following source tags: (" + String.Join(",", sourceTags)+")");
+                Log.Message("SimpleSidearms warning: no weaponTag sidearm map found for following source tags: (" + String.Join(",", sourceTags)+"), defaulting to source tags for sidearms");
                 //as a fallback, use the source tags 
                 resultTags.AddRange(sourceTags);
             }

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace SimpleSidearms.rimworld
 {
@@ -43,13 +45,32 @@ namespace SimpleSidearms.rimworld
                 lastJobs[parent] = curJobs[parent];
                 curJobs[parent] = curJob;
             }
-            string curJobDriver = parent.jobs.curDriver == null ? "null" : parent.jobs.curDriver.ToString();
+            string curJobDriverStr = parent.jobs.curDriver == null ? "null" : parent.jobs.curDriver.ToString();
+            string toilStr = "null";
+            string toilActiveSkillStr = "null";
+            if (parent?.jobs?.curDriver != null) 
+            {
+                Toil toil = Traverse.Create(parent.jobs.curDriver).Property("CurToil").GetValue() as Toil;
+                if (toil != null)
+                {
+                    toilStr = toil.ToString();
+                    if (toil.activeSkill != null)
+                        toilActiveSkillStr = toil.activeSkill().ToString();
+                }
+            }
+
+            var font = Text.Font;
+            Text.Font = GameFont.Tiny;
 
             float offset = 0;
-            printBool("Idle:", parent.mindState.IsIdle, contentRect, 0);                        offset += 16f;
-            printStringPair("Job:", curJobs[parent], Color.white, contentRect, offset);         offset += 16f;
-            printStringPair("Last job:", lastJobs[parent], Color.white, contentRect, offset);   offset += 16f;
-            printStringPair("JobDriver:", curJobDriver, Color.white, contentRect, offset);      offset += 16f;
+            printBool("Idle:", parent.mindState.IsIdle, contentRect, 0);                        offset += 10f;
+            printStringPair("Job:", curJobs[parent], Color.white, contentRect, offset);         offset += 10f;
+            printStringPair("Last job:", lastJobs[parent], Color.white, contentRect, offset);   offset += 10f;
+            printStringPair("JobDriver:", curJobDriverStr, Color.white, contentRect, offset);   offset += 10f;
+            printStringPair("Toil:", toilStr, Color.white, contentRect, offset);                offset += 10f;
+            printStringPair("T. actSk:", toilActiveSkillStr, Color.white, contentRect, offset); offset += 10f;
+
+            Text.Font = font;
 
             return new GizmoResult(GizmoState.Clear);
         }

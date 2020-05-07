@@ -25,27 +25,41 @@ namespace SimpleSidearms.intercepts
             if (SimpleSidearms.ToolAutoSwitch == true) 
             {
                 Toil toil = __instance;
+                if (toil == null)
+                    return;
+
                 toil.AddPreInitAction(delegate
                 {
                     Pawn pawn = toil.GetActor();
-                    if (!pawn.IsValidSidearmsCarrier())
+                    if (pawn == null || !pawn.IsValidSidearmsCarrier())
                         return;
+
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if (pawnMemory == null)
                         return;
                     pawnMemory.CheckIfStillOnAutotoolJob();
 
-                    if (toil.activeSkill != null && toil.activeSkill() != null && pawn != null)
+                    StatDef activeStat = pawn.CurJob?.RecipeDef?.workSpeedStat;
+
+                    SkillDef activeSkill = null;
+                    if (toil.activeSkill != null && toil.activeSkill() != null)
+                        activeSkill = toil.activeSkill();
+                    else
+                        activeSkill = pawn.CurJob?.RecipeDef?.workSkill;
+
+                    List<StatDef> possiblyActiveStats = new List<StatDef>();
+                    if (activeStat != null)
+                        possiblyActiveStats.Add(activeStat);
+                    else if (activeSkill != null && SkillStatMap.Map.ContainsKey(activeSkill))
+                        possiblyActiveStats.AddRange(SkillStatMap.Map[activeSkill]);
+
+                    bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(toil.GetActor(), possiblyActiveStats);
+                    if (usingAppropriateTool)
                     {
-                        //Log.Message("Pawn " + toil.GetActor().Label + " initializing toil that uses skill " + toil.activeSkill().label);
-                        bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(toil.GetActor(), SkillStatMap.Map[toil.activeSkill()]);
-                        if (usingAppropriateTool)
+                        if (pawnMemory != null)
                         {
-                            if (pawnMemory != null)
-                            {
-                                pawnMemory.autotoolToil = toil;
-                                pawnMemory.autotoolJob = pawn.CurJobDef;
-                            }
+                            pawnMemory.autotoolToil = toil;
+                            pawnMemory.autotoolJob = pawn.CurJobDef;
                         }
                     }
                 });

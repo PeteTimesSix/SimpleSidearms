@@ -81,26 +81,21 @@ namespace SimpleSidearms.intercepts
                             Gizmo_SidearmsList advanced = new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons);
 
                             List<Gizmo> results = new List<Gizmo>();
+                            results.Add(advanced);
+                            if (DebugSettings.godMode)
+                            {
+                                Gizmo_Brainscope brainscope = new Gizmo_Brainscope(__instance);
+                                results.Add(brainscope);
+                            }
                             foreach (Gizmo gizmo in __result)
                             {
                                 results.Add(gizmo);
-                            }
-                            results.Add(advanced);
+                            };
                             __result = results;
                         }
                     }
                 }
-                if (DebugSettings.godMode)
-                {
-                    Gizmo_Brainscope brainscope = new Gizmo_Brainscope(__instance);
-                    List<Gizmo> results = new List<Gizmo>();
-                    foreach (Gizmo gizmo in __result)
-                    {
-                        results.Add(gizmo);
-                    }
-                    results.Add(brainscope);
-                    __result = results;
-                }
+               
             }
             catch(Exception e) 
             {

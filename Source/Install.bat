@@ -121,3 +121,7 @@ IF EXIST "%RIMWORLD_DIR_STEAM%" (
 	)
 	%ZIP_EXE% a "%TARGET_DIR%.zip" "%TARGET_DIR%" 1>NUL
 )
+
+
+
+"C:\Program Files (x86)\Steam\Steam.exe"  -applaunch 294100
