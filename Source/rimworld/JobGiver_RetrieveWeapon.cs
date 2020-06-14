@@ -40,7 +40,7 @@ namespace SimpleSidearms.rimworld
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
-                    if (!pawn.hasWeaponSomewhere(weaponMemory, dupeCounters[weaponMemory]))
+                    if (!pawn.hasWeaponType(weaponMemory, dupeCounters[weaponMemory]))
                     {
                         float maxDist = 1000f;
                         if (pawn.Faction != Faction.OfPlayer)

@@ -298,6 +298,36 @@ namespace SimpleSidearms.intercepts
         }
     }
 
+    [HarmonyPatch(typeof(JobGiver_DropUnusedInventory))]
+    [HarmonyPatch("Drop")]
+    public static class JobGiver_DropUnusedInventory_Drop 
+    {
+        [HarmonyPrefix]
+        public static bool Prefix(Pawn pawn, Thing thing)
+        {
+            if (!(thing is ThingWithComps thingWithComps) || !pawn.IsValidSidearmsCarrier())
+                return true;
+            else
+            {
+                var weaponType = thingWithComps.toThingDefStuffDefPair();
+                CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                var rememberedOfType = pawnMemory.rememberedWeapons.Where(w => w == weaponType);
+                if (rememberedOfType.Any())
+                {
+
+                    var carriedOfType = pawn.getCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
+
+                    if (rememberedOfType.Count() > carriedOfType.Sum(c => c.stackCount) - thingWithComps.stackCount)
+                    {
+                        //Log.Message($"was about to dump a weapon we need (need {rememberedOfType.Count()}, dropping {thingWithComps.stackCount} of {carriedOfType.Sum(c => c.stackCount)})");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(Pawn_InventoryTracker))]
     [HarmonyPatch("FirstUnloadableThing", MethodType.Getter)]
     public static class Pawn_InventoryTracker_FirstUnloadableThing

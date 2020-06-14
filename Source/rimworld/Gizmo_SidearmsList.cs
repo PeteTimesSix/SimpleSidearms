@@ -1,8 +1,10 @@
-﻿using RimWorld;
+﻿using HarmonyLib;
+using RimWorld;
 using SimpleSidearms.utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 using Verse;
@@ -102,93 +104,111 @@ namespace SimpleSidearms.rimworld
             if (pawnMemory == null)
                 return new GizmoResult(GizmoState.Clear);
 
-            int i = 0;
+            int total = 0;
+            Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
             {
-                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
                 var rangedWeapons = carriedRangedWeapons.ToList();
                 rangedWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
-                for (i = 0; i < rangedWeapons.Count(); i++)
+
+                int i = 0;
+                foreach (var weapon in rangedWeapons)
                 {
-                    ThingDefStuffDefPair weaponMemory = rangedWeapons[i].toThingDefStuffDefPair();
+                    ThingDefStuffDefPair weaponMemory = weapon.toThingDefStuffDefPair();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
                     bool isDupe = dupeCounters[weaponMemory] > 0;
                     var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1) + SelectorPanelWidth, 0);
-                    DrawIconForWeapon(parent, pawnMemory, rangedWeapons[i], isDupe, contentRect, iconOffset);
+                    DrawIconForWeapon(parent, pawnMemory, weapon, isDupe, contentRect, iconOffset);
 
-                    dupeCounters[weaponMemory]++;
+                    i++;
+                    dupeCounters[weaponMemory] += weapon.stackCount;
                 }
+                total += i;
             }
 
-            int j = 0;
+            dupeCounters.Clear();
+
             if (pawnMemory != null)
             {
-                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
                 var rangedWeaponMemoriesSorted = rangedWeaponMemories.ToList();
                 rangedWeaponMemoriesSorted.SortStable((a, b) => { return (int)((b.Price - a.Price) * 1000); });
-                foreach (ThingDefStuffDefPair weaponMemory in rangedWeaponMemoriesSorted)
+                var grouped = rangedWeaponMemoriesSorted.GroupBy(m => m);
+
+                int j = 0;
+                foreach (var group in grouped)
                 {
+                    var weaponMemory = group.Key;
+                    var stackCount = group.Count();
+
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
-                    if (!parent.hasWeaponSomewhere(weaponMemory, dupeCounters[weaponMemory]))
+                    int missingCount = parent.missingCountWeaponsOfType(weaponMemory, stackCount, dupeCounters[weaponMemory]);
+                    if(missingCount > 0)
                     {
                         bool isDupe = dupeCounters[weaponMemory] > 0;
-                        var iconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + SelectorPanelWidth, 0);
-                        DrawIconForWeaponMemory(parent, pawnMemory, weaponMemory, isDupe, contentRect, iconOffset);
+                        var iconOffset = new Vector2((IconSize * (total + j)) + IconGap * ((total + j) - 1) + SelectorPanelWidth, 0);
+                        DrawIconForWeaponMemory(parent, pawnMemory, weaponMemory, missingCount, isDupe, contentRect, iconOffset);
                         j++;
                     }
-
-                    dupeCounters[weaponMemory]++;
+                    dupeCounters[weaponMemory] += stackCount;
                 }
             }
 
+            dupeCounters.Clear();
+            total = 0;
+
             {
-                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
                 var meleeWeapons = carriedMeleeWeapons.ToList();
                 meleeWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
-                for (i = 0; i < meleeWeapons.Count(); i++)
+                int i = 0;
+                foreach(var weapon in meleeWeapons)
                 {
-                    ThingDefStuffDefPair weaponMemory = meleeWeapons[i].toThingDefStuffDefPair();
+                    ThingDefStuffDefPair weaponMemory = weapon.toThingDefStuffDefPair();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
                     bool isDupe = dupeCounters[weaponMemory] > 0;
                     var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1) + SelectorPanelWidth, IconSize + IconGap);
+                    DrawIconForWeapon(parent, pawnMemory, weapon, isDupe, contentRect, iconOffset);
 
-                    DrawIconForWeapon(parent, pawnMemory, meleeWeapons[i], isDupe, contentRect, iconOffset);
-
-                    dupeCounters[weaponMemory]++;
+                    i++;
+                    dupeCounters[weaponMemory] += weapon.stackCount;
                 }
+                total += i;
             }
-            
 
-            j = 0;
+            dupeCounters.Clear();
+
             if (pawnMemory != null)
             {
-                Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
                 var meleeWeaponMemoriesSorted = meleeWeaponMemories.ToList();
                 meleeWeaponMemoriesSorted.SortStable((a, b) => { return (int)((b.Price - a.Price) * 1000); });
-                foreach (ThingDefStuffDefPair weaponMemory in meleeWeaponMemoriesSorted)
+                var grouped = meleeWeaponMemoriesSorted.GroupBy(m => m);
+
+                int j = 0;
+                foreach (var group in grouped)
                 {
+                    var weaponMemory = group.Key;
+                    var stackCount = group.Count();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
-                    if (!parent.hasWeaponSomewhere(weaponMemory, dupeCounters[weaponMemory]))
+                    int missingCount = parent.missingCountWeaponsOfType(weaponMemory, stackCount, dupeCounters[weaponMemory]);
+                    if (missingCount > 0)
                     {
                         bool isDupe = dupeCounters[weaponMemory] > 0;
-                        var iconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + SelectorPanelWidth, IconSize + IconGap);
-
-                        DrawIconForWeaponMemory(parent, pawnMemory, weaponMemory, isDupe, contentRect, iconOffset);
-
-                        dupeCounters[weaponMemory]++;
+                        var iconOffset = new Vector2((IconSize * (total + j)) + IconGap * ((total + j) - 1) + SelectorPanelWidth, IconSize + IconGap);
+                        DrawIconForWeaponMemory(parent, pawnMemory, weaponMemory, missingCount, isDupe, contentRect, iconOffset);
                         j++;
                     }
+                    dupeCounters[weaponMemory] += stackCount;
                 }
+                total += j;
             }
 
-            var unarmedIconOffset = new Vector2((IconSize * (i + j)) + IconGap * ((i + j) - 1) + SelectorPanelWidth, IconSize + IconGap);
+            var unarmedIconOffset = new Vector2((IconSize * total) + IconGap * (total - 1) + SelectorPanelWidth, IconSize + IconGap);
             DrawIconForUnarmed(parent, pawnMemory, contentRect, unarmedIconOffset);
 
             Rect selectorPanel = new Rect(gizmoRect.x + ContentPadding, gizmoRect.y + ContentPadding, SelectorPanelWidth - ContentPadding * 2, MinGizmoSize - ContentPadding * 2);
@@ -301,7 +321,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        public void DrawIconForWeaponMemory(Pawn pawn, CompSidearmMemory pawnMemory, ThingDefStuffDefPair weaponType, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForWeaponMemory(Pawn pawn, CompSidearmMemory pawnMemory, ThingDefStuffDefPair weaponType, int stackCount, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
         {
             Graphic g = weaponType.thing.graphicData.Graphic;
 
@@ -334,12 +354,21 @@ namespace SimpleSidearms.rimworld
 
             Graphic outerGraphic = weaponType.thing.graphic;
             if (outerGraphic is Graphic_StackCount)
-                outerGraphic = (outerGraphic as Graphic_StackCount).SubGraphicForStackCount(1, weaponType.thing);
+                outerGraphic = (outerGraphic as Graphic_StackCount).SubGraphicForStackCount(stackCount, weaponType.thing);
+
             Material material = outerGraphic.ExtractInnerGraphicFor(null).MatAt(weaponType.thing.defaultPlacingRot, null);
             Texture resolvedIcon = (Texture2D)material.mainTexture;
             GUI.color = weaponType.getDrawColor();
             GUI.DrawTexture(iconRect, resolvedIcon);
             GUI.color = Color.white;
+
+            if (stackCount > 1)
+            {
+                var store = Text.Anchor;
+                Text.Anchor = TextAnchor.MiddleCenter;
+                Widgets.Label(iconRect, stackCount.ToString());
+                Text.Anchor = store;
+            }
 
             if (!isDuplicate)
             {
@@ -447,28 +476,23 @@ namespace SimpleSidearms.rimworld
                 //Graphics.DrawTexture(iconRect, TextureResources.drawPocket, new Rect(0, 0, 1f, 1f), 0, 0, 0, 0, iconBaseColor);
             }
 
-            /*Texture resolvedIcon;
-
-            if (!weapon.def.uiIconPath.NullOrEmpty())
-            {
-                resolvedIcon = weapon.def.uiIcon;
-            }
-            else
-            {
-                resolvedIcon = weapon.Graphic.ExtractInnerGraphicFor(weapon).MatSingle.mainTexture;
-            }
-            GUI.color = weapon.DrawColor;
-            GUI.DrawTexture(iconRect, resolvedIcon);
-            GUI.color = Color.white;*/
-
             Graphic outerGraphic = weaponType.thing.graphic;
             if (outerGraphic is Graphic_StackCount)
-                outerGraphic = (outerGraphic as Graphic_StackCount).SubGraphicForStackCount(1, weaponType.thing);
+                outerGraphic = (outerGraphic as Graphic_StackCount).SubGraphicForStackCount(weapon.stackCount, weaponType.thing);
+
             Material material = outerGraphic.ExtractInnerGraphicFor(null).MatAt(weaponType.thing.defaultPlacingRot, null);
             Texture resolvedIcon = (Texture2D)material.mainTexture;
             GUI.color = weapon.DrawColor;
             GUI.DrawTexture(iconRect, resolvedIcon);
             GUI.color = Color.white;
+
+            if (weapon.stackCount > 1)
+            {
+                var store = Text.Anchor;
+                Text.Anchor = TextAnchor.MiddleCenter;
+                Widgets.Label(iconRect, weapon.stackCount.ToString());
+                Text.Anchor = store;
+            }
 
             if (!isDuplicate)
             {
@@ -902,18 +926,25 @@ namespace SimpleSidearms.rimworld
             int count = 0;
 
             Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
-            foreach (ThingDefStuffDefPair weapon in pawnMemory.RememberedWeapons)
+
+            var weaponMemories = meleeWeaponMemories.ToList();
+            var grouped = weaponMemories.GroupBy(m => m);
+
+            foreach (var group in grouped)
             {
+                var weapon = group.Key;
+                var stackCount = group.Count();
+
                 if (!dupeCounters.ContainsKey(weapon))
                     dupeCounters[weapon] = 0;
 
-                if (!weapon.thing.IsMeleeWeapon)
-                    continue;
-                if (!pawn.hasWeaponSomewhere(weapon, dupeCounters[weapon]))
+                var missingWeapons = pawn.missingCountWeaponsOfType(weapon, stackCount, dupeCounters[weapon]);
+                if (missingWeapons > 0)
                     count++;
 
-                dupeCounters[weapon]++;
+                dupeCounters[weapon] += stackCount;
             }
+
             return count;
         }
 
@@ -925,18 +956,24 @@ namespace SimpleSidearms.rimworld
             int count = 0;
 
             Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
-            foreach (ThingDefStuffDefPair weapon in pawnMemory.RememberedWeapons)
+            var weaponMemories = rangedWeaponMemories.ToList();
+            var grouped = weaponMemories.GroupBy(m => m);
+
+            foreach (var group in grouped)
             {
+                var weapon = group.Key;
+                var stackCount = group.Count();
+
                 if (!dupeCounters.ContainsKey(weapon))
                     dupeCounters[weapon] = 0;
 
-                if (!weapon.thing.IsRangedWeapon)
-                    continue;
-                if (!pawn.hasWeaponSomewhere(weapon, dupeCounters[weapon]))
+                var missingWeapons = pawn.missingCountWeaponsOfType(weapon, stackCount, dupeCounters[weapon]);
+                if (missingWeapons > 0)
                     count++;
 
-                dupeCounters[weapon]++;
+                dupeCounters[weapon] += stackCount;
             }
+
             return count;
         }
 

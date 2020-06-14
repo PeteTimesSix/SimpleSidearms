@@ -3,6 +3,7 @@ using SimpleSidearms.rimworld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using UnityEngine;
 using Verse;
@@ -166,12 +167,17 @@ namespace SimpleSidearms
             return weapons;
         }
 
-        public static bool hasWeaponSomewhere(this Pawn pawn, ThingDefStuffDefPair weapon, int duplicatesToSkip = 0)
+        public static bool hasWeaponType(this Pawn pawn, ThingDefStuffDefPair weapon, int dupesToSkip = 0) 
+        {
+            return pawn.missingCountWeaponsOfType(weapon, 1, dupesToSkip) == 0;
+        }
+
+        public static int missingCountWeaponsOfType(this Pawn pawn, ThingDefStuffDefPair weapon, int countToSatisfy, int dupesToSkip = 0)
         {
             if (pawn == null)
             {
                 Log.Warning("hasWeaponSomewhere got handed null pawn");
-                return false;
+                return 0;
             }
 
             int dupesSoFar = 0;
@@ -181,8 +187,10 @@ namespace SimpleSidearms
                     if (pawn.equipment.Primary.matchesThingDefStuffDefPair(weapon))
                         dupesSoFar++;
 
-            if (duplicatesToSkip < dupesSoFar)
-                return true;
+            if (dupesSoFar - dupesToSkip >= countToSatisfy)
+            {
+                return 0;
+            }
 
             if (pawn.inventory != null)
             {
@@ -192,14 +200,16 @@ namespace SimpleSidearms
                     {
                         if (thing.matchesThingDefStuffDefPair(weapon))
                         {
-                            dupesSoFar++;
-                            if (duplicatesToSkip < dupesSoFar)
-                                return true;
+                            dupesSoFar += thing.stackCount;
+                            if (dupesSoFar - dupesToSkip >= countToSatisfy)
+                            {
+                                return 0;
+                            }
                         }
                     }
                 }
             }
-            return false;
+            return countToSatisfy - (dupesSoFar - dupesToSkip);
         }
 
         public static bool Contains(this Rect rect, Rect otherRect)

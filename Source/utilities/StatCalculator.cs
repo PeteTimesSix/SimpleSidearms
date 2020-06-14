@@ -145,18 +145,19 @@ namespace SimpleSidearms.utilities
                 errString = "BladelinkBondedToSomeoneElse".Translate();
                 return false;
             }
-            if (compBladelinkWeapon != null && compBladelinkWeapon.bondedPawn == null)
-            {
-                errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
-                return false;
-            }
             if (EquipmentUtility.IsBiocoded(sidearmThing) && pawn != sidearmThing.TryGetComp<CompBiocodableWeapon>().CodedPawn)
             {
                 errString = "BiocodedCodedForSomeoneElse".Translate();
                 return false;
             }
+            if (compBladelinkWeapon != null && compBladelinkWeapon.bondedPawn == null)
+            {
+                errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
+                return false;
+            }
 
             ThingDefStuffDefPair sidearm = sidearmThing.toThingDefStuffDefPair();
+            
             return canCarrySidearmType(sidearm, pawn, out errString);
         }
 

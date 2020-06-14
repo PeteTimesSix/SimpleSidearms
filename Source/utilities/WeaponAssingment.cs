@@ -220,7 +220,7 @@ namespace SimpleSidearms.utilities
                 ((mode == PrimaryWeaponMode.BySkill) && (pawn.getSkillWeaponPreference() == PrimaryWeaponMode.Ranged)))
             {
 
-                if (pawnMemory.DefaultRangedWeapon != null && pawn.hasWeaponSomewhere(pawnMemory.DefaultRangedWeapon.Value))
+                if (pawnMemory.DefaultRangedWeapon != null && pawn.hasWeaponType(pawnMemory.DefaultRangedWeapon.Value))
                 {
                     if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.DefaultRangedWeapon.Value)
                     {
@@ -272,7 +272,7 @@ namespace SimpleSidearms.utilities
                 }
                 else 
                 {
-                    if (pawnMemory.PreferredMeleeWeapon != null && pawn.hasWeaponSomewhere(pawnMemory.PreferredMeleeWeapon.Value))
+                    if (pawnMemory.PreferredMeleeWeapon != null && pawn.hasWeaponType(pawnMemory.PreferredMeleeWeapon.Value))
                     {
                         if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.PreferredMeleeWeapon.Value)
                         {
@@ -420,16 +420,24 @@ namespace SimpleSidearms.utilities
             if (pawn.IsQuestLodger() && intentional)
                 return;
 
-            ThingWithComps discarded1;
-            Thing discarded2;
             if (pawn.equipment.Primary == weapon)
             {
                 Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
-                pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out discarded1, pawn.Position, false);
+                pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out _, pawn.Position, false);
                 Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
             }
             else
-                pawn.inventory.innerContainer.TryDrop(weapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out discarded2, null);
+            {
+                if (weapon.stackCount > 1)
+                {
+                    var toDrop = weapon.SplitOff(1);
+                    GenDrop.TryDropSpawn_NewTmp(toDrop, pawn.Position, pawn.Map, ThingPlaceMode.Near, out _);
+                }
+                else
+                {
+                    pawn.inventory.innerContainer.TryDrop(weapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out _, null);
+                }   
+            }
 
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
             if (pawnMemory == null)

@@ -38,8 +38,13 @@ namespace SimpleSidearms.rimworld
                     }
                     else
                     {
+                        if (thingWithComps.Spawned)
+                            thingWithComps.DeSpawn(DestroyMode.Vanish);
+
+                        if (thingWithComps.holdingOwner != null)
+                            thingWithComps.holdingOwner.Remove(thingWithComps);
+
                         thingWithComps2 = thingWithComps;
-                        thingWithComps2.DeSpawn();
                     }
                     bool success = this.pawn.inventory.innerContainer.TryAdd(thingWithComps2);
                     if (thingWithComps.def.soundInteract != null)

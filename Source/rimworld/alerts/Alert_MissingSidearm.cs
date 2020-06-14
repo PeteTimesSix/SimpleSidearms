@@ -65,7 +65,7 @@ namespace SimpleSidearms.rimworld.alerts
                         {
                             foreach (ThingDefStuffDefPair weaponMemory in pawnMemory.RememberedWeapons)
                             {
-                                if (!pawn.hasWeaponSomewhere(weaponMemory))
+                                if (!pawn.hasWeaponType(weaponMemory))
                                 {
                                     if (pawns.Add(pawn))
                                         yield return pawn;

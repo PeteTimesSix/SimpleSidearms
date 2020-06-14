@@ -405,7 +405,7 @@ namespace SimpleSidearms.rimworld
                 var carriedOfType = Owner.getCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
                 var rememberedOfType = rememberedWeapons.Where(w => w == weaponType);
 
-                if (rememberedOfType.Count() < carriedOfType.Count())
+                if (rememberedOfType.Count() < carriedOfType.Sum(c => c.stackCount))
                     rememberedWeapons.Add(weapon.toThingDefStuffDefPair());
             }
         }

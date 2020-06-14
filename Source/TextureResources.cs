@@ -8,7 +8,7 @@ using Verse;
 namespace SimpleSidearms
 {
     [StaticConstructorOnStartup]
-    class TextureResources
+    public static class TextureResources
     {
 
         public static readonly Texture2D drawPocket = ContentFinder<Texture2D>.Get("drawPocket", true);
@@ -29,7 +29,5 @@ namespace SimpleSidearms
 
         public static readonly Texture2D SpeedBiasSliderPositive = ContentFinder<Texture2D>.Get("speedBiasSliderPositive", true);
         public static readonly Texture2D SpeedBiasSliderNegative = ContentFinder<Texture2D>.Get("speedBiasSliderNegative", true);
-
-
     }
 }

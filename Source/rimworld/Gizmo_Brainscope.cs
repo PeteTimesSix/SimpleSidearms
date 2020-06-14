@@ -59,6 +59,16 @@ namespace SimpleSidearms.rimworld
                 }
             }
 
+
+            if (Widgets.ButtonText(contentRect.RightPartPixels(15), "<>"))
+            {
+                var tickManager = Find.TickManager;
+                if (!tickManager.Paused)
+                    tickManager.TogglePaused();
+
+                tickManager.DoSingleTick();
+            }
+
             var font = Text.Font;
             Text.Font = GameFont.Tiny;
 

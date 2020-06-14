@@ -147,6 +147,12 @@ namespace SimpleSidearms.intercepts
                         else if (!equipment.def.IsWeapon)
                         {
                         }
+                        else if (equipment.IsBurning())
+                        {
+                        }
+                        else if (pawn.IsQuestLodger())
+                        {
+                        }
                         else if (!StatCalculator.canCarrySidearmInstance(equipment, pawn, out errStr))
                         {
                             "CannotEquip".Translate();
