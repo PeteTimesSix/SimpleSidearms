@@ -19,6 +19,8 @@ namespace SimpleSidearms.rimworld
             {
                 if (rememberedWeapons == null)
                     generateRememberedWeaponsFromEquipped();
+                if (!nullchecked)
+                    NullChecks();
                 List<ThingDefStuffDefPair> fakery = new List<ThingDefStuffDefPair>();
                 foreach (var wep in rememberedWeapons)
                     fakery.Add(wep);
@@ -216,7 +218,7 @@ namespace SimpleSidearms.rimworld
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                NullChecks(this.Owner);
+                NullChecks();
             }
         }
 
@@ -480,7 +482,7 @@ namespace SimpleSidearms.rimworld
 
         public bool nullchecked = false;
 
-        public void NullChecks(Pawn owner)
+        public void NullChecks()
         {
             if (nullchecked)
                 return;
@@ -549,9 +551,23 @@ namespace SimpleSidearms.rimworld
                     ForcedWeaponWhileDrafted = null;
                 }
             }
+            checkRememberedWeaponsForNulls();
             nullchecked = true;
         }
-}
+
+
+        public void checkRememberedWeaponsForNulls()
+        {
+            for (int i = rememberedWeapons.Count - 1; i >= 0; i--)
+            {
+                if (rememberedWeapons[i].thing == null)
+                {
+                    rememberedWeapons.RemoveAt(i);
+                    Log.Warning(Owner.Label + " had null weapon memory, removing...");
+                }
+            }
+        }
+    }
 
 
     public class CompProperties_SidearmMemory : CompProperties
