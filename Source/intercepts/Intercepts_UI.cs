@@ -45,61 +45,42 @@ namespace SimpleSidearms.intercepts
     public static class Pawn_GetGizmos_Postfix
     {
         [HarmonyPostfix]
-        public static void GetGizmos(Pawn __instance, ref IEnumerable<Gizmo> __result)
+        //public static void GetGizmos(Pawn __instance, ref IEnumerable<Gizmo> __result)
+        public static IEnumerable<Gizmo> Postfix(IEnumerable<Gizmo> __result, Pawn __instance)
         {
-            if (!__instance.IsValidSidearmsCarrier())
-                return;
-            try
+            //This postfix inserts the SimpleSidearms gizmo before all other gizmos
+            if (__instance.IsValidSidearmsCarrier() && (__instance.IsColonistPlayerControlled
+                || DebugSettings.godMode) && __instance.equipment != null && __instance.inventory != null
+                )
             {
-                if ((__instance.IsColonistPlayerControlled)
-                    || DebugSettings.godMode)
+                IEnumerable<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons(includeTools: true);
+
+                CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(__instance);
+                if (pawnMemory != null)
                 {
-                    if (__instance.equipment != null && __instance.inventory != null)
+                    List<ThingDefStuffDefPair> rangedWeaponMemories = new List<ThingDefStuffDefPair>();
+                    List<ThingDefStuffDefPair> meleeWeaponMemories = new List<ThingDefStuffDefPair>();
+
+                    foreach (ThingDefStuffDefPair weapon in pawnMemory.RememberedWeapons)
                     {
-                        IEnumerable<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons(includeTools: true);
+                        if (weapon.thing.IsMeleeWeapon)
+                            meleeWeaponMemories.Add(weapon);
+                        else if (weapon.thing.IsRangedWeapon)
+                            rangedWeaponMemories.Add(weapon);
+                    }
 
-                        CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(__instance);
-                        if (pawnMemory == null)
-                            return;
+                    yield return new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons);
 
-                        //if (carriedWeapons.Count() > 0 || (pawnMemory != null && pawnMemory.RememberedWeapons.Count > 0))
-                        {
-                            List<ThingDefStuffDefPair> rangedWeaponMemories = new List<ThingDefStuffDefPair>();
-                            List<ThingDefStuffDefPair> meleeWeaponMemories = new List<ThingDefStuffDefPair>();
-
-                            if (pawnMemory != null)
-                            {
-                                foreach (ThingDefStuffDefPair weapon in pawnMemory.RememberedWeapons)
-                                {
-                                    if (weapon.thing.IsMeleeWeapon)
-                                        meleeWeaponMemories.Add(weapon);
-                                    else if (weapon.thing.IsRangedWeapon)
-                                        rangedWeaponMemories.Add(weapon);
-                                }
-                            }
-
-                            Gizmo_SidearmsList advanced = new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons);
-
-                            List<Gizmo> results = new List<Gizmo>();
-                            results.Add(advanced);
-                            if (DebugSettings.godMode)
-                            {
-                                Gizmo_Brainscope brainscope = new Gizmo_Brainscope(__instance);
-                                results.Add(brainscope);
-                            }
-                            foreach (Gizmo gizmo in __result)
-                            {
-                                results.Add(gizmo);
-                            };
-                            __result = results;
-                        }
+                    if (DebugSettings.godMode)
+                    {
+                        yield return new Gizmo_Brainscope(__instance);
                     }
                 }
-               
             }
-            catch(Exception e) 
+
+            foreach (var aGizmo in __result)
             {
-                Log.Error("Exception during SimpleSidearms gizmo intercept. Cancelling intercept. Exception: " + e.ToString());
+                yield return aGizmo;
             }
         }
     }
