@@ -119,7 +119,8 @@ namespace SimpleSidearms.intercepts
                         /*if ((!equipment.toThingStuffPair().isToolNotWeapon()) && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0))
                         {
                         }*/
-                        if (!pawn.CanReach(equipment, PathEndMode.ClosestTouch, Danger.Deadly, false, TraverseMode.ByPawn))
+                        //if (!pawn.CanReach(equipment, PathEndMode.ClosestTouch, Danger.Deadly, false, TraverseMode.ByPawn))
+                        if (!pawn.CanReach(new LocalTargetInfo(equipment), PathEndMode.ClosestTouch, Danger.Deadly))
                         {
                         }
                         else if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
@@ -158,7 +159,7 @@ namespace SimpleSidearms.intercepts
                             {
                                 equipment.SetForbidden(false, true);
                                 pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(SidearmsDefOf.EquipSecondary, equipment), JobTag.Misc);
-                                MoteMaker.MakeStaticMote(equipment.DrawPos, equipment.Map, ThingDefOf.Mote_FeedbackEquip, 1f);
+                                //MoteMaker.MakeStaticMote(equipment.DrawPos, equipment.Map, ThingDefOf.Mote_FeedbackEquip, 1f); //why is this gone?
                             
                                 PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
                             }, MenuOptionPriority.High, null, null, 0f, null, null), pawn, equipment, "ReservedBy");

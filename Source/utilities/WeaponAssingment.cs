@@ -431,7 +431,7 @@ namespace SimpleSidearms.utilities
                 if (weapon.stackCount > 1)
                 {
                     var toDrop = weapon.SplitOff(1);
-                    GenDrop.TryDropSpawn_NewTmp(toDrop, pawn.Position, pawn.Map, ThingPlaceMode.Near, out _);
+                    GenDrop.TryDropSpawn(toDrop, pawn.Position, pawn.Map, ThingPlaceMode.Near, out _);
                 }
                 else
                 {

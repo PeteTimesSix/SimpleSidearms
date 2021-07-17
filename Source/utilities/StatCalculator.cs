@@ -138,19 +138,20 @@ namespace SimpleSidearms.utilities
 
         public static bool canCarrySidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
         {
-            //nicked from EquipmentUtility.CanEquip 
+            //nicked from EquipmentUtility.CanEquip
             CompBladelinkWeapon compBladelinkWeapon = sidearmThing.TryGetComp<CompBladelinkWeapon>();
-            if (compBladelinkWeapon != null && compBladelinkWeapon.bondedPawn != null && compBladelinkWeapon.bondedPawn != pawn)
+            if (compBladelinkWeapon != null && compBladelinkWeapon.CodedPawn != null && compBladelinkWeapon.CodedPawn != pawn)
             {
                 errString = "BladelinkBondedToSomeoneElse".Translate();
                 return false;
             }
-            if (EquipmentUtility.IsBiocoded(sidearmThing) && pawn != sidearmThing.TryGetComp<CompBiocodableWeapon>().CodedPawn)
+            CompBiocodable compBiocodable = sidearmThing.TryGetComp<CompBladelinkWeapon>();
+            if (compBiocodable != null && compBiocodable.CodedPawn != pawn)
             {
                 errString = "BiocodedCodedForSomeoneElse".Translate();
                 return false;
             }
-            if (compBladelinkWeapon != null && compBladelinkWeapon.bondedPawn == null)
+            if (compBladelinkWeapon != null && !compBladelinkWeapon.Biocoded)
             {
                 errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
                 return false;

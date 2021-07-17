@@ -118,7 +118,7 @@ namespace SimpleSidearms.rimworld
                 float num = (request.BiocodeWeaponChance > 0f) ? request.BiocodeWeaponChance : pawn.kindDef.biocodeWeaponChance;
                 if (Rand.Value < num)
                 {
-                    CompBiocodableWeapon compBiocodableWeapon = rolledWeaponFinal.TryGetComp<CompBiocodableWeapon>();
+                    CompBiocodable compBiocodableWeapon = rolledWeaponFinal.TryGetComp<CompBiocodable>();
                     if (compBiocodableWeapon != null)
                     {
                         compBiocodableWeapon.CodeFor(pawn);

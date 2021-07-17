@@ -49,7 +49,7 @@ namespace SimpleSidearms.rimworld
                             maxDist = 12f;
 
                         bool bladelinkable = weaponMemory.thing.HasComp(typeof(CompBladelinkWeapon));
-                        bool biocodeable = weaponMemory.thing.HasComp(typeof(CompBiocodableWeapon));
+                        bool biocodeable = weaponMemory.thing.HasComp(typeof(CompBiocodable));
 
                         IEnumerable<ThingWithComps> matchingWeapons = pawn.Map.listerThings.ThingsOfDef(weaponMemory.thing).OfType<ThingWithComps>().Where(t => t.Stuff == weaponMemory.stuff);
                         if (bladelinkable)
@@ -57,14 +57,14 @@ namespace SimpleSidearms.rimworld
                             matchingWeapons = matchingWeapons.Where(t =>
                             {
                                 CompBladelinkWeapon bladelink = t.GetComp<CompBladelinkWeapon>();
-                                return (bladelink != null && bladelink.bondedPawn == pawn);
+                                return (bladelink != null && bladelink.Biocoded && bladelink.CodedPawn == pawn);
                             });
                         }
                         if (biocodeable)
                         {
                             matchingWeapons = matchingWeapons.Where(t =>
                             {
-                                CompBiocodableWeapon biocode = t.GetComp<CompBiocodableWeapon>();
+                                CompBiocodable biocode = t.GetComp<CompBiocodable>();
                                 if (biocode == null)
                                     return true; //not sure how this could ever happen...
                                 if (biocode.Biocoded && biocode.CodedPawn != pawn)

@@ -27,8 +27,12 @@ namespace SimpleSidearms.rimworld
             return 250f;
         }
 
+        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
+        {
+            return GizmoOnGUI_old(topLeft, maxWidth);
+        }
 
-        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
+        private GizmoResult GizmoOnGUI_old(Vector2 topLeft, float maxWidth)
         {
             var gizmoRect = new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), 75f);
             var contentRect = gizmoRect.ContractedBy(ContentPadding);

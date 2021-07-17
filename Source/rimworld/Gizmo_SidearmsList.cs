@@ -84,7 +84,12 @@ namespace SimpleSidearms.rimworld
             this.defaultDesc = "DrawSidearm_gizmoTooltip".Translate();
         }
 
-        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
+        public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
+        {
+            return GizmoOnGUI_old(topLeft, maxWidth);
+        }
+
+        private GizmoResult GizmoOnGUI_old(Vector2 topLeft, float maxWidth)
         {
             interactionWeaponIsDuplicate = false;
             interactionWeapon = null;
