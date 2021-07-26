@@ -1,17 +1,16 @@
-﻿using RimWorld;
-using SimpleSidearms.intercepts;
+﻿using PeteTimesSix.SimpleSidearms.Intercepts;
+using RimWorld;
 using SimpleSidearms.rimworld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
-using static SimpleSidearms.Globals;
-using static SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
-namespace SimpleSidearms.utilities
+namespace PeteTimesSix.SimpleSidearms.Utilities
 {
     public static class WeaponAssingment
     {
@@ -70,7 +69,7 @@ namespace SimpleSidearms.utilities
                        pawn?.LabelCap,
                        pawn?.IsColonist,
                        dropCurrent,
-                       SimpleSidearms.DropMode
+                       Settings.DropMode
                     ));
             }
 
@@ -83,7 +82,7 @@ namespace SimpleSidearms.utilities
                     pawn?.LabelCap,
                     pawn?.IsColonist,
                     dropCurrent,
-                    SimpleSidearms.DropMode
+                    Settings.DropMode
                     ));
                 return false;
             }
@@ -235,7 +234,6 @@ namespace SimpleSidearms.utilities
 
                 else
                 {
-                    ThingWithComps result;
                     (ThingWithComps weapon, float dps, float averageSpeed) bestWeapon = GettersFilters.findBestRangedWeapon(pawn, null, pawn.IsColonistPlayerControlled);
                     if (bestWeapon.weapon != null)
                     {
@@ -308,8 +306,7 @@ namespace SimpleSidearms.utilities
         //When hit in Close-Quarter Combat 
         internal static void doCQC(Pawn pawn, Pawn attacker)
         {
-
-            if (CQCAutoSwitch == true)
+            if (Settings.CQCAutoSwitch == true)
             {
                 if (attacker != null)
                 {
@@ -326,12 +323,12 @@ namespace SimpleSidearms.utilities
                     }
                     
 
-                    if (CQCTargetOnly.Value == true && attacker != pawn.mindState.lastAttackedTarget.Thing)
+                    if (Settings.CQCTargetOnly == true && attacker != pawn.mindState.lastAttackedTarget.Thing)
                     {
                         return;
                     }
 
-                    if (!OptimalMelee && pawn.equipment.Primary != null && pawn.equipment.Primary.def.IsMeleeWeapon)
+                    if (!Settings.OptimalMelee && pawn.equipment.Primary != null && pawn.equipment.Primary.def.IsMeleeWeapon)
                         return;
 
                     bool changed = tryCQCWeaponSwapToMelee(pawn, attacker, DroppingModeEnum.InDistress);
@@ -353,7 +350,7 @@ namespace SimpleSidearms.utilities
 
         public static void chooseOptimalMeleeForAttack(Pawn pawn, Pawn target)
         {
-            if (!OptimalMelee || target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))
+            if (!Settings.OptimalMelee || target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))
                     return;
 
             tryCQCWeaponSwapToMelee(pawn, target, DroppingModeEnum.Combat);
@@ -404,9 +401,9 @@ namespace SimpleSidearms.utilities
 
             CellRect cellRect = (!target.HasThing) ? CellRect.SingleCell(target.Cell) : target.Thing.OccupiedRect();
             float range = cellRect.ClosestDistSquaredTo(pawn.Position);
-            float currentDPS = StatCalculator.RangedDPS(pawn.equipment.Primary, SpeedSelectionBiasRanged.Value, bestWeapon.averageSpeed, range);
+            float currentDPS = StatCalculator.RangedDPS(pawn.equipment.Primary, Settings.SpeedSelectionBiasRanged, bestWeapon.averageSpeed, range);
             
-            if (bestWeapon.dps < currentDPS + ANTI_OSCILLATION_FACTOR)
+            if (bestWeapon.dps < currentDPS + MiscUtils.ANTI_OSCILLATION_FACTOR)
                 return false;
 
             equipSpecificWeaponFromInventory(pawn, bestWeapon.weapon, dropCurrent, false);

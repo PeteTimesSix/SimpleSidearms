@@ -7,18 +7,18 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
-using static SimpleSidearms.Globals;
-using static SimpleSidearms.hugsLibSettings.SettingsUIs;
-using static SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
-namespace SimpleSidearms.utilities
+namespace PeteTimesSix.SimpleSidearms.Utilities
 {
     public static class MiscUtils
     {
+        public static readonly float ANTI_OSCILLATION_FACTOR = 0.1f;
 
         public static bool shouldDrop(DroppingModeEnum mode)
         {
-            switch (SimpleSidearms.DropMode.Value)
+            switch (Settings.DropMode)
             {
                 case DroppingModeOptionsEnum.Never:
                     return false;
@@ -40,20 +40,6 @@ namespace SimpleSidearms.utilities
 
         public static void DoNothing()
         {
-        }
-
-        public static WeaponSearchType LimitTypeToListType(WeaponListKind type)
-        {
-            switch (type)
-            {
-                case WeaponListKind.Melee:
-                    return WeaponSearchType.Melee;
-                case WeaponListKind.Ranged:
-                    return WeaponSearchType.Ranged;
-                case WeaponListKind.Both:
-                default:
-                    return WeaponSearchType.Both;
-            }
         }
     }
 

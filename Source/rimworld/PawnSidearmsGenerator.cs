@@ -1,9 +1,9 @@
-﻿using RimWorld;
-using SimpleSidearms.utilities;
+﻿using PeteTimesSix.SimpleSidearms;
+using PeteTimesSix.SimpleSidearms.Utilities;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
 
 namespace SimpleSidearms.rimworld
@@ -25,8 +25,7 @@ namespace SimpleSidearms.rimworld
         public static bool TryGenerateSidearmFor(Pawn pawn, float chance, float budgetMultiplier, PawnGenerationRequest request)
         {
             if (
-                !pawn.IsValidSidearmsCarrier() ||
-                SimpleSidearms.configData is null || //not yet in game
+                !(Current.ProgramState == ProgramState.Playing) || !pawn.IsValidSidearmsCarrier() ||
                 chance < 0.01f ||
                 pawn.kindDef.weaponTags == null || pawn.kindDef.weaponTags.Count == 0 ||
                 pawn.equipment.Primary == null ||

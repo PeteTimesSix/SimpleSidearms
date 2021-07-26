@@ -1,6 +1,6 @@
-﻿using HarmonyLib;
+﻿using PeteTimesSix.SimpleSidearms;
+using PeteTimesSix.SimpleSidearms.Utilities;
 using RimWorld;
-using SimpleSidearms.utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
-using static SimpleSidearms.Globals;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
 namespace SimpleSidearms.rimworld
 {
@@ -744,7 +744,6 @@ namespace SimpleSidearms.rimworld
                     case SidearmsListInteraction.None:
                     default:
                         return;
-                        break;
                 }
             }
             else if(ev.button == RIGHT_CLICK)
@@ -903,7 +902,6 @@ namespace SimpleSidearms.rimworld
                     case SidearmsListInteraction.None:
                     default:
                         return;
-                        break;
                 }
             }
         }

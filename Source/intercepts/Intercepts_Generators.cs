@@ -1,13 +1,11 @@
 ﻿using HarmonyLib;
-using RimWorld;
 using SimpleSidearms.rimworld;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Verse;
 
-namespace SimpleSidearms.intercepts
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+
+namespace PeteTimesSix.SimpleSidearms.Intercepts
 {
     [HarmonyPatch(typeof(PawnGenerator), "GenerateGearFor")]
     public static class PawnGenerator_GenerateGearFor_Postfix
@@ -17,8 +15,8 @@ namespace SimpleSidearms.intercepts
         {
             try { 
                 //Log.Message("generating sidearms for " + pawn.Label);
-                float modifiedChance = SimpleSidearms.SidearmSpawnChance;
-                float modifiedBudgetMultiplier = SimpleSidearms.SidearmBudgetMultiplier.Value;
+                float modifiedChance = Settings.SidearmSpawnChance;
+                float modifiedBudgetMultiplier = Settings.SidearmBudgetMultiplier;
                 bool more = true;
                 int sanityLimiter = 0;
 
@@ -27,8 +25,8 @@ namespace SimpleSidearms.intercepts
                     sanityLimiter++;
                     //Log.Message("generating sidearm number " + sanityLimiter + " chance: "+modifiedChance+" budgetMult:"+modifiedBudgetMultiplier);
                     more = PawnSidearmsGenerator.TryGenerateSidearmFor(pawn, modifiedChance, modifiedBudgetMultiplier, request);
-                    modifiedChance -= SimpleSidearms.SidearmSpawnChanceDropoff.Value;
-                    modifiedBudgetMultiplier -= SimpleSidearms.SidearmBudgetDropoff.Value;
+                    modifiedChance -= Settings.SidearmSpawnChanceDropoff;
+                    modifiedBudgetMultiplier -= Settings.SidearmBudgetDropoff;
                 }
             }
             catch(Exception e) 

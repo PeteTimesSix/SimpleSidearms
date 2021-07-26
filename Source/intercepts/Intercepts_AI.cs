@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Verse;
-using static SimpleSidearms.Globals;
-using SimpleSidearms.utilities;
-using SimpleSidearms.rimworld;
+using PeteTimesSix.SimpleSidearms.Utilities;
 using Verse.AI;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using SimpleSidearms.rimworld;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
-namespace SimpleSidearms.intercepts
+namespace PeteTimesSix.SimpleSidearms.Intercepts
 {
 
     [HarmonyPatch(typeof(Toil))]
@@ -22,7 +23,7 @@ namespace SimpleSidearms.intercepts
         [HarmonyPostfix]
         public static void _ctor(Toil __instance) 
         {
-            if (SimpleSidearms.ToolAutoSwitch == true) 
+            if (Settings.ToolAutoSwitch == true) 
             {
                 Toil toil = __instance;
                 if (toil == null)
@@ -53,7 +54,7 @@ namespace SimpleSidearms.intercepts
                     else if (activeSkill != null && SkillStatMap.Map.ContainsKey(activeSkill))
                         possiblyActiveStats.AddRange(SkillStatMap.Map[activeSkill]);
 
-                    bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(toil.GetActor(), possiblyActiveStats);
+                    bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(pawn, possiblyActiveStats);
                     if (usingAppropriateTool)
                     {
                         if (pawnMemory != null)
@@ -66,8 +67,9 @@ namespace SimpleSidearms.intercepts
                 toil.AddFinishAction(delegate
                 {
                     Pawn pawn = toil.GetActor();
-                    if (!pawn.IsValidSidearmsCarrier())
+                    if (pawn == null || !pawn.IsValidSidearmsCarrier())
                         return;
+
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if (pawnMemory != null)
                     {
@@ -176,7 +178,7 @@ namespace SimpleSidearms.intercepts
         public static void StanceTick(Stance_Warmup __instance)
         {
 
-            if (SimpleSidearms.RangedCombatAutoSwitch == false)
+            if (Settings.RangedCombatAutoSwitch == false)
                 return;
             Pawn pawn = __instance.stanceTracker.pawn;
             if (IsHunting(pawn))
@@ -192,7 +194,7 @@ namespace SimpleSidearms.intercepts
             float statValue = pawn.GetStatValue(StatDefOf.AimingDelayFactor, true);
             int ticks = (__instance.verb.verbProps.warmupTime * statValue).SecondsToTicks();
             
-            if (__instance.ticksLeft / (float)ticks < 1f - SimpleSidearms.RangedCombatAutoSwitchMaxWarmup.Value)
+            if (__instance.ticksLeft / (float)ticks < 1f - Settings.RangedCombatAutoSwitchMaxWarmup)
             {
                 return;
             }

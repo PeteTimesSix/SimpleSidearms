@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using PeteTimesSix.SimpleSidearms;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

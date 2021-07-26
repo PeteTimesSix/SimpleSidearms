@@ -5,7 +5,7 @@
 	<Operation Class="PatchOperationConditional">
 		<xpath>/Defs/ThingDef[thingClass="Pawn"]/comps</xpath>
 		 <nomatch Class="PatchOperationAdd">
-			<xpath>!xpath /Defs/ThingDef[thingClass="Pawn"]</xpath>
+			<xpath>/Defs/ThingDef[thingClass="Pawn"]</xpath>
 			<value>
 				<comps>
 					<li Class="SimpleSidearms.rimworld.CompProperties_SidearmMemory"></li>

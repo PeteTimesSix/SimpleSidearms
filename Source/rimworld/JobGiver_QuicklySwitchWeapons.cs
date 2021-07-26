@@ -1,12 +1,9 @@
-﻿using RimWorld;
-using SimpleSidearms.utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PeteTimesSix.SimpleSidearms;
+using PeteTimesSix.SimpleSidearms.Utilities;
+using RimWorld;
 using Verse;
 using Verse.AI;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
 namespace SimpleSidearms.rimworld
 {
@@ -37,7 +34,7 @@ namespace SimpleSidearms.rimworld
                 }
 
                 //Log.Message(pawn.Label+" considering switching weapons on the run");
-                WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, Globals.DroppingModeEnum.Calm);
+                WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, DroppingModeEnum.Calm);
 
                 //yes, I realise that this never actually results in a job.
                 //I might at some point in the future decide to make switching weapons non-instaneous, which will happen here.

@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace SimpleSidearms
+namespace PeteTimesSix.SimpleSidearms
 {
     [StaticConstructorOnStartup]
     public static class TextureResources

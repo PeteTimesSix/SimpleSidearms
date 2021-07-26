@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 
-namespace SimpleSidearms.intercepts
+namespace PeteTimesSix.SimpleSidearms.Intercepts
 {
 
     [HarmonyPatch(typeof(Alert_HunterLacksRangedWeapon), "HuntersWithoutRangedWeapon")]

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using RimWorld;
 using SimpleSidearms.rimworld;
 using Verse;
-using static SimpleSidearms.Globals;
-using static SimpleSidearms.hugsLibSettings.SettingsUIs;
-using static SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
-namespace SimpleSidearms.utilities
+namespace PeteTimesSix.SimpleSidearms.Utilities
 {
     public static class GettersFilters
     {
@@ -139,7 +136,7 @@ namespace SimpleSidearms.utilities
                 (ThingWithComps thing, float dps, float averageSpeed) best = (null, -1 , averageSpeed);
                 foreach(ThingWithComps candidate in options) 
                 {
-                    float dps = StatCalculator.RangedDPS(candidate, SpeedSelectionBiasRanged.Value, averageSpeed, targetDistance);
+                    float dps = StatCalculator.RangedDPS(candidate, Settings.SpeedSelectionBiasRanged, averageSpeed, targetDistance);
                     if(dps > best.dps) 
                     {
                         best = (candidate, dps, averageSpeed);
@@ -152,7 +149,7 @@ namespace SimpleSidearms.utilities
                 (ThingWithComps thing, float dps, float averageSpeed) best = (null, -1, averageSpeed);
                 foreach (ThingWithComps candidate in options)
                 {
-                    float dps = StatCalculator.RangedDPSAverage(candidate, SpeedSelectionBiasRanged.Value, averageSpeed);
+                    float dps = StatCalculator.RangedDPSAverage(candidate, Settings.SpeedSelectionBiasRanged, averageSpeed);
                     if (dps > best.dps)
                     {
                         best = (candidate, dps, averageSpeed);
@@ -201,8 +198,8 @@ namespace SimpleSidearms.utilities
             }
             else*/
             {
-                float resultDPS = options.Max(t => StatCalculator.getMeleeDPSBiased(t as ThingWithComps, pawn, SpeedSelectionBiasMelee.Value, averageSpeed));
-                result = options.MaxBy(t => StatCalculator.getMeleeDPSBiased(t as ThingWithComps, pawn, SpeedSelectionBiasMelee.Value, averageSpeed)) as ThingWithComps;
+                float resultDPS = options.Max(t => StatCalculator.getMeleeDPSBiased(t as ThingWithComps, pawn, Settings.SpeedSelectionBiasMelee, averageSpeed));
+                result = options.MaxBy(t => StatCalculator.getMeleeDPSBiased(t as ThingWithComps, pawn, Settings.SpeedSelectionBiasMelee, averageSpeed)) as ThingWithComps;
 
                 //check if pawn is better when punching
                 if (pawn.GetStatValue(StatDefOf.MeleeDPS) > resultDPS)

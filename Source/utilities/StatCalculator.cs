@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Verse;
-using static SimpleSidearms.Globals;
-using static SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
-namespace SimpleSidearms.utilities
+namespace PeteTimesSix.SimpleSidearms.Utilities
 {
     public static class StatCalculator
     {
@@ -60,19 +60,19 @@ namespace SimpleSidearms.utilities
         {
             float sidearmWeight = sidearm.thing.GetStatValueAbstract(StatDefOf.Mass, sidearm.stuff);
 
-            if (!SimpleSidearms.SeparateModes)
+            if (!Settings.SeparateModes)
             {
-                switch (SimpleSidearms.LimitModeSingle.Value)
+                switch (Settings.LimitModeSingle)
                 {
                     case LimitModeSingleSidearm.AbsoluteWeight:
-                        if (sidearmWeight >= SimpleSidearms.LimitModeSingle_Absolute.Value)
+                        if (sidearmWeight >= Settings.LimitModeSingleMelee_AbsoluteMass)
                         {
                             errString = "SidearmPickupFail_TooHeavyForSidearm".Translate();
                             return false;
                         }
                         break;
                     case LimitModeSingleSidearm.Selection:
-                        if (!SimpleSidearms.LimitModeSingle_Selection.Value.InnerList.Contains<ThingDef>(sidearm.thing))
+                        if (!Settings.LimitModeSingle_Selection.Contains<ThingDef>(sidearm.thing))
                         {
                             errString = "SidearmPickupFail_NotASidearm".Translate();
                             return false;
@@ -87,17 +87,17 @@ namespace SimpleSidearms.utilities
             {
                 if (sidearm.thing.IsMeleeWeapon)
                 {
-                    switch (SimpleSidearms.LimitModeSingleMelee.Value)
+                    switch (Settings.LimitModeSingleMelee)
                     {
                         case LimitModeSingleSidearm.AbsoluteWeight:
-                            if (sidearmWeight >= SimpleSidearms.LimitModeSingleMelee_Absolute.Value)
+                            if (sidearmWeight >= Settings.LimitModeSingleMelee_AbsoluteMass)
                             {
                                 errString = "SidearmPickupFail_TooHeavyForSidearmMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.Selection:
-                            if (!SimpleSidearms.LimitModeSingleMelee_Selection.Value.InnerList.Contains<ThingDef>(sidearm.thing))
+                            if (!Settings.LimitModeSingleMelee_Selection.Contains<ThingDef>(sidearm.thing))
                             {
                                 errString = "SidearmPickupFail_NotASidearmMelee".Translate();
                                 return false;
@@ -110,17 +110,17 @@ namespace SimpleSidearms.utilities
                 }
                 else if(sidearm.thing.IsRangedWeapon)
                 {
-                    switch (SimpleSidearms.LimitModeSingleRanged.Value)
+                    switch (Settings.LimitModeSingleRanged)
                     {
                         case LimitModeSingleSidearm.AbsoluteWeight:
-                            if (sidearmWeight >= SimpleSidearms.LimitModeSingleRanged_Absolute.Value)
+                            if (sidearmWeight >= Settings.LimitModeSingleRanged_AbsoluteMass)
                             {
                                 errString = "SidearmPickupFail_TooHeavyForSidearmRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.Selection:
-                            if (!SimpleSidearms.LimitModeSingleRanged_Selection.Value.InnerList.Contains<ThingDef>(sidearm.thing))
+                            if (!Settings.LimitModeSingleRanged_Selection.Contains<ThingDef>(sidearm.thing))
                             {
                                 errString = "SidearmPickupFail_NotASidearmRanged".Translate();
                                 return false;
@@ -184,54 +184,54 @@ namespace SimpleSidearms.utilities
                 return false;
             }
 
-            if (!SimpleSidearms.SeparateModes)
+            if (!Settings.SeparateModes)
             {
-                switch (SimpleSidearms.LimitModeSingle.Value)
+                switch (Settings.LimitModeSingle)
                 {
                     case LimitModeSingleSidearm.None:
                         break;
                     case LimitModeSingleSidearm.AbsoluteWeight:
-                        if(sidearmWeight >= SimpleSidearms.LimitModeSingle_Absolute.Value)
+                        if(sidearmWeight >= Settings.LimitModeSingle_AbsoluteMass)
                         {
                             errString = "SidearmPickupFail_TooHeavyForSidearm".Translate();
                             return false;
                         }
                         break;
                     case LimitModeSingleSidearm.RelativeWeight:
-                        if(sidearmWeight >= SimpleSidearms.LimitModeSingle_Relative.Value * maxCapacity)
+                        if(sidearmWeight >= Settings.LimitModeSingle_RelativeMass * maxCapacity)
                         {
                             errString = "SidearmPickupFail_TooHeavyForSidearm".Translate();
                             return false;
                         }
                         break;
                     case LimitModeSingleSidearm.Selection:
-                        if(!SimpleSidearms.LimitModeSingle_Selection.Value.InnerList.Contains<ThingDef>(sidearm.thing))
+                        if(!Settings.LimitModeSingle_Selection.Contains<ThingDef>(sidearm.thing))
                         {
                             errString = "SidearmPickupFail_NotASidearm".Translate();
                             return false;
                         }
                         break;
                 }
-                switch (SimpleSidearms.LimitModeAmount.Value)
+                switch (Settings.LimitModeAmount)
                 {
-                    case LimitModeAmountOfSidearms.MaximumCarryWeightOnly:
+                    case LimitModeAmountOfSidearms.None:
                         break;
                     case LimitModeAmountOfSidearms.AbsoluteWeight:
-                        if (sidearmWeight >= (SimpleSidearms.LimitModeAmount_Absolute.Value - weightForLimitType(pawn, WeaponSearchType.Both)))
+                        if (sidearmWeight >= (Settings.LimitModeAmount_AbsoluteMass - weightForLimitType(pawn, WeaponSearchType.Both)))
                         {
                             errString = "SidearmPickupFail_SidearmsTooHeavyInTotal".Translate();
                             return false;
                         }
                         break;
                     case LimitModeAmountOfSidearms.RelativeWeight:
-                        if (sidearmWeight >= ((SimpleSidearms.LimitModeAmount_Relative.Value * maxCapacity) - weightForLimitType(pawn, WeaponSearchType.Both)))
+                        if (sidearmWeight >= ((Settings.LimitModeAmount_RelativeMass * maxCapacity) - weightForLimitType(pawn, WeaponSearchType.Both)))
                         {
                             errString = "SidearmPickupFail_SidearmsTooHeavyInTotal".Translate();
                             return false;
                         }
                         break;
                     case LimitModeAmountOfSidearms.Slots:
-                        if (SimpleSidearms.LimitModeAmount_Slots.Value <= countForLimitType(pawn, WeaponSearchType.Both))
+                        if (Settings.LimitModeAmount_Slots <= countForLimitType(pawn, WeaponSearchType.Both))
                         {
                             errString = "SidearmPickupFail_AllSlotsFull".Translate();
                             return false;
@@ -241,26 +241,26 @@ namespace SimpleSidearms.utilities
             }
             else
             {
-                switch (SimpleSidearms.LimitModeAmountTotal.Value)
+                switch (Settings.LimitModeAmountTotal)
                 {
-                    case LimitModeAmountOfSidearms.MaximumCarryWeightOnly:
+                    case LimitModeAmountOfSidearms.None:
                         break;
                     case LimitModeAmountOfSidearms.AbsoluteWeight:
-                        if (sidearmWeight >= (SimpleSidearms.LimitModeAmountTotal_Absolute.Value - weightForLimitType(pawn, WeaponSearchType.Both)))
+                        if (sidearmWeight >= (Settings.LimitModeAmountTotal_AbsoluteMass - weightForLimitType(pawn, WeaponSearchType.Both)))
                         {
                             errString = "SidearmPickupFail_SidearmsTooHeavyInTotal".Translate();
                             return false;
                         }
                         break;
                     case LimitModeAmountOfSidearms.RelativeWeight:
-                        if (sidearmWeight >= ((SimpleSidearms.LimitModeAmountTotal_Relative.Value * maxCapacity) - weightForLimitType(pawn, WeaponSearchType.Both)))
+                        if (sidearmWeight >= ((Settings.LimitModeAmountTotal_RelativeMass * maxCapacity) - weightForLimitType(pawn, WeaponSearchType.Both)))
                         {
                             errString = "SidearmPickupFail_SidearmsTooHeavyInTotal".Translate();
                             return false;
                         }
                         break;
                     case LimitModeAmountOfSidearms.Slots:
-                        if (SimpleSidearms.LimitModeAmountTotal_Slots.Value <= countForLimitType(pawn, WeaponSearchType.Both))
+                        if (Settings.LimitModeAmountTotal_Slots <= countForLimitType(pawn, WeaponSearchType.Both))
                         {
                             errString = "SidearmPickupFail_AllSlotsFull".Translate();
                             return false;
@@ -269,52 +269,52 @@ namespace SimpleSidearms.utilities
                 }
                 if (sidearm.thing.IsMeleeWeapon)
                 {
-                    switch (SimpleSidearms.LimitModeSingleMelee.Value)
+                    switch (Settings.LimitModeSingleMelee)
                     {
                         case LimitModeSingleSidearm.None:
                             break;
                         case LimitModeSingleSidearm.AbsoluteWeight:
-                            if (sidearmWeight >= SimpleSidearms.LimitModeSingleMelee_Absolute.Value)
+                            if (sidearmWeight >= Settings.LimitModeSingleMelee_AbsoluteMass)
                             {
                                 errString = "SidearmPickupFail_TooHeavyForSidearmMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.RelativeWeight:
-                            if (sidearmWeight >= SimpleSidearms.LimitModeSingleMelee_Relative.Value * maxCapacity)
+                            if (sidearmWeight >= Settings.LimitModeSingleMelee_RelativeMass * maxCapacity)
                             {
                                 errString = "SidearmPickupFail_TooHeavyForSidearmMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.Selection:
-                            if (!SimpleSidearms.LimitModeSingleMelee_Selection.Value.InnerList.Contains<ThingDef>(sidearm.thing))
+                            if (!Settings.LimitModeSingleMelee_Selection.Contains<ThingDef>(sidearm.thing))
                             {
                                 errString = "SidearmPickupFail_NotASidearmMelee".Translate();
                                 return false;
                             }
                             break;
                     }
-                    switch (SimpleSidearms.LimitModeAmountMelee.Value)
+                    switch (Settings.LimitModeAmountMelee)
                     {
-                        case LimitModeAmountOfSidearms.MaximumCarryWeightOnly:
+                        case LimitModeAmountOfSidearms.None:
                             break;
                         case LimitModeAmountOfSidearms.AbsoluteWeight:
-                            if (sidearmWeight >= (SimpleSidearms.LimitModeAmountMelee_Absolute.Value - weightForLimitType(pawn, WeaponSearchType.Melee)))
+                            if (sidearmWeight >= (Settings.LimitModeAmountMelee_AbsoluteMass - weightForLimitType(pawn, WeaponSearchType.Melee)))
                             {
                                 errString = "SidearmPickupFail_SidearmsTooHeavyMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeAmountOfSidearms.RelativeWeight:
-                            if (sidearmWeight >= ((SimpleSidearms.LimitModeAmountMelee_Relative.Value * maxCapacity) - weightForLimitType(pawn, WeaponSearchType.Melee)))
+                            if (sidearmWeight >= ((Settings.LimitModeAmountMelee_RelativeMass * maxCapacity) - weightForLimitType(pawn, WeaponSearchType.Melee)))
                             {
                                 errString = "SidearmPickupFail_SidearmsTooHeavyMelee".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeAmountOfSidearms.Slots:
-                            if (SimpleSidearms.LimitModeAmountMelee_Slots.Value <= countForLimitType(pawn, WeaponSearchType.Melee))
+                            if (Settings.LimitModeAmountMelee_Slots <= countForLimitType(pawn, WeaponSearchType.Melee))
                             {
                                 errString = "SidearmPickupFail_MeleeSlotsFull".Translate();
                                 return false;
@@ -324,52 +324,52 @@ namespace SimpleSidearms.utilities
                 }
                 else if(sidearm.thing.IsRangedWeapon)
                 {
-                    switch (SimpleSidearms.LimitModeSingleRanged.Value)
+                    switch (Settings.LimitModeSingleRanged)
                     {
                         case LimitModeSingleSidearm.None:
                             break;
                         case LimitModeSingleSidearm.AbsoluteWeight:
-                            if (sidearmWeight >= SimpleSidearms.LimitModeSingleRanged_Absolute.Value)
+                            if (sidearmWeight >= Settings.LimitModeSingleRanged_AbsoluteMass)
                             {
                                 errString = "SidearmPickupFail_TooHeavyForSidearmRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.RelativeWeight:
-                            if (sidearmWeight >= SimpleSidearms.LimitModeSingleRanged_Relative.Value * maxCapacity)
+                            if (sidearmWeight >= Settings.LimitModeSingleRanged_RelativeMass * maxCapacity)
                             {
                                 errString = "SidearmPickupFail_TooHeavyForSidearmRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeSingleSidearm.Selection: 
-                            if (!SimpleSidearms.LimitModeSingleRanged_Selection.Value.InnerList.Contains<ThingDef>(sidearm.thing))
+                            if (!Settings.LimitModeSingleRanged_Selection.Contains<ThingDef>(sidearm.thing))
                             {
                                 errString = "SidearmPickupFail_NotASidearmRanged".Translate();
                                 return false;
                             }
                             break;
                     }
-                    switch (SimpleSidearms.LimitModeAmountRanged.Value)
+                    switch (Settings.LimitModeAmountRanged)
                     {
-                        case LimitModeAmountOfSidearms.MaximumCarryWeightOnly:
+                        case LimitModeAmountOfSidearms.None:
                             break;
                         case LimitModeAmountOfSidearms.AbsoluteWeight:
-                            if (sidearmWeight >= (SimpleSidearms.LimitModeAmountRanged_Absolute.Value - weightForLimitType(pawn, WeaponSearchType.Ranged)))
+                            if (sidearmWeight >= (Settings.LimitModeAmountRanged_AbsoluteMass - weightForLimitType(pawn, WeaponSearchType.Ranged)))
                             {
                                 errString = "SidearmPickupFail_SidearmsTooHeavyRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeAmountOfSidearms.RelativeWeight:
-                            if (sidearmWeight >= ((SimpleSidearms.LimitModeAmountRanged_Relative.Value * maxCapacity) - weightForLimitType(pawn, WeaponSearchType.Ranged)))
+                            if (sidearmWeight >= ((Settings.LimitModeAmountRanged_RelativeMass * maxCapacity) - weightForLimitType(pawn, WeaponSearchType.Ranged)))
                             {
                                 errString = "SidearmPickupFail_SidearmsTooHeavyRanged".Translate();
                                 return false;
                             }
                             break;
                         case LimitModeAmountOfSidearms.Slots:
-                            if (SimpleSidearms.LimitModeAmountRanged_Slots.Value <= countForLimitType(pawn, WeaponSearchType.Ranged))
+                            if (Settings.LimitModeAmountRanged_Slots <= countForLimitType(pawn, WeaponSearchType.Ranged))
                             {
                                 errString = "SidearmPickupFail_RangedSlotsFull".Translate();
                                 return false;
