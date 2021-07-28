@@ -16,11 +16,15 @@
 
 <DropMode_desc>In which situations are pawns forced to drop their weapon instead of moving it to their inventory?</DropMode_desc>
 <DropMode_title>Weapon dropping criteria</DropMode_title>
-<ReEquipBest_desc>After having dropped a weapon, auto-re-equip will find the best weapon available (instead of the closest)</ReEquipBest_desc>
+<ReEquipOutOfCombat_desc>After having dropped a weapon, auto-re-equip it after combat once out of immediate danger.</ReEquipOutOfCombat_desc>
+<ReEquipOutOfCombat_title>Re-equip dropped weapons</ReEquipOutOfCombat_title>
+<ReEquipBest_desc>Auto-re-equip will find the best weapon available (instead of the closest)</ReEquipBest_desc>
 <ReEquipBest_title>Re-equip best available</ReEquipBest_title>
+<ReEquipInCombat_desc>Auto-re-equip weapons even in combat, when not actively fighting.</ReEquipInCombat_desc>
+<ReEquipInCombat_title>Re-equip during combat</ReEquipInCombat_title>
 
 <LimitCarryInfo_desc></LimitCarryInfo_desc>
-<LimitCarryInfo_title>*Always limited by pawn's carry capacity</LimitCarryInfo_title>
+<LimitCarryInfo_title>Always limited by pawn's carry capacity</LimitCarryInfo_title>
 
 <CEOverrideInfo_desc></CEOverrideInfo_desc>
 <CEOverrideInfo_title>Disabled in favor of CE's system.</CEOverrideInfo_title>
@@ -38,7 +42,7 @@
 <LimitModeSingleMelee_desc>What restrictions are there on individual melee sidearms.</LimitModeSingleMelee_desc>
 <LimitModeSingleRanged_desc>What restrictions are there on individual ranged sidearms.</LimitModeSingleRanged_desc>
 
-<LimitModeAmountTotal_title>Total</LimitModeAmountTotal_title>
+<LimitModeAmountTotal_title>Total sidearms limit mode</LimitModeAmountTotal_title>
 <LimitModeAmountTotal_desc>What restrictions are there on all sidearms.</LimitModeAmountTotal_desc>
 
 <MaximumMassAmountAbsolute_desc>Maximum total mass of sidearms a pawn can carry.</MaximumMassAmountAbsolute_desc>
@@ -67,6 +71,7 @@
 <SpeedSelectionBiasRanged_title>Speed bias (ranged)</SpeedSelectionBiasRanged_title>
 <WeaponMatch_desc>These are the weapons that match the given criteria.</WeaponMatch_desc>
 <WeaponMatch_title></WeaponMatch_title>
+<MaximumMassAmountRelative_hint>Listing assumes standard carry capacity of 35 kg</MaximumMassAmountRelative_hint>
 
 <SidearmSpawnChance_desc>The chance for any pawn that spawns with a weapon to also have a sidearm.</SidearmSpawnChance_desc>
 <SidearmSpawnChance_title>Sidearm spawn chance</SidearmSpawnChance_title>

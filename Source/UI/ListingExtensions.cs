@@ -14,9 +14,9 @@ namespace PeteTimesSix.SimpleSidearms.UI
 
         public static float ColumnGap = 17f;
 
-        public static void SliderLabeled(this Listing_Standard instance, string label, ref float value, float min, float max, float displayMult = 1, string valueSuffix = "")
+        public static void SliderLabeled(this Listing_Standard instance, string label, ref float value, float min, float max, float displayMult = 1, string valueSuffix = "", string tooltip = null)
         {
-            instance.Label($"{label}: {(value * displayMult).ToString("F0")}{valueSuffix}");
+            instance.Label($"{label}: {(value * displayMult).ToString("F0")}{valueSuffix}", tooltip: null);
             value = instance.Slider(value, min, max);
         }
 
@@ -63,8 +63,6 @@ namespace PeteTimesSix.SimpleSidearms.UI
             float lineHeight = Text.LineHeight;
             float labelWidth = Text.CalcSize(label).x + AfterLabelMinGap;
 
-            var tempWidth = listing.ColumnWidth;
-
             float buttonsWidth = 0f;
             foreach (var name in names)
             {
@@ -74,9 +72,9 @@ namespace PeteTimesSix.SimpleSidearms.UI
                     buttonsWidth = width;
             }
 
-            bool fitsOnLabelRow = (((buttonsWidth * names.Length) + labelWidth) < tempWidth);
+            bool fitsOnLabelRow = (((buttonsWidth * names.Length) + labelWidth) < (listing.ColumnWidth));
             float buttonsRectWidth = fitsOnLabelRow ?
-                listing.ColumnWidth - (labelWidth) :
+                listing.ColumnWidth - (labelWidth + 1f) : //little extra to handle naughty pixels
                 listing.ColumnWidth;
 
             int rowNum = 0;

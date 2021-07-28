@@ -482,37 +482,37 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
         public static float MeleeSpeed(ThingWithComps weapon, Pawn pawn)
         {
-            List<VerbProperties> verbProps;
-            List<Tool> tools;
-            GetVerbsAndTools(weapon, out verbProps, out tools);
-            float speed = (from x in VerbUtility.GetAllVerbProperties(verbProps, tools)
-                           where x.verbProps.IsMeleeAttack
-                           select x).AverageWeighted((VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, pawn, weapon, null, false), (VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedCooldown(x.tool, pawn, weapon));
+            GetVerbsAndTools(weapon, out List<VerbProperties> verbProps, out List<Tool> tools);
+            float speed = VerbUtility.GetAllVerbProperties(verbProps, tools).Where(x => x.verbProps.IsMeleeAttack).AverageWeighted(x => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, pawn, weapon, null, false), x => x.verbProps.AdjustedCooldown(x.tool, pawn, weapon));
             return speed;
         }
+
+        public static float MeleePenetration(ThingWithComps weapon, Pawn pawn)
+        {
+            GetVerbsAndTools(weapon, out List<VerbProperties> verbProps, out List<Tool> tools);
+            float penetration = VerbUtility.GetAllVerbProperties(verbProps, tools).Where(x => x.verbProps.IsMeleeAttack).AverageWeighted(x => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, pawn, weapon, null, false), x => x.verbProps.AdjustedArmorPenetration(x.tool, pawn, weapon, null));
+            return penetration;
+        }
+
 
         public static float getMeleeDPSBiased(ThingWithComps weapon, Pawn pawn, float speedBias, float averageSpeed)
         {
             //nicked from StatWorker_MeleeAverageDPS
-            List<VerbProperties> verbProps;
-            List<Tool> tools;
-            GetVerbsAndTools(weapon, out verbProps, out tools);
-            float damage = (from x in VerbUtility.GetAllVerbProperties(verbProps, tools)
-                         where x.verbProps.IsMeleeAttack
-                         select x).AverageWeighted((VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, pawn, weapon, null, false), (VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeDamageAmount(x.tool, pawn, weapon, null));
+            GetVerbsAndTools(weapon, out List<VerbProperties> verbProps, out List<Tool> tools);
+            float damage = VerbUtility.GetAllVerbProperties(verbProps, tools).Where(x => x.verbProps.IsMeleeAttack).AverageWeighted(x => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, pawn, weapon, null, false), x => x.verbProps.AdjustedMeleeDamageAmount(x.tool, pawn, weapon, null));
             float speed = MeleeSpeed(weapon, pawn);
+            float penetration = MeleePenetration(weapon, pawn);
             float speedBase = speed;
 
             float diffFromAverage = speed - averageSpeed;
             diffFromAverage *= (speedBias - 1);
             speed += diffFromAverage;
 
-            //Log.Message(weapon.LabelCap + " damage:" + damage + " spdfac:" + speed + " spdFacBase:" + speedBase);
             if (speed == 0f)
             {
                 return 0f;
             }
-            return damage / speed;
+            return (damage + (damage * penetration)) / speed;
         }
 
         public static void GetVerbsAndTools(ThingWithComps weapon, out List<VerbProperties> verbs, out List<Tool> tools)

@@ -202,8 +202,8 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 result = options.MaxBy(t => StatCalculator.getMeleeDPSBiased(t as ThingWithComps, pawn, Settings.SpeedSelectionBiasMelee, averageSpeed)) as ThingWithComps;
 
                 //check if pawn is better when punching
-                if (pawn.GetStatValue(StatDefOf.MeleeDPS) > resultDPS)
-                    result = null;
+                //if (pawn.GetStatValue(StatDefOf.MeleeDPS) > resultDPS)
+                //    result = null;
 
                 return true;
             }

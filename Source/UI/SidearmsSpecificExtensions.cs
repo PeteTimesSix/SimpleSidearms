@@ -8,14 +8,17 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
 namespace PeteTimesSix.SimpleSidearms.UI
 {
     public static class SidearmsSpecificExtensions
     {
         public const float IconSize = 32f;
+        public const float IconGap = 1f;
         public static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
         public static readonly Color iconMouseOverColor = new Color(0.6f, 0.6f, 0.4f, 1f);
+        public const float WeaponListSize = (IconGap + IconSize) * 5;
 
 
         public static void SliderSpeedBias(this Listing_Standard instance, string label, ref float value, float min, float mid, float max, bool isMelee, float displayMult = 100, string valueSuffix = "%")
@@ -69,6 +72,31 @@ namespace PeteTimesSix.SimpleSidearms.UI
             }
 
             value = instance.Slider(value, min, max);
+
+            GUI.color = save;
+        }
+
+        public static void WeaponList(this Listing_Standard instance, ref HashSet<ThingDef> weapons, WeaponListKind listType)
+        {
+            Color save = GUI.color;
+
+            var width = instance.GetRect(0).width;
+            int iconsPerRow = (int)(width / (IconGap + IconSize));
+            int rows = (weapons.Count / iconsPerRow) + 1;
+
+            var rect = instance.GetRect((rows * (IconSize + IconGap)) - IconGap);
+
+            var weaponsIndexable = weapons.ToList();
+            for (int i = 0; i < weaponsIndexable.Count; i++)
+            {
+                int collum = (i % iconsPerRow);
+                int row = (i / iconsPerRow);
+                bool interacted = DrawIconForWeapon(weaponsIndexable[i], rect, new Vector2(IconSize * collum + collum * IconGap, IconSize * row + row * IconGap));
+                if (interacted)
+                {
+                    //nothing, since this is the passive list
+                }
+            }
 
             GUI.color = save;
         }

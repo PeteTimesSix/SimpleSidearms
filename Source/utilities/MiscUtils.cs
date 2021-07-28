@@ -41,6 +41,20 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         public static void DoNothing()
         {
         }
+
+        public static WeaponSearchType LimitTypeToListType(WeaponListKind type)
+        {
+            switch (type)
+            {
+                case WeaponListKind.Melee:
+                    return WeaponSearchType.Melee;
+                case WeaponListKind.Ranged:
+                    return WeaponSearchType.Ranged;
+                case WeaponListKind.Both:
+                default:
+                    return WeaponSearchType.Both;
+            }
+        }
     }
 
 }

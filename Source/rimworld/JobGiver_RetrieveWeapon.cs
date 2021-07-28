@@ -14,6 +14,10 @@ namespace SimpleSidearms.rimworld
 
         public static Job TryGiveJobStatic(Pawn pawn, bool inCombat)
         {
+            if (!Settings.ReEquipOutOfCombat)
+                return null;
+            if (!Settings.ReEquipInCombat && inCombat)
+                return null;
             if (RestraintsUtility.InRestraints(pawn))
                 return null;
             else
