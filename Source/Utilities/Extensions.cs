@@ -1,18 +1,20 @@
-﻿using RimWorld;
+﻿using HarmonyLib;
+using RimWorld;
 using SimpleSidearms.rimworld;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
 using UnityEngine;
 using Verse;
-using static SimpleSidearms.Globals;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
-namespace SimpleSidearms
+namespace PeteTimesSix.SimpleSidearms
 {
     public static class Extensions
     {
+        public static void DoModSettings(this Dialog_ModSettings instance, Mod mod) 
+        {
+            AccessTools.Field(typeof(Dialog_ModSettings), "selMod").SetValue(instance, mod);
+        }
+
         public static string getLabelCap(this ThingDefStuffDefPair pair)
         {
             return pair.getLabel().CapitalizeFirst();

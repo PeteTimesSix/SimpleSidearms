@@ -1,11 +1,14 @@
-﻿using System;
+﻿using PeteTimesSix.SimpleSidearms;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
 using Verse.AI;
-using static SimpleSidearms.Globals;
+
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
 namespace SimpleSidearms.rimworld
 {
@@ -159,9 +162,9 @@ namespace SimpleSidearms.rimworld
             if (Owner != null)
             {
                 if (Owner.IsColonist)
-                    primaryWeaponMode = SimpleSidearms.ColonistDefaultWeaponMode.Value;
+                    primaryWeaponMode = Settings.ColonistDefaultWeaponMode;
                 else
-                    primaryWeaponMode = SimpleSidearms.NPCDefaultWeaponMode.Value;
+                    primaryWeaponMode = Settings.NPCDefaultWeaponMode;
 
                 if (primaryWeaponMode == PrimaryWeaponMode.ByGenerated)
                 {
@@ -237,22 +240,6 @@ namespace SimpleSidearms.rimworld
                 return null;
 
             return memory;
-        }
-
-        public void backfillFromGoldfish(GoldfishModule obsoleteMemory)
-        {
-            this.rememberedWeapons = obsoleteMemory.rememberedWeapons;
-
-            this.forcedWeaponEx = obsoleteMemory.forcedWeaponEx;
-            this.forcedUnarmedEx = obsoleteMemory.forcedUnarmedEx;
-            this.forcedWeaponWhileDraftedEx = obsoleteMemory.forcedWeaponWhileDraftedEx;
-            this.forcedUnarmedWhileDraftedEx = obsoleteMemory.forcedUnarmedWhileDraftedEx;
-
-            this.preferredUnarmedEx = obsoleteMemory.preferredUnarmedEx;
-            this.defaultRangedWeaponEx = obsoleteMemory.defaultRangedWeaponEx;
-            this.preferredMeleeWeaponEx = obsoleteMemory.preferredMeleeWeaponEx;
-
-            this.primaryWeaponMode = obsoleteMemory.primaryWeaponMode;
         }
 
         public bool IsCurrentWeaponForced(bool alsoCountPreferredOrDefault)
@@ -439,7 +426,7 @@ namespace SimpleSidearms.rimworld
 
         public bool IsUsingAutotool(bool withDelay, bool withJobLag)
         {
-            if (!SimpleSidearms.ToolAutoSwitch)
+            if (!Settings.ToolAutoSwitch)
                 return false;
             if (this.autotoolToil != null)
             {

@@ -1,6 +1,6 @@
-﻿using HarmonyLib;
+﻿using PeteTimesSix.SimpleSidearms;
+using PeteTimesSix.SimpleSidearms.Utilities;
 using RimWorld;
-using SimpleSidearms.utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,8 @@ using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
-using static SimpleSidearms.Globals;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
 
 namespace SimpleSidearms.rimworld
 {
@@ -22,6 +23,8 @@ namespace SimpleSidearms.rimworld
         public const float SelectorPanelWidth = 32f + ContentPadding * 2;
         public const float PreferenceIconHeight = 21f;
         public const float PreferenceIconWidth = 32f;
+
+        public const float FirstTimeSettingsWarningWidth = 16f;
 
 
         public static readonly Color iconBaseColor = new Color(0.5f, 0.5f, 0.5f, 1f);
@@ -70,6 +73,8 @@ namespace SimpleSidearms.rimworld
                 carriedMeleeWeapons.Count() + countMissingMeleeWeapons(pawnMemory, parent) + 1
                 );
             float width = SelectorPanelWidth + ContentPadding + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + ContentPadding;
+            if (!Settings.SettingsEverOpened)
+                width += (FirstTimeSettingsWarningWidth + 2);
             return Math.Min(Math.Max(width, MinGizmoSize), maxWidth);
         }
 
@@ -222,7 +227,24 @@ namespace SimpleSidearms.rimworld
 
             UIHighlighter.HighlightOpportunity(gizmoRect, "SidearmList");
 
-            if(parent.IsColonistPlayerControlled)
+            if (!Settings.SettingsEverOpened)
+            {
+                Rect position = new Rect((gizmoRect.x + gizmoRect.width - (FirstTimeSettingsWarningWidth + 2)), gizmoRect.y + 4, FirstTimeSettingsWarningWidth, FirstTimeSettingsWarningWidth);
+                float brightness = Pulser.PulseBrightness(1f, 0.5f);
+                GUI.color = new Color(brightness, brightness, 0f);
+                GUI.DrawTexture(position, TextureResources.FirstTimeSettingsWarningIcon);
+                if (Widgets.ButtonInvisible(position))
+                {
+                    var dialog = new Dialog_ModSettings();
+                    dialog.DoModSettings(ModSingleton);
+                    Find.WindowStack.Add(dialog);
+                }
+                TooltipHandler.TipRegion(position, "FirstTimeSettingsWarning".Translate());
+            }
+
+            GUI.color = Color.white;
+
+            if (parent.IsColonistPlayerControlled)
                 DrawGizmoLabel(defaultLabel, gizmoRect);
             else
                 DrawGizmoLabel(defaultLabel+" (godmode)", gizmoRect);
@@ -660,7 +682,7 @@ namespace SimpleSidearms.rimworld
 
                             pawnMemory.SetWeaponAsForced(weaponType, true);
                             if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
-                                WeaponAssingment.equipSpecificWeaponTypeFromInventory(parent, weaponType, MiscUtils.shouldDrop(dropMode), false);
+                                WeaponAssingment.equipSpecificWeaponTypeFromInventory(parent, weaponType, MiscUtils.shouldDrop(parent, dropMode, false), false);
                         }
                         else if (pawnMemory.DefaultRangedWeapon == weaponType || pawnMemory.PreferredMeleeWeapon == weaponType || weaponType.isToolNotWeapon())
                         {
@@ -672,7 +694,7 @@ namespace SimpleSidearms.rimworld
 
                             pawnMemory.SetWeaponAsForced(weaponType, false);
                             if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
-                                WeaponAssingment.equipSpecificWeaponTypeFromInventory(parent, weaponType, MiscUtils.shouldDrop(dropMode), false);
+                                WeaponAssingment.equipSpecificWeaponTypeFromInventory(parent, weaponType, MiscUtils.shouldDrop(parent, dropMode, false), false);
                         }
                         else
                         {
@@ -722,7 +744,7 @@ namespace SimpleSidearms.rimworld
 
                             pawnMemory.SetUnarmedAsForced(true);
                             if (parent.equipment.Primary != null)
-                                WeaponAssingment.equipSpecificWeapon(parent, null, MiscUtils.shouldDrop(dropMode), false);
+                                WeaponAssingment.equipSpecificWeapon(parent, null, MiscUtils.shouldDrop(parent, dropMode, false), false);
                         }
                         else if (pawnMemory.PreferredUnarmed)
                         {
@@ -731,7 +753,7 @@ namespace SimpleSidearms.rimworld
 
                             pawnMemory.SetUnarmedAsForced(false);
                             if (parent.equipment.Primary != null)
-                                WeaponAssingment.equipSpecificWeapon(parent, null, MiscUtils.shouldDrop(dropMode), false);
+                                WeaponAssingment.equipSpecificWeapon(parent, null, MiscUtils.shouldDrop(parent, dropMode, false), false);
                         }
                         else 
                         {
@@ -744,7 +766,6 @@ namespace SimpleSidearms.rimworld
                     case SidearmsListInteraction.None:
                     default:
                         return;
-                        break;
                 }
             }
             else if(ev.button == RIGHT_CLICK)
@@ -903,7 +924,6 @@ namespace SimpleSidearms.rimworld
                     case SidearmsListInteraction.None:
                     default:
                         return;
-                        break;
                 }
             }
         }

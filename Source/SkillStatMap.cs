@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 
-namespace SimpleSidearms
+namespace PeteTimesSix.SimpleSidearms
 {
     public static class SkillStatMap
     {

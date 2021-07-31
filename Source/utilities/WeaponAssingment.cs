@@ -1,17 +1,16 @@
-﻿using RimWorld;
-using SimpleSidearms.intercepts;
+﻿using PeteTimesSix.SimpleSidearms.Intercepts;
+using RimWorld;
 using SimpleSidearms.rimworld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
-using static SimpleSidearms.Globals;
-using static SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
-namespace SimpleSidearms.utilities
+namespace PeteTimesSix.SimpleSidearms.Utilities
 {
     public static class WeaponAssingment
     {
@@ -50,6 +49,8 @@ namespace SimpleSidearms.utilities
                 //drop current on the ground
             if (dropCurrent && pawn.equipment.Primary != null)
             {
+                if (!intentionalDrop)
+                    DoFumbleMote(pawn);
                 pawnMemory.InformOfDroppedSidearm(weapon, intentionalDrop);
                 Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out ThingWithComps droppedItem, pawn.Position, false);
@@ -70,7 +71,7 @@ namespace SimpleSidearms.utilities
                        pawn?.LabelCap,
                        pawn?.IsColonist,
                        dropCurrent,
-                       SimpleSidearms.DropMode
+                       Settings.FumbleMode
                     ));
             }
 
@@ -83,7 +84,7 @@ namespace SimpleSidearms.utilities
                     pawn?.LabelCap,
                     pawn?.IsColonist,
                     dropCurrent,
-                    SimpleSidearms.DropMode
+                    Settings.FumbleMode
                     ));
                 return false;
             }
@@ -116,6 +117,23 @@ namespace SimpleSidearms.utilities
             return true;
         }
 
+        public static void DoFumbleMote(Pawn pawn)
+        {
+            var bestSkillc = Math.Max(pawn.skills.GetSkill(SkillDefOf.Shooting).Level, pawn.skills.GetSkill(SkillDefOf.Melee).Level);
+            var chancec = Settings.FumbleRecoveryChance.Evaluate(bestSkillc);
+            Log.Message($"aaaa {pawn.Label} {chancec}");
+            if (!Prefs.DevMode)
+            {
+                MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, Prefs.DevMode ? "Fumbled".Translate() : "Fumbled".Translate());
+            }
+            else
+            {
+                var bestSkill = Math.Max(pawn.skills.GetSkill(SkillDefOf.Shooting).Level, pawn.skills.GetSkill(SkillDefOf.Melee).Level);
+                var chance = Settings.FumbleRecoveryChance.Evaluate(bestSkill);
+                MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, Prefs.DevMode ? "Fumbled_dev".Translate($"{((1f - chance) * 100).ToString("F0")}% chance") : "Fumbled".Translate());
+            }
+        }
+
         public static bool equipBestWeaponFromInventoryByStatModifiers(Pawn pawn, List<StatDef> stats)
         {
             //Log.Message("looking for a stat booster for stats " + String.Join(",", stats.Select(s => s.label))); ;
@@ -145,7 +163,7 @@ namespace SimpleSidearms.utilities
             return success;
         }
 
-        public static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum drop, PrimaryWeaponMode? modeOverride = null, Pawn target = null)
+        public static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum dropMode, PrimaryWeaponMode? modeOverride = null, Pawn target = null)
         {
             if (!pawn.IsValidSidearmsCarrier())
                 return;
@@ -159,7 +177,7 @@ namespace SimpleSidearms.utilities
             {
                 if (pawn.equipment.Primary != null)
                 {
-                    bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(drop), false);
+                    bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
                 }
@@ -172,7 +190,7 @@ namespace SimpleSidearms.utilities
             {
                 if (pawn.equipment.Primary != null)
                 {
-                    bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(drop), false);
+                    bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
                 }
@@ -185,7 +203,7 @@ namespace SimpleSidearms.utilities
                 if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.ForcedWeaponWhileDrafted.Value)
                 {
                     var requiredWeapon = pawnMemory.ForcedWeaponWhileDrafted.Value;
-                    bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(drop), false);
+                    bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
                 }
@@ -196,7 +214,7 @@ namespace SimpleSidearms.utilities
             {
                 if (pawn.equipment.Primary != null)
                 {
-                    bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(drop), false);
+                    bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
                 }
@@ -208,7 +226,7 @@ namespace SimpleSidearms.utilities
                 if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.ForcedWeapon.Value)
                 {
                     var requiredWeapon = pawnMemory.ForcedWeapon.Value;
-                    bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(drop), false);
+                    bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
                 }
@@ -225,7 +243,7 @@ namespace SimpleSidearms.utilities
                     if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.DefaultRangedWeapon.Value)
                     {
                         var requiredWeapon = pawnMemory.DefaultRangedWeapon.Value;
-                        bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(drop), false);
+                        bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                         if (success)
                             return;
                     }
@@ -235,13 +253,12 @@ namespace SimpleSidearms.utilities
 
                 else
                 {
-                    ThingWithComps result;
                     (ThingWithComps weapon, float dps, float averageSpeed) bestWeapon = GettersFilters.findBestRangedWeapon(pawn, null, pawn.IsColonistPlayerControlled);
                     if (bestWeapon.weapon != null)
                     {
                         if (pawn.equipment.Primary != bestWeapon.weapon)
                         {
-                            bool success = equipSpecificWeaponFromInventory(pawn, bestWeapon.weapon, MiscUtils.shouldDrop(drop), false);
+                            bool success = equipSpecificWeaponFromInventory(pawn, bestWeapon.weapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                             if (success)
                                 return;
                         }
@@ -262,7 +279,7 @@ namespace SimpleSidearms.utilities
                 {
                     if (pawn.equipment.Primary != null)
                     {
-                        bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(drop), false);
+                        bool success = equipSpecificWeapon(pawn, null, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                         if (success)
                             return;
                     }
@@ -277,7 +294,7 @@ namespace SimpleSidearms.utilities
                         if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.PreferredMeleeWeapon.Value)
                         {
                             var requiredWeapon = pawnMemory.PreferredMeleeWeapon.Value;
-                            bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(drop), false);
+                            bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                             if (success)
                                 return;
                         }
@@ -292,7 +309,7 @@ namespace SimpleSidearms.utilities
                         {
                             if (pawn.equipment.Primary != result)
                             {
-                                bool success = equipSpecificWeaponFromInventory(pawn, result, MiscUtils.shouldDrop(drop), false);
+                                bool success = equipSpecificWeaponFromInventory(pawn, result, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                                 if (success)
                                     return;
                             }
@@ -308,8 +325,7 @@ namespace SimpleSidearms.utilities
         //When hit in Close-Quarter Combat 
         internal static void doCQC(Pawn pawn, Pawn attacker)
         {
-
-            if (CQCAutoSwitch == true)
+            if (Settings.CQCAutoSwitch == true)
             {
                 if (attacker != null)
                 {
@@ -326,12 +342,12 @@ namespace SimpleSidearms.utilities
                     }
                     
 
-                    if (CQCTargetOnly.Value == true && attacker != pawn.mindState.lastAttackedTarget.Thing)
+                    if (Settings.CQCTargetOnly == true && attacker != pawn.mindState.lastAttackedTarget.Thing)
                     {
                         return;
                     }
 
-                    if (!OptimalMelee && pawn.equipment.Primary != null && pawn.equipment.Primary.def.IsMeleeWeapon)
+                    if (!Settings.OptimalMelee && pawn.equipment.Primary != null && pawn.equipment.Primary.def.IsMeleeWeapon)
                         return;
 
                     bool changed = tryCQCWeaponSwapToMelee(pawn, attacker, DroppingModeEnum.InDistress);
@@ -353,13 +369,13 @@ namespace SimpleSidearms.utilities
 
         public static void chooseOptimalMeleeForAttack(Pawn pawn, Pawn target)
         {
-            if (!OptimalMelee || target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))
+            if (!Settings.OptimalMelee || target == null || (target.MentalStateDef == MentalStateDefOf.SocialFighting && pawn.MentalStateDef == MentalStateDefOf.SocialFighting))
                     return;
 
             tryCQCWeaponSwapToMelee(pawn, target, DroppingModeEnum.Combat);
         }
 
-        public static bool tryCQCWeaponSwapToMelee(Pawn pawn, Pawn target, DroppingModeEnum drop)
+        public static bool tryCQCWeaponSwapToMelee(Pawn pawn, Pawn target, DroppingModeEnum dropMode)
         {
             if (!pawn.IsValidSidearmsCarrier())
                 return false;
@@ -382,7 +398,7 @@ namespace SimpleSidearms.utilities
                 return false;
 
             var current = pawn.equipment.Primary;
-            equipBestWeaponFromInventoryByPreference(pawn, drop, PrimaryWeaponMode.Melee, target: target);
+            equipBestWeaponFromInventoryByPreference(pawn, dropMode, PrimaryWeaponMode.Melee, target: target);
             return (current != pawn.equipment.Primary);
         }
 
@@ -404,21 +420,24 @@ namespace SimpleSidearms.utilities
 
             CellRect cellRect = (!target.HasThing) ? CellRect.SingleCell(target.Cell) : target.Thing.OccupiedRect();
             float range = cellRect.ClosestDistSquaredTo(pawn.Position);
-            float currentDPS = StatCalculator.RangedDPS(pawn.equipment.Primary, SpeedSelectionBiasRanged.Value, bestWeapon.averageSpeed, range);
+            float currentDPS = StatCalculator.RangedDPS(pawn.equipment.Primary, Settings.SpeedSelectionBiasRanged, bestWeapon.averageSpeed, range);
             
-            if (bestWeapon.dps < currentDPS + ANTI_OSCILLATION_FACTOR)
+            if (bestWeapon.dps < currentDPS + MiscUtils.ANTI_OSCILLATION_FACTOR)
                 return false;
 
             equipSpecificWeaponFromInventory(pawn, bestWeapon.weapon, dropCurrent, false);
             return true;
         }
 
-        public static void dropSidearm(Pawn pawn, Thing weapon, bool intentional)
+        public static void dropSidearm(Pawn pawn, Thing weapon, bool intentionalDrop)
         {
             if (weapon == null)
                 return;
-            if (pawn.IsQuestLodger() && intentional)
+            if (pawn.IsQuestLodger() && intentionalDrop)
                 return;
+
+            if (!intentionalDrop)
+                DoFumbleMote(pawn);
 
             if (pawn.equipment.Primary == weapon)
             {
@@ -442,7 +461,7 @@ namespace SimpleSidearms.utilities
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
             if (pawnMemory == null)
                 return;
-            pawnMemory.InformOfDroppedSidearm(weapon, intentional);
+            pawnMemory.InformOfDroppedSidearm(weapon, intentionalDrop);
         }
     }
 }

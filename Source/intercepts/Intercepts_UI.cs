@@ -7,10 +7,10 @@ using System.Text;
 using UnityEngine;
 using Verse;
 using Verse.AI;
-using SimpleSidearms.utilities;
 using SimpleSidearms.rimworld;
+using PeteTimesSix.SimpleSidearms.Utilities;
 
-namespace SimpleSidearms.intercepts
+namespace PeteTimesSix.SimpleSidearms.Intercepts
 {
     [HarmonyPatch(typeof(ITab_Pawn_Gear), "InterfaceDrop")]
     public static class ITab_Pawn_Gear_InterfaceDrop_Prefix
@@ -95,9 +95,6 @@ namespace SimpleSidearms.intercepts
         {
             try
             {
-                if (SimpleSidearms.CEOverride)
-                    return;
-
                 IntVec3 c = IntVec3.FromVector3(clickPos);
                 if (pawn.equipment != null)
                 {

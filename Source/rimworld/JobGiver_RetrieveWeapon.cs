@@ -1,11 +1,11 @@
-﻿using RimWorld;
-using SimpleSidearms.utilities;
-using System;
+﻿using PeteTimesSix.SimpleSidearms;
+using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Verse;
 using Verse.AI;
+
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
 
 namespace SimpleSidearms.rimworld
 {
@@ -14,6 +14,10 @@ namespace SimpleSidearms.rimworld
 
         public static Job TryGiveJobStatic(Pawn pawn, bool inCombat)
         {
+            if (!Settings.ReEquipOutOfCombat)
+                return null;
+            if (!Settings.ReEquipInCombat && inCombat)
+                return null;
             if (RestraintsUtility.InRestraints(pawn))
                 return null;
             else
@@ -75,7 +79,7 @@ namespace SimpleSidearms.rimworld
 
                         Thing thing = GenClosest.ClosestThing_Global_Reachable(pawn.Position, pawn.Map, matchingWeapons, PathEndMode.OnCell, TraverseParms.For(pawn), maxDist,
                             (Thing t) => !t.IsForbidden(pawn) && pawn.CanReserve(t),
-                            (Thing t) => SimpleSidearms.ReEquipBest ? t.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS, false) : 0);
+                            (Thing t) => Settings.ReEquipBest ? t.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS, false) : 0);
                                                             //this works properly because better ranged weapons also happen to be better at pistolwhipping
                                                             //okay past me, WHAT? Why?
 

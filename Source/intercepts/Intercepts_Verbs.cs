@@ -6,11 +6,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Verse;
-using SimpleSidearms.utilities;
-using static SimpleSidearms.Globals;
 using SimpleSidearms.rimworld;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
+using PeteTimesSix.SimpleSidearms.Utilities;
 
-namespace SimpleSidearms.intercepts
+namespace PeteTimesSix.SimpleSidearms.Intercepts
 {
 
     [HarmonyPatch(typeof(Verb_ShootOneUse), "SelfConsume")]

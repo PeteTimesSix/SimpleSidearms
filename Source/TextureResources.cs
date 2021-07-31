@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace SimpleSidearms
+namespace PeteTimesSix.SimpleSidearms
 {
     [StaticConstructorOnStartup]
     public static class TextureResources
@@ -29,5 +29,7 @@ namespace SimpleSidearms
 
         public static readonly Texture2D SpeedBiasSliderPositive = ContentFinder<Texture2D>.Get("speedBiasSliderPositive", true);
         public static readonly Texture2D SpeedBiasSliderNegative = ContentFinder<Texture2D>.Get("speedBiasSliderNegative", true);
+
+        public static readonly Texture2D FirstTimeSettingsWarningIcon = ContentFinder<Texture2D>.Get("settingsWarningIcon", true);
     }
 }

@@ -7,35 +7,52 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
-using static SimpleSidearms.Globals;
-using static SimpleSidearms.hugsLibSettings.SettingsUIs;
-using static SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
-namespace SimpleSidearms.utilities
+namespace PeteTimesSix.SimpleSidearms.Utilities
 {
     public static class MiscUtils
     {
+        public static readonly float ANTI_OSCILLATION_FACTOR = 0.1f;
 
-        public static bool shouldDrop(DroppingModeEnum mode)
+        public static bool shouldDrop(Pawn pawn, DroppingModeEnum mode, bool ignoreRecoveryChance)
         {
-            switch (SimpleSidearms.DropMode.Value)
+            bool drop;
+            switch (Settings.FumbleMode)
             {
-                case DroppingModeOptionsEnum.Never:
-                    return false;
-                case DroppingModeOptionsEnum.InDistress:
+                case FumbleModeOptionsEnum.Never:
+                    drop = false;
+                    break;
+                case FumbleModeOptionsEnum.InDistress:
                     if (mode == DroppingModeEnum.InDistress)
-                        return true;
+                        drop = true;
                     else
-                        return false;
-                case DroppingModeOptionsEnum.InCombat:
+                        drop = false;
+                    break;
+                case FumbleModeOptionsEnum.InCombat:
                     if (mode == DroppingModeEnum.InDistress || mode == DroppingModeEnum.Combat)
-                        return true;
+                        drop = true;
                     else
-                        return false;
-                case DroppingModeOptionsEnum.Always:
+                        drop = false;
+                    break;
+                case FumbleModeOptionsEnum.Always:
                 default:
-                    return true;
+                    drop = true;
+                    break;
             }
+            if (ignoreRecoveryChance)
+            {
+                return drop;
+            }
+            else if (drop) 
+            {
+                var bestSkill = Math.Max(pawn.skills.GetSkill(SkillDefOf.Shooting).Level, pawn.skills.GetSkill(SkillDefOf.Melee).Level);
+                var chance = Settings.FumbleRecoveryChance.Evaluate(bestSkill);
+                var recovered = Rand.Chance(chance);
+                return !recovered;
+            }
+            return false;
         }
 
         public static void DoNothing()
