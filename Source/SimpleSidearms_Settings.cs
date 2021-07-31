@@ -10,6 +10,7 @@ using PeteTimesSix.SimpleSidearms.Utilities;
 using SimpleSidearms.rimworld;
 using System.Linq;
 using RimWorld;
+using PeteTimesSix.SimpleSidearms.UI.Verse;
 
 namespace PeteTimesSix.SimpleSidearms
 {
@@ -32,6 +33,9 @@ namespace PeteTimesSix.SimpleSidearms
     public class SimpleSidearms_Settings : ModSettings
     {
         public OptionsTab ActiveTab = OptionsTab.Presets;
+
+        public bool SettingsEverOpened = false;
+
         public SettingsPreset ActivePreset = SettingsPreset.NoneApplied;
 
         public bool ToolAutoSwitch;
@@ -106,85 +110,117 @@ namespace PeteTimesSix.SimpleSidearms
         public PrimaryWeaponMode ColonistDefaultWeaponMode;
         public PrimaryWeaponMode NPCDefaultWeaponMode;
 
-        public DroppingModeOptionsEnum DropMode;
+        public FumbleModeOptionsEnum FumbleMode;
+        public SimpleCurve FumbleRecoveryChance;
+
+        private static CurvePoint[] defaultFumbleRecoveryChancePoints = { new CurvePoint(0, 0), new CurvePoint(2, 0.15f), new CurvePoint(5, 0.85f), new CurvePoint(7, 1), new CurvePoint(20, 1) };
         public bool ReEquipOutOfCombat;
         public bool ReEquipBest;
         public bool ReEquipInCombat;
 
         public void StartupChecks()
         {
-            if(ActivePreset == SettingsPreset.NoneApplied) 
+            if (LimitModeSingle_Selection == null)
+                LimitModeSingle_Selection = new HashSet<ThingDef>();
+            if (LimitModeSingleMelee_Selection == null)
+                LimitModeSingleMelee_Selection = new HashSet<ThingDef>();
+            if (LimitModeSingleRanged_Selection == null)
+                LimitModeSingleRanged_Selection = new HashSet<ThingDef>();
+            if (ActivePreset == SettingsPreset.NoneApplied) 
             {
-                
+                SettingsEverOpened = false;
+                ApplyPreset(SettingsPreset.Basic);
             }
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref ToolAutoSwitch, "ToolAutoSwitch");
-            Scribe_Values.Look(ref OptimalMelee, "OptimalMelee");
-            Scribe_Values.Look(ref CQCAutoSwitch, "CQCAutoSwitch");
-            Scribe_Values.Look(ref CQCTargetOnly, "CQCTargetOnly");
-            Scribe_Values.Look(ref RangedCombatAutoSwitch, "RangedCombatAutoSwitch");
-            Scribe_Values.Look(ref RangedCombatAutoSwitchMaxWarmup, "RangedCombatAutoSwitchMaxWarmup");
-            Scribe_Values.Look(ref SpeedSelectionBiasMelee, "SpeedSelectionBiasMelee");
-            Scribe_Values.Look(ref SpeedSelectionBiasRanged, "SpeedSelectionBiasRanged");
-            Scribe_Values.Look(ref SeparateModes, "SeparateModes");
+            Scribe_Values.Look(ref SettingsEverOpened, "SettingsEverOpened", defaultValue: false);
+            Scribe_Values.Look(ref ActivePreset, "ActivePreset", defaultValue: SettingsPreset.NoneApplied);
 
-            Scribe_Values.Look(ref LimitModeSingle, "LimitModeSingle");
-            Scribe_Values.Look(ref LimitModeAmount, "LimitModeAmount");
+            Scribe_Values.Look(ref ToolAutoSwitch, "ToolAutoSwitch", defaultValue: true);
+            Scribe_Values.Look(ref OptimalMelee, "OptimalMelee", defaultValue: true);
+            Scribe_Values.Look(ref CQCAutoSwitch, "CQCAutoSwitch", defaultValue: true);
+            Scribe_Values.Look(ref CQCTargetOnly, "CQCTargetOnly", defaultValue: false);
+            Scribe_Values.Look(ref RangedCombatAutoSwitch, "RangedCombatAutoSwitch", defaultValue: true);
 
-            Scribe_Values.Look(ref LimitModeSingleMelee, "LimitModeSingleMelee");
-            Scribe_Values.Look(ref LimitModeAmountMelee, "LimitModeAmountMelee");
-            Scribe_Values.Look(ref LimitModeSingleRanged, "LimitModeSingleRanged");
-            Scribe_Values.Look(ref LimitModeAmountRanged, "LimitModeAmountRanged");
-            Scribe_Values.Look(ref LimitModeAmountTotal, "LimitModeAmountTotal");
+            Scribe_Values.Look(ref RangedCombatAutoSwitchMaxWarmup, "RangedCombatAutoSwitchMaxWarmup", defaultValue: 0.75f);
 
-            Scribe_Values.Look(ref LimitModeSingle_AbsoluteMass, "LimitModeSingle_AbsoluteMass");
-            Scribe_Values.Look(ref LimitModeSingle_RelativeMass, "LimitModeSingle_RelativeMass");
-            Scribe_Collections.Look(ref LimitModeSingle_Selection, "LimitModeSingle_Selection");
+            Scribe_Values.Look(ref SpeedSelectionBiasMelee, "SpeedSelectionBiasMelee", defaultValue: 1f);
+            Scribe_Values.Look(ref SpeedSelectionBiasRanged, "SpeedSelectionBiasRanged", defaultValue: 1.1f);
+            Scribe_Values.Look(ref SeparateModes, "SeparateModes", defaultValue: false);
 
-            Scribe_Values.Look(ref LimitModeAmount_AbsoluteMass, "LimitModeAmount_AbsoluteMass");
-            Scribe_Values.Look(ref LimitModeAmount_RelativeMass, "LimitModeAmount_RelativeMass");
-            Scribe_Values.Look(ref LimitModeAmount_Slots, "LimitModeAmount_Slots");
+            Scribe_Values.Look(ref LimitModeSingle, "LimitModeSingle", defaultValue: LimitModeSingleSidearm.None);
+            Scribe_Values.Look(ref LimitModeAmount, "LimitModeAmount", defaultValue: LimitModeAmountOfSidearms.None);
 
-            Scribe_Values.Look(ref LimitModeSingleMelee_AbsoluteMass, "LimitModeSingleMelee_AbsoluteMass");
-            Scribe_Values.Look(ref LimitModeSingleMelee_RelativeMass, "LimitModeSingleMelee_RelativeMass");
-            Scribe_Collections.Look(ref LimitModeSingleMelee_Selection, "LimitModeSingleMelee_Selection");
+            Scribe_Values.Look(ref LimitModeSingleMelee, "LimitModeSingleMelee", defaultValue: LimitModeSingleSidearm.None);
+            Scribe_Values.Look(ref LimitModeAmountMelee, "LimitModeAmountMelee", defaultValue: LimitModeAmountOfSidearms.None);
+            Scribe_Values.Look(ref LimitModeSingleRanged, "LimitModeSingleRanged", defaultValue: LimitModeSingleSidearm.None);
+            Scribe_Values.Look(ref LimitModeAmountRanged, "LimitModeAmountRanged", defaultValue: LimitModeAmountOfSidearms.None);
+            Scribe_Values.Look(ref LimitModeAmountTotal, "LimitModeAmountTotal", defaultValue: LimitModeAmountOfSidearms.None);
 
-            Scribe_Values.Look(ref LimitModeAmountMelee_AbsoluteMass, "LimitModeAmountMelee_AbsoluteMass");
-            Scribe_Values.Look(ref LimitModeAmountMelee_RelativeMass, "LimitModeAmountMelee_RelativeMass");
-            Scribe_Values.Look(ref LimitModeAmountMelee_Slots, "LimitModeAmountMelee_Slots");
+            Scribe_Values.Look(ref LimitModeSingle_AbsoluteMass, "LimitModeSingle_AbsoluteMass", defaultValue: 1.9f);
+            Scribe_Values.Look(ref LimitModeSingle_RelativeMass, "LimitModeSingle_RelativeMass", defaultValue: 0.25f);
+            Scribe_Collections.Look(ref LimitModeSingle_Selection, "LimitModeSingle_Selection", LookMode.Def);
 
-            Scribe_Values.Look(ref LimitModeSingleRanged_AbsoluteMass, "LimitModeSingleRanged_AbsoluteMass");
-            Scribe_Values.Look(ref LimitModeSingleRanged_RelativeMass, "LimitModeSingleRanged_RelativeMass");
-            Scribe_Collections.Look(ref LimitModeSingleRanged_Selection, "LimitModeSingleRanged_Selection");
+            Scribe_Values.Look(ref LimitModeAmount_AbsoluteMass, "LimitModeAmount_AbsoluteMass", defaultValue: 10f);
+            Scribe_Values.Look(ref LimitModeAmount_RelativeMass, "LimitModeAmount_RelativeMass", defaultValue: 0.5f);
+            Scribe_Values.Look(ref LimitModeAmount_Slots, "LimitModeAmount_Slots", defaultValue: 2);
 
-            Scribe_Values.Look(ref LimitModeAmountRanged_AbsoluteMass, "LimitModeAmountRanged_AbsoluteMass");
-            Scribe_Values.Look(ref LimitModeAmountRanged_RelativeMass, "LimitModeAmountRanged_RelativeMass");
-            Scribe_Values.Look(ref LimitModeAmountRanged_Slots, "LimitModeAmountRanged_Slots");
+            Scribe_Values.Look(ref LimitModeSingleMelee_AbsoluteMass, "LimitModeSingleMelee_AbsoluteMass", defaultValue: 1.9f);
+            Scribe_Values.Look(ref LimitModeSingleMelee_RelativeMass, "LimitModeSingleMelee_RelativeMass", defaultValue: 0.25f);
+            Scribe_Collections.Look(ref LimitModeSingleMelee_Selection, "LimitModeSingleMelee_Selection", LookMode.Def);
 
-            Scribe_Values.Look(ref LimitModeAmountTotal_AbsoluteMass, "LimitModeAmountTotal_AbsoluteMass");
-            Scribe_Values.Look(ref LimitModeAmountTotal_RelativeMass, "LimitModeAmountTotal_RelativeMass");
-            Scribe_Values.Look(ref LimitModeAmountTotal_Slots, "LimitModeAmountTotal_Slots");
+            Scribe_Values.Look(ref LimitModeAmountMelee_AbsoluteMass, "LimitModeAmountMelee_AbsoluteMass", defaultValue: 10f);
+            Scribe_Values.Look(ref LimitModeAmountMelee_RelativeMass, "LimitModeAmountMelee_RelativeMass", defaultValue: 0.5f);
+            Scribe_Values.Look(ref LimitModeAmountMelee_Slots, "LimitModeAmountMelee_Slots", defaultValue: 2);
 
-            Scribe_Values.Look(ref SidearmSpawnChance, "SidearmSpawnChance");
-            Scribe_Values.Look(ref SidearmSpawnChanceDropoff, "SidearmSpawnChanceDropoff");
-            Scribe_Values.Look(ref SidearmBudgetMultiplier, "SidearmBudgetMultiplier");
-            Scribe_Values.Look(ref SidearmBudgetDropoff, "SidearmBudgetDropoff");
+            Scribe_Values.Look(ref LimitModeSingleRanged_AbsoluteMass, "LimitModeSingleRanged_AbsoluteMass", defaultValue: 2.55f);
+            Scribe_Values.Look(ref LimitModeSingleRanged_RelativeMass, "LimitModeSingleRanged_RelativeMass", defaultValue: 0.25f);
+            Scribe_Collections.Look(ref LimitModeSingleRanged_Selection, "LimitModeSingleRanged_Selection", LookMode.Def);
 
-            Scribe_Values.Look(ref ColonistDefaultWeaponMode, "ColonistDefaultWeaponMode");
-            Scribe_Values.Look(ref NPCDefaultWeaponMode, "NPCDefaultWeaponMode");
+            Scribe_Values.Look(ref LimitModeAmountRanged_AbsoluteMass, "LimitModeAmountRanged_AbsoluteMass", defaultValue: 10f);
+            Scribe_Values.Look(ref LimitModeAmountRanged_RelativeMass, "LimitModeAmountRanged_RelativeMass", defaultValue: 0.5f);
+            Scribe_Values.Look(ref LimitModeAmountRanged_Slots, "LimitModeAmountRanged_Slots", defaultValue: 2);
 
-            Scribe_Values.Look(ref DropMode, "DropMode");
-            Scribe_Values.Look(ref ReEquipOutOfCombat, "ReEquipOutOfCombat");
-            Scribe_Values.Look(ref ReEquipBest, "ReEquipBest");
-            Scribe_Values.Look(ref ReEquipInCombat, "ReEquipInCombat");
+            Scribe_Values.Look(ref LimitModeAmountTotal_AbsoluteMass, "LimitModeAmountTotal_AbsoluteMass", defaultValue: 10f);
+            Scribe_Values.Look(ref LimitModeAmountTotal_RelativeMass, "LimitModeAmountTotal_RelativeMass", defaultValue: 0.5f);
+            Scribe_Values.Look(ref LimitModeAmountTotal_Slots, "LimitModeAmountTotal_Slots", defaultValue: 4);
+
+            Scribe_Values.Look(ref SidearmSpawnChance, "SidearmSpawnChance", defaultValue: 0.5f);
+            Scribe_Values.Look(ref SidearmSpawnChanceDropoff, "SidearmSpawnChanceDropoff", defaultValue: 0.25f);
+            Scribe_Values.Look(ref SidearmBudgetMultiplier, "SidearmBudgetMultiplier", defaultValue: 0.5f);
+            Scribe_Values.Look(ref SidearmBudgetDropoff, "SidearmBudgetDropoff", defaultValue: 0.25f);
+
+            Scribe_Values.Look(ref ColonistDefaultWeaponMode, "ColonistDefaultWeaponMode", defaultValue: PrimaryWeaponMode.BySkill);
+            Scribe_Values.Look(ref NPCDefaultWeaponMode, "NPCDefaultWeaponMode", PrimaryWeaponMode.ByGenerated);
+
+            Scribe_Values.Look(ref FumbleMode, "FumbleMode", defaultValue: FumbleModeOptionsEnum.InDistress);
+            Scribe_Values.Look(ref ReEquipOutOfCombat, "ReEquipOutOfCombat", defaultValue: true);
+            Scribe_Values.Look(ref ReEquipBest, "ReEquipBest", defaultValue: true);
+            Scribe_Values.Look(ref ReEquipInCombat, "ReEquipInCombat", defaultValue: true);
+
+            if (Scribe.mode == LoadSaveMode.Saving)
+            {
+                var temp = FumbleRecoveryChance.ToList();
+                Scribe_Collections.Look(ref temp, "FumbleRecoveryChance");
+            }
+            else
+            {
+                List<CurvePoint> temp = null;
+                Scribe_Collections.Look(ref temp, "FumbleRecoveryChance");
+                FumbleRecoveryChance = temp != null ? new SimpleCurve(temp) : new SimpleCurve(defaultFumbleRecoveryChancePoints);
+            }
         }
 
         internal void DoSettingsWindowContents(Rect outerRect)
         {
+            SettingsEverOpened = true;
+
+            bool change = false;
+            Action onChange = () => { change = true; };
+
             Color colorSave = GUI.color;
             TextAnchor anchorSave = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleCenter;
@@ -201,24 +237,41 @@ namespace PeteTimesSix.SimpleSidearms
             switch (ActiveTab) 
             {
                 case OptionsTab.Presets:
-                    
+                    {
+                        if (listingStandard.RadioButton("PresetCustom_title".Translate(), active: ActivePreset == SettingsPreset.Custom, tooltip: "PresetCustom_desc".Translate()))
+                            ApplyPreset(SettingsPreset.Custom);
+                        if (listingStandard.RadioButton("Preset0_title".Translate(), active: ActivePreset == SettingsPreset.Disabled, tooltip: "Preset0_desc".Translate()))
+                            ApplyPreset(SettingsPreset.Disabled);
+                        if (listingStandard.RadioButton("Preset1_title".Translate(), active: ActivePreset == SettingsPreset.LoadoutOnly, tooltip: "Preset1_desc".Translate()))
+                            ApplyPreset(SettingsPreset.LoadoutOnly);
+                        if (listingStandard.RadioButton("Preset1half_title".Translate(), active: ActivePreset == SettingsPreset.Lite, tooltip: "Preset1half_desc".Translate()))
+                            ApplyPreset(SettingsPreset.Lite);
+                        if (listingStandard.RadioButton("Preset2_title".Translate(), active: ActivePreset == SettingsPreset.Basic, tooltip: "Preset2_desc".Translate()))
+                            ApplyPreset(SettingsPreset.Basic);
+                        if (listingStandard.RadioButton("Preset3_title".Translate(), active: ActivePreset == SettingsPreset.Advanced, tooltip: "Preset3_desc".Translate()))
+                            ApplyPreset(SettingsPreset.Advanced);
+                        if (listingStandard.RadioButton("Preset4_title".Translate(), active: ActivePreset == SettingsPreset.Excessive, tooltip: "Preset4_desc".Translate()))
+                            ApplyPreset(SettingsPreset.Excessive);
+                        if (listingStandard.RadioButton("Preset5_title".Translate(), active: ActivePreset == SettingsPreset.Brawler, tooltip: "Preset5_desc".Translate()))
+                            ApplyPreset(SettingsPreset.Brawler);
+                    }
                     break;
                 case OptionsTab.Automation:
                     {
                         var subsection = listingStandard.BeginHiddenSection(out float subsectionHeight);
                         subsection.ColumnWidth = (maxWidth - ColumnGap) / 2;
 
-                        subsection.CheckboxLabeled("ToolAutoSwitch_title".Translate(), ref ToolAutoSwitch, "ToolAutoSwitch_desc".Translate());
-                        subsection.CheckboxLabeled("OptimalMelee_title".Translate(), ref OptimalMelee, "OptimalMelee_desc".Translate());
-                        subsection.CheckboxLabeled("CQCAutoSwitch_title".Translate(), ref CQCAutoSwitch, "CQCAutoSwitch_desc".Translate());
-                        subsection.CheckboxLabeled("CQCTargetOnly_title".Translate(), ref CQCTargetOnly, "CQCTargetOnly_desc".Translate());
+                        subsection.CheckboxLabeled("ToolAutoSwitch_title".Translate(), ref ToolAutoSwitch, "ToolAutoSwitch_desc".Translate(), onChange: onChange);
+                        subsection.CheckboxLabeled("OptimalMelee_title".Translate(), ref OptimalMelee, "OptimalMelee_desc".Translate(), onChange: onChange);
+                        subsection.CheckboxLabeled("CQCAutoSwitch_title".Translate(), ref CQCAutoSwitch, "CQCAutoSwitch_desc".Translate(), onChange: onChange);
+                        subsection.CheckboxLabeled("CQCTargetOnly_title".Translate(), ref CQCTargetOnly, "CQCTargetOnly_desc".Translate(), onChange: onChange);
 
                         subsection.NewHiddenColumn(ref subsectionHeight);
 
-                        subsection.CheckboxLabeled("RangedCombatAutoSwitch_title".Translate(), ref RangedCombatAutoSwitch, "RangedCombatAutoSwitch_desc".Translate());
+                        subsection.CheckboxLabeled("RangedCombatAutoSwitch_title".Translate(), ref RangedCombatAutoSwitch, "RangedCombatAutoSwitch_desc".Translate(), onChange);
                         if (RangedCombatAutoSwitch)
                         {
-                            subsection.SliderLabeled("RangedCombatAutoSwitchMaxWarmup_title".Translate(), ref RangedCombatAutoSwitchMaxWarmup, 0, 1, displayMult: 100, valueSuffix: "%");
+                            subsection.SliderLabeled("RangedCombatAutoSwitchMaxWarmup_title".Translate(), ref RangedCombatAutoSwitchMaxWarmup, 0, 1, displayMult: 100, valueSuffix: "%", onChange: onChange);
                         }
 
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
@@ -227,11 +280,11 @@ namespace PeteTimesSix.SimpleSidearms
                         var subsection = listingStandard.BeginHiddenSection(out float subsectionHeight);
                         subsection.ColumnWidth = (maxWidth - ColumnGap) / 2;
 
-                        subsection.SliderSpeedBias("SpeedSelectionBiasMelee_title".Translate(), ref SpeedSelectionBiasMelee, 0.5f, 1f, 2f, true, displayMult: 100, valueSuffix: "%");
+                        subsection.SliderSpeedBias("SpeedSelectionBiasMelee_title".Translate(), ref SpeedSelectionBiasMelee, 0.5f, 1f, 2f, true, displayMult: 100, valueSuffix: "%", onChange: onChange);
 
                         subsection.NewHiddenColumn(ref subsectionHeight);
 
-                        subsection.SliderSpeedBias("SpeedSelectionBiasRanged_title".Translate(), ref SpeedSelectionBiasRanged, 0.5f, 1f, 2f, false, displayMult: 100, valueSuffix: "%");
+                        subsection.SliderSpeedBias("SpeedSelectionBiasRanged_title".Translate(), ref SpeedSelectionBiasRanged, 0.5f, 1f, 2f, false, displayMult: 100, valueSuffix: "%", onChange: onChange);
 
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
                     }
@@ -239,7 +292,7 @@ namespace PeteTimesSix.SimpleSidearms
                 case OptionsTab.Allowances:
                     {
                         var valBefore = SeparateModes;
-                        listingStandard.CheckboxLabeled("SeparateModes_title".Translate(), ref SeparateModes, "SeparateModes_desc".Translate());
+                        listingStandard.CheckboxLabeled("SeparateModes_title".Translate(), ref SeparateModes, "SeparateModes_desc".Translate(), onChange: onChange);
                         if (valBefore != SeparateModes)
                         {
                             LimitModeSingle_Match_Cache = null;
@@ -249,40 +302,45 @@ namespace PeteTimesSix.SimpleSidearms
                     }
                     if (!SeparateModes)
                     {
-                        Limits(listingStandard, WeaponListKind.Both);
+                        Limits(listingStandard, WeaponListKind.Both, onChange: onChange);
                     }
                     else
                     {
                         var subsection = listingStandard.BeginHiddenSection(out float subsectionHeight);
                         subsection.ColumnWidth = (maxWidth - ColumnGap) / 2;
 
-                        Limits(subsection, WeaponListKind.Melee);
+                        Limits(subsection, WeaponListKind.Melee, onChange: onChange);
 
                         subsection.NewHiddenColumn(ref subsectionHeight);
 
-                        Limits(subsection, WeaponListKind.Ranged);
+                        Limits(subsection, WeaponListKind.Ranged, onChange: onChange);
 
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
-                        listingStandard.EnumSelector("LimitModeAmountTotal_title".Translate(), ref LimitModeAmountTotal, "LimitModeAmount_option_", valueTooltipPostfix: null, tooltip: "LimitModeAmountTotal_desc".Translate());
+
+                        listingStandard.GapLine();
+
+                        listingStandard.EnumSelector("LimitModeAmountTotal_title".Translate(), ref LimitModeAmountTotal, "LimitModeAmount_option_", valueTooltipPostfix: null, tooltip: "LimitModeAmountTotal_desc".Translate(), onChange: onChange);
                         switch (LimitModeAmountTotal)
                         {
                             case LimitModeAmountOfSidearms.AbsoluteWeight:
-                                listingStandard.SliderLabeled("MaximumMassAmountAbsolute_title".Translate(), ref LimitModeAmountTotal_AbsoluteMass, 0, InferredValues.maxCapacity, valueSuffix: " kg");
+                                listingStandard.SliderLabeled("MaximumMassAmountAbsolute_title".Translate(), ref LimitModeAmountTotal_AbsoluteMass, 0, InferredValues.maxCapacity, decimalPlaces: 1, valueSuffix: " kg", onChange: onChange);
                                 break;
                             case LimitModeAmountOfSidearms.RelativeWeight:
-                                listingStandard.SliderLabeled("MaximumMassAmountRelative_title".Translate(), ref LimitModeAmountTotal_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%");
+                                listingStandard.SliderLabeled("MaximumMassAmountRelative_title".Translate(), ref LimitModeAmountTotal_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%", onChange: onChange);
                                 break;
                             case LimitModeAmountOfSidearms.Slots:
-                                listingStandard.Spinner("MaximumSlots_title".Translate(), ref LimitModeAmountTotal_Slots, min: 1, tooltip: "MaximumSlots_desc".Translate());
+                                listingStandard.Spinner("MaximumSlots_title".Translate(), ref LimitModeAmountTotal_Slots, min: 1, tooltip: "MaximumSlots_desc".Translate(), onChange: onChange);
                                 break;
                             case LimitModeAmountOfSidearms.None:
                                 break;
                         }
                     }
-                    Color save = GUI.color;
-                    GUI.color = Color.gray;
-                    listingStandard.Label("LimitCarryInfo_title".Translate());
-                    GUI.color = save;
+                    {
+                        Color save = GUI.color;
+                        GUI.color = Color.gray;
+                        listingStandard.Label("LimitCarryInfo_title".Translate());
+                        GUI.color = save;
+                    }
                     
                     break;
                 case OptionsTab.Spawning:
@@ -290,13 +348,13 @@ namespace PeteTimesSix.SimpleSidearms
                         var subsection = listingStandard.BeginHiddenSection(out float subsectionHeight);
                         subsection.ColumnWidth = (maxWidth - ColumnGap) / 2;
 
-                        subsection.SliderLabeled("SidearmSpawnChance_title".Translate(), ref SidearmSpawnChance, 0, 1, displayMult: 100, valueSuffix: "%", tooltip: "SidearmSpawnChance_desc".Translate());
-                        subsection.SliderLabeled("SidearmSpawnChanceDropoff_title".Translate(), ref SidearmSpawnChanceDropoff, 0, 1, displayMult: 100, valueSuffix: "%", tooltip: "SidearmSpawnChanceDropoff_desc".Translate());
+                        subsection.SliderLabeled("SidearmSpawnChance_title".Translate(), ref SidearmSpawnChance, 0, 1, displayMult: 100, valueSuffix: "%", tooltip: "SidearmSpawnChance_desc".Translate(), onChange: onChange);
+                        subsection.SliderLabeled("SidearmSpawnChanceDropoff_title".Translate(), ref SidearmSpawnChanceDropoff, 0, 1, displayMult: 100, valueSuffix: "%", tooltip: "SidearmSpawnChanceDropoff_desc".Translate(), onChange: onChange);
 
                         subsection.NewHiddenColumn(ref subsectionHeight);
 
-                        subsection.SliderLabeled("SidearmBudgetMultiplier_title".Translate(), ref SidearmBudgetMultiplier, 0, 1, displayMult: 100, valueSuffix: "%", tooltip: "SidearmBudgetMultiplier_desc".Translate());
-                        subsection.SliderLabeled("SidearmBudgetDropoff_title".Translate(), ref SidearmBudgetDropoff, 0, 1, displayMult: 100, valueSuffix: "%", tooltip: "SidearmBudgetDropoff_desc".Translate());
+                        subsection.SliderLabeled("SidearmBudgetMultiplier_title".Translate(), ref SidearmBudgetMultiplier, 0, 1, displayMult: 100, valueSuffix: "%", tooltip: "SidearmBudgetMultiplier_desc".Translate(), onChange: onChange);
+                        subsection.SliderLabeled("SidearmBudgetDropoff_title".Translate(), ref SidearmBudgetDropoff, 0, 1, displayMult: 100, valueSuffix: "%", tooltip: "SidearmBudgetDropoff_desc".Translate(), onChange: onChange);
 
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
                     }
@@ -306,17 +364,28 @@ namespace PeteTimesSix.SimpleSidearms
                         var subsection = listingStandard.BeginHiddenSection(out float subsectionHeight);
                         subsection.ColumnWidth = (maxWidth - ColumnGap) / 2;
 
-                        subsection.EnumSelector("ColonistDefaultWeaponMode_title".Translate(), ref ColonistDefaultWeaponMode, "PrimaryWeaponMode_option_", valueTooltipPostfix: null, tooltip: "ColonistDefaultWeaponMode_desc".Translate());
-                        subsection.EnumSelector("NPCDefaultWeaponMode_title".Translate(), ref NPCDefaultWeaponMode, "PrimaryWeaponMode_option_", valueTooltipPostfix: null, tooltip: "NPCDefaultWeaponMode_desc".Translate());
+                        subsection.EnumSelector("ColonistDefaultWeaponMode_title".Translate(), ref ColonistDefaultWeaponMode, "PrimaryWeaponMode_option_", valueTooltipPostfix: null, tooltip: "ColonistDefaultWeaponMode_desc".Translate(), onChange: onChange);
+                        subsection.EnumSelector("NPCDefaultWeaponMode_title".Translate(), ref NPCDefaultWeaponMode, "PrimaryWeaponMode_option_", valueTooltipPostfix: null, tooltip: "NPCDefaultWeaponMode_desc".Translate(), onChange: onChange);
+
+                        subsection.EnumSelector("DropMode_title".Translate(), ref FumbleMode, "DropMode_option_", valueTooltipPostfix: null, tooltip: "DropMode_desc".Translate(), onChange: onChange);
+                        subsection.Label("FumbleRecoveryChance_title".Translate());
+                        var rect = subsection.GetRect(100f);
+                        Widgets.DrawBoxSolid(rect, Color.black);
+                        var innerRect = rect.ContractedBy(2f);
+                        CurveEditorPublic.DoCurveEditor(innerRect, FumbleRecoveryChance, displayMult: 100, valueSuffix: "%", onChange: onChange);
+
+                        Color save = GUI.color;
+                        GUI.color = Color.gray;
+                        subsection.Label("FumbleRecoveryChance_hint".Translate());
+                        GUI.color = save;
 
                         subsection.NewHiddenColumn(ref subsectionHeight);
 
-                        subsection.EnumSelector("DropMode_title".Translate(), ref DropMode, "DropMode_option_", valueTooltipPostfix: null, tooltip: "DropMode_desc".Translate());
-                        subsection.CheckboxLabeled("ReEquipOutOfCombat_title".Translate(), ref ReEquipOutOfCombat, "ReEquipOutOfCombat_desc".Translate());
+                        subsection.CheckboxLabeled("ReEquipOutOfCombat_title".Translate(), ref ReEquipOutOfCombat, "ReEquipOutOfCombat_desc".Translate(), onChange: onChange);
                         if (ReEquipOutOfCombat)
                         {
-                            subsection.CheckboxLabeled("ReEquipBest_title".Translate(), ref ReEquipBest, "ReEquipBest_desc".Translate());
-                            subsection.CheckboxLabeled("ReEquipInCombat_title".Translate(), ref ReEquipInCombat, "ReEquipInCombat_desc".Translate());
+                            subsection.CheckboxLabeled("ReEquipBest_title".Translate(), ref ReEquipBest, "ReEquipBest_desc".Translate(), onChange: onChange);
+                            subsection.CheckboxLabeled("ReEquipInCombat_title".Translate(), ref ReEquipInCombat, "ReEquipInCombat_desc".Translate(), onChange: onChange);
                         }
 
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
@@ -326,18 +395,206 @@ namespace PeteTimesSix.SimpleSidearms
 
             listingStandard.End();
 
+            if(change)
+                ApplyPreset(SettingsPreset.Custom);
 
             GUI.color = colorSave;
             Text.Anchor = anchorSave;
         }
 
-        private void Limits(Listing_Standard listingStandard, WeaponListKind listType)
+        public void ApplyBaseSettings() 
         {
+            ToolAutoSwitch = true;
+            OptimalMelee = true;
+            CQCAutoSwitch = true;
+            CQCTargetOnly = false;
+            RangedCombatAutoSwitch = true;
 
+            RangedCombatAutoSwitchMaxWarmup = 0.75f;
+
+            SpeedSelectionBiasMelee = 1f;
+            SpeedSelectionBiasRanged = 1.1f;
+
+            SeparateModes = false;
+            LimitModeSingle = LimitModeSingleSidearm.None;
+            LimitModeAmount = LimitModeAmountOfSidearms.None;
+
+            LimitModeSingleMelee = LimitModeSingleSidearm.None;
+            LimitModeAmountMelee = LimitModeAmountOfSidearms.None;
+            LimitModeSingleRanged = LimitModeSingleSidearm.None;
+            LimitModeAmountRanged = LimitModeAmountOfSidearms.None;
+            LimitModeAmountTotal = LimitModeAmountOfSidearms.None;
+
+            #region LimitModeSingle
+            LimitModeSingle_AbsoluteMass = 1.9f;
+            LimitModeSingle_RelativeMass = 0.25f;
+            LimitModeSingle_Selection = GettersFilters.getValidWeaponsThingDefsOnly().Where(w => w.GetStatValueAbstract(StatDefOf.Mass) <= LimitModeSingle_AbsoluteMass).ToHashSet();
+            #endregion
+            #region LimitModeAmount
+            LimitModeAmount_AbsoluteMass = 10f;
+            LimitModeAmount_RelativeMass = 0.5f;
+            LimitModeAmount_Slots = 2;
+            #endregion
+
+            #region LimitModeSingleMelee
+            LimitModeSingleMelee_AbsoluteMass = 1.9f;
+            LimitModeSingleMelee_RelativeMass = 0.25f;
+            LimitModeSingleMelee_Selection = GettersFilters.filterForWeaponKind(GettersFilters.getValidWeaponsThingDefsOnly(), WeaponSearchType.Melee).Where(w => w.GetStatValueAbstract(StatDefOf.Mass) <= LimitModeSingleMelee_AbsoluteMass).ToHashSet();
+            #endregion
+            #region LimitModeAmountMelee
+            LimitModeAmountMelee_AbsoluteMass = 10f;
+            LimitModeAmountMelee_RelativeMass = 0.5f;
+            LimitModeAmountMelee_Slots = 2;
+            #endregion
+
+            #region LimitModeSingleRanged
+            LimitModeSingleRanged_AbsoluteMass = 2.55f;
+            LimitModeSingleRanged_RelativeMass = 0.25f;
+            LimitModeSingleRanged_Selection = GettersFilters.filterForWeaponKind(GettersFilters.getValidWeaponsThingDefsOnly(), WeaponSearchType.Ranged).Where(w => w.GetStatValueAbstract(StatDefOf.Mass) <= LimitModeSingleRanged_AbsoluteMass).ToHashSet();
+            #endregion
+            #region LimitModeAmountRanged
+            LimitModeAmountRanged_AbsoluteMass = 10f;
+            LimitModeAmountRanged_RelativeMass = 0.5f;
+            LimitModeAmountRanged_Slots = 2;
+            #endregion
+
+            #region LimitModeAmountTotal
+            LimitModeAmountTotal_AbsoluteMass = 10f;
+            LimitModeAmountTotal_RelativeMass = 0.5f;
+            LimitModeAmountTotal_Slots = 4;
+            #endregion
+
+            SidearmSpawnChance = 0.5f;
+            SidearmSpawnChanceDropoff = 0.25f;
+            SidearmBudgetMultiplier = 0.5f;
+            SidearmBudgetDropoff = 0.25f;
+
+            ColonistDefaultWeaponMode = PrimaryWeaponMode.BySkill;
+            NPCDefaultWeaponMode = PrimaryWeaponMode.ByGenerated;
+
+            FumbleMode = FumbleModeOptionsEnum.InDistress;
+            FumbleRecoveryChance = new SimpleCurve(defaultFumbleRecoveryChancePoints);
+            ReEquipOutOfCombat = true;
+            ReEquipBest = true;
+            ReEquipInCombat = true;
+        }
+
+        public void ApplyPreset(SettingsPreset preset)
+        {
+            if (preset == SettingsPreset.NoneApplied)
+                throw new InvalidOperationException("SettingsPreset.NoneApplied should never be assigned!");
+
+            ActivePreset = preset;
+            if (preset == SettingsPreset.Custom) //setting the preset TO custom does nothing
+                return;
+
+            ApplyBaseSettings();
+
+            switch (preset)
+            {
+                case SettingsPreset.NoneApplied:
+                    break;
+                case SettingsPreset.Disabled:
+                    ToolAutoSwitch = false;
+                    OptimalMelee = false;
+                    CQCAutoSwitch = false;
+                    RangedCombatAutoSwitch = false;
+
+                    SidearmSpawnChance = 0.0f;
+
+                    LimitModeAmount = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmount_Slots = 1;
+
+                    FumbleMode = FumbleModeOptionsEnum.Never;
+                    ReEquipOutOfCombat = false;
+                    ReEquipBest = false;
+                    ReEquipInCombat = false;
+                    break;
+                case SettingsPreset.LoadoutOnly:
+                    ToolAutoSwitch = false;
+                    OptimalMelee = false;
+                    CQCAutoSwitch = false;
+                    RangedCombatAutoSwitch = false;
+                    LimitModeSingle = LimitModeSingleSidearm.AbsoluteWeight;
+                    LimitModeSingle_AbsoluteMass = 4.75f;
+                    LimitModeAmount = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmount_Slots = 3;
+
+                    SidearmSpawnChance = 0.0f;
+
+                    FumbleMode = FumbleModeOptionsEnum.Never;
+                    ReEquipOutOfCombat = false;
+                    ReEquipBest = false;
+                    ReEquipInCombat = false;
+                    break;
+                case SettingsPreset.Lite:
+                    SeparateModes = true;
+                    LimitModeSingleMelee = LimitModeSingleSidearm.AbsoluteWeight;
+                    LimitModeSingleMelee_AbsoluteMass = 0.6f;
+                    LimitModeSingleRanged = LimitModeSingleSidearm.AbsoluteWeight;
+                    LimitModeSingleRanged_AbsoluteMass = 1.6f;
+                    LimitModeAmountMelee = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmountMelee_Slots = 2;
+                    LimitModeAmountRanged = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmountRanged_Slots = 2;
+                    LimitModeAmountTotal = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmountTotal_Slots = 2;
+
+                    SidearmSpawnChanceDropoff = 1.0f;
+                    break;
+                case SettingsPreset.Basic:
+                    SeparateModes = true;
+                    LimitModeSingleMelee = LimitModeSingleSidearm.AbsoluteWeight;
+                    LimitModeSingleMelee_AbsoluteMass = 1.9f;
+                    LimitModeSingleRanged = LimitModeSingleSidearm.AbsoluteWeight;
+                    LimitModeSingleRanged_AbsoluteMass = 2.7f;
+                    LimitModeAmountMelee = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmountMelee_Slots = 2;
+                    LimitModeAmountRanged = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmountRanged_Slots = 2;
+                    LimitModeAmountTotal = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmountTotal_Slots = 3;
+                    break;
+                case SettingsPreset.Advanced:
+                    SeparateModes = true;
+                    LimitModeSingleMelee = LimitModeSingleSidearm.AbsoluteWeight;
+                    LimitModeSingleMelee_AbsoluteMass = 2.25f;
+                    LimitModeSingleRanged = LimitModeSingleSidearm.AbsoluteWeight;
+                    LimitModeSingleRanged_AbsoluteMass = 5.0f;
+                    LimitModeAmountTotal = LimitModeAmountOfSidearms.AbsoluteWeight;
+                    LimitModeAmountTotal_AbsoluteMass = 10;
+                    break;
+                case SettingsPreset.Excessive:
+                    SidearmSpawnChance = 0.75f;
+                    SidearmSpawnChanceDropoff = 0.5f;
+                    SidearmBudgetMultiplier = 0.75f;
+                    SidearmBudgetDropoff = 0.5f;
+                    break;
+                case SettingsPreset.Brawler:
+                    SeparateModes = true;
+                    LimitModeSingleMelee = LimitModeSingleSidearm.AbsoluteWeight;
+                    LimitModeSingleMelee_AbsoluteMass = 4f;
+                    LimitModeAmountMelee = LimitModeAmountOfSidearms.AbsoluteWeight;
+                    LimitModeAmountMelee_AbsoluteMass = 10f;
+                    LimitModeAmountRanged = LimitModeAmountOfSidearms.Slots;
+                    LimitModeAmountRanged_Slots = 0;
+                    break;
+                default:
+                    return;
+            }
+
+            RebuildCache(ref LimitModeSingle_Match_Cache, WeaponListKind.Both);
+            RebuildCache(ref LimitModeSingleMelee_Match_Cache, WeaponListKind.Melee);
+            RebuildCache(ref LimitModeSingleRanged_Match_Cache, WeaponListKind.Ranged);
+        }
+
+        private void Limits(Listing_Standard listing, WeaponListKind listType, Action onChange)
+        {
             ref var limitModeSingle = ref LimitModeSingle;
             ref var limitModeSingle_Match_Cache = ref LimitModeSingle_Match_Cache;
             ref var limitModeSingle_AbsoluteMass = ref LimitModeSingle_AbsoluteMass;
             ref var limitModeSingle_RelativeMass = ref LimitModeSingle_RelativeMass;
+            ref var limitModeSingle_Selection = ref LimitModeSingle_Selection;
             ref var limitModeAmount = ref LimitModeAmount;
             ref var limitModeAmount_AbsoluteMass = ref LimitModeAmount_AbsoluteMass;
             ref var limitModeAmount_RelativeMass = ref LimitModeAmount_RelativeMass;
@@ -357,6 +614,7 @@ namespace PeteTimesSix.SimpleSidearms
                     limitModeSingle_Match_Cache = ref LimitModeSingleMelee_Match_Cache;
                     limitModeSingle_AbsoluteMass = ref LimitModeSingleMelee_AbsoluteMass;
                     limitModeSingle_RelativeMass = ref LimitModeSingleMelee_RelativeMass;
+                    limitModeSingle_Selection = ref LimitModeSingleMelee_Selection;
                     limitModeAmount = ref LimitModeAmountMelee;
                     limitModeAmount_AbsoluteMass = ref LimitModeAmountMelee_AbsoluteMass;
                     limitModeAmount_RelativeMass = ref LimitModeAmountMelee_RelativeMass;
@@ -372,6 +630,7 @@ namespace PeteTimesSix.SimpleSidearms
                     limitModeSingle_Match_Cache = ref LimitModeSingleRanged_Match_Cache;
                     limitModeSingle_AbsoluteMass = ref LimitModeSingleRanged_AbsoluteMass;
                     limitModeSingle_RelativeMass = ref LimitModeSingleRanged_RelativeMass;
+                    limitModeSingle_Selection = ref LimitModeSingleRanged_Selection;
                     limitModeAmount = ref LimitModeAmountRanged;
                     limitModeAmount_AbsoluteMass = ref LimitModeAmountRanged_AbsoluteMass;
                     limitModeAmount_RelativeMass = ref LimitModeAmountRanged_RelativeMass;
@@ -386,9 +645,10 @@ namespace PeteTimesSix.SimpleSidearms
                     throw new ArgumentException();
             }
 
+            listing.GapLine();
             {
                 var valBefore = limitModeSingle;
-                listingStandard.EnumSelector(limitModeSingleLabel.Translate(), ref limitModeSingle, "LimitModeSingle_option_", valueTooltipPostfix: null, tooltip: limitModeSingleTooltip.Translate());
+                listing.EnumSelector(limitModeSingleLabel.Translate(), ref limitModeSingle, "LimitModeSingle_option_", valueTooltipPostfix: null, tooltip: limitModeSingleTooltip.Translate(), onChange: onChange);
                 if (valBefore != limitModeSingle)
                     limitModeSingle_Match_Cache = null;
             }
@@ -397,42 +657,49 @@ namespace PeteTimesSix.SimpleSidearms
                 case LimitModeSingleSidearm.AbsoluteWeight:
                     {
                         var valBefore = limitModeSingle_AbsoluteMass;
-                        listingStandard.SliderLabeled("MaximumMassSingleAbsolute_title".Translate(), ref limitModeSingle_AbsoluteMass, 0, InferredValues.maxWeightTotal, valueSuffix: " kg");
+                        listing.SliderLabeled("MaximumMassSingleAbsolute_title".Translate(), ref limitModeSingle_AbsoluteMass, 0, InferredValues.maxWeightTotal, decimalPlaces: 1, valueSuffix: " kg", onChange: onChange);
                         if (valBefore != limitModeSingle_AbsoluteMass || limitModeSingle_Match_Cache == null)
                             RebuildCache(ref limitModeSingle_Match_Cache, listType);
-                        listingStandard.WeaponList(ref limitModeSingle_Match_Cache, listType);
+                        listing.WeaponList(limitModeSingle_Match_Cache);
                     }
                     break;
                 case LimitModeSingleSidearm.RelativeWeight:
                     {
                         var valBefore = limitModeSingle_RelativeMass;
-                        listingStandard.SliderLabeled("MaximumMassSingleRelative_title".Translate(), ref limitModeSingle_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%");
+                        listing.SliderLabeled("MaximumMassSingleRelative_title".Translate(), ref limitModeSingle_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%", onChange: onChange);
                         if (valBefore != limitModeSingle_RelativeMass || limitModeSingle_Match_Cache == null)
                             RebuildCache(ref limitModeSingle_Match_Cache, listType);
                         Color save = GUI.color;
                         GUI.color = Color.gray;
-                        listingStandard.Label("MaximumMassAmountRelative_hint".Translate());
+                        listing.Label("MaximumMassAmountRelative_hint".Translate());
                         GUI.color = save;
-                        listingStandard.WeaponList(ref limitModeSingle_Match_Cache, listType);
+                        listing.WeaponList(limitModeSingle_Match_Cache);
                     }
                     break;
                 case LimitModeSingleSidearm.Selection:
-                    //sublisting.WeaponSelector(ref LimitModeSingle_Selection, WeaponListKind.Both);
+                    {
+                        var matchingSidearms = GettersFilters.filterForWeaponKind(GettersFilters.getValidWeaponsThingDefsOnly(), MiscUtils.LimitTypeToListType(listType));
+                        listing.WeaponSelector(matchingSidearms, limitModeSingle_Selection, "ConsideredSidearms".Translate(), "NotConsideredSidearms".Translate(), onChange: onChange);
+                    }
                     break;
                 case LimitModeSingleSidearm.None:
                     break;
             }
-            listingStandard.EnumSelector(limitModeAmountLabel.Translate(), ref limitModeAmount, "LimitModeAmount_option_", valueTooltipPostfix: null, tooltip: limitModeAmountTooltip.Translate());
+
+            listing.GapLine();
+            {
+                listing.EnumSelector(limitModeAmountLabel.Translate(), ref limitModeAmount, "LimitModeAmount_option_", valueTooltipPostfix: null, tooltip: limitModeAmountTooltip.Translate(), onChange: onChange);
+            }
             switch (limitModeAmount)
             {
                 case LimitModeAmountOfSidearms.AbsoluteWeight:
-                    listingStandard.SliderLabeled("MaximumMassAmountAbsolute_title".Translate(), ref limitModeAmount_AbsoluteMass, 0, InferredValues.maxCapacity, valueSuffix: " kg");
+                    listing.SliderLabeled("MaximumMassAmountAbsolute_title".Translate(), ref limitModeAmount_AbsoluteMass, 0, InferredValues.maxCapacity, decimalPlaces: 1, valueSuffix: " kg", onChange: onChange);
                     break;
                 case LimitModeAmountOfSidearms.RelativeWeight:
-                    listingStandard.SliderLabeled("MaximumMassAmountRelative_title".Translate(), ref limitModeAmount_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%");
+                    listing.SliderLabeled("MaximumMassAmountRelative_title".Translate(), ref limitModeAmount_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%", onChange: onChange);
                     break;
                 case LimitModeAmountOfSidearms.Slots:
-                    listingStandard.Spinner("MaximumSlots_title".Translate(), ref limitModeAmount_Slots, min: 1, tooltip: "MaximumSlots_desc".Translate());
+                    listing.Spinner("MaximumSlots_title".Translate(), ref limitModeAmount_Slots, min: 1, tooltip: "MaximumSlots_desc".Translate(), onChange: onChange);
                     break;
                 case LimitModeAmountOfSidearms.None:
                     break;
@@ -441,8 +708,13 @@ namespace PeteTimesSix.SimpleSidearms
 
         private void RebuildCache(ref HashSet<ThingDef> cache, WeaponListKind listType)
         {
-            IEnumerable<ThingDefStuffDefPair> validSidearms = GettersFilters.getValidWeapons();
-            List<ThingDef> matchingSidearms = GettersFilters.filterForWeaponKind(validSidearms, MiscUtils.LimitTypeToListType(listType)).Select(w => w.thing).ToList();
+            IEnumerable<ThingDef> validSidearms = GettersFilters.getValidWeaponsThingDefsOnly();
+
+            //Log.Message($"(list type: {listType}) valid weapons ({validSidearms.Count()}):{String.Join(", ", validSidearms.Select(w => w.defName))}");
+
+            List<ThingDef> matchingSidearms = GettersFilters.filterForWeaponKind(validSidearms, MiscUtils.LimitTypeToListType(listType)).ToList();
+
+            //Log.Message($"candidate weapons ({matchingSidearms.Count()}):{String.Join(", ", matchingSidearms.Select(w => w.defName))}");
 
             LimitModeSingleSidearm limitMode;
             float limitModeSingle_AbsoluteMass;
@@ -482,6 +754,8 @@ namespace PeteTimesSix.SimpleSidearms
                 case LimitModeSingleSidearm.None:
                     break;
             }
+
+            //Log.Message($"(result weapons ({matchingSidearms.Count()}):{String.Join(", ", matchingSidearms.Select(w => w.defName))}");
 
             cache = matchingSidearms.ToHashSet();
         }

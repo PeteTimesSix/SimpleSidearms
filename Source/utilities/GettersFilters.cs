@@ -56,6 +56,22 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             return getValidSidearms().ToList().ConvertAll(t => t.thing).Distinct();
         }
 
+        public static IEnumerable<ThingDef> filterForWeaponKind(IEnumerable<ThingDef> options, WeaponSearchType type)
+        {
+            switch (type)
+            {
+                case WeaponSearchType.Melee:
+                    return options.Where(t => t.IsMeleeWeapon);
+                case WeaponSearchType.Ranged:
+                    return options.Where(t => t.IsRangedWeapon);
+                case WeaponSearchType.MeleeCapable:
+                    return options.Where(t => t.IsMeleeWeapon || (t.IsWeapon && !t.tools.NullOrEmpty()));
+                case WeaponSearchType.Both:
+                default:
+                    return options.Where(t => t.IsWeapon);
+            }
+        }
+
         public static IEnumerable<ThingDefStuffDefPair> filterForWeaponKind(IEnumerable<ThingDefStuffDefPair> options, WeaponSearchType type)
         {
             switch (type)

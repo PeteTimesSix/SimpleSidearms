@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
+<SimpleSidearms_ModTitle>Simple Sidearms</SimpleSidearms_ModTitle>
+
+<FirstTimeSettingsWarning>First time running Simple Sidearms?
+
+This icon indicates the mod's settings have not been configured yet. It will go away when the settings menu is first accessed.
+
+Click to go to settings now.</FirstTimeSettingsWarning>
+
 <ActiveTab_desc></ActiveTab_desc>
 <ActiveTab_title>Configuration tabs</ActiveTab_title>
 <ToolAutoSwitch_desc>Should pawns switch tools/weapons with statboosts for their current job?</ToolAutoSwitch_desc>
@@ -14,8 +22,12 @@
 <CQCTargetOnly_desc>Should pawns only react to attacks from their current target?</CQCTargetOnly_desc>
 <CQCTargetOnly_title>Switch only on attacks from target</CQCTargetOnly_title>
 
-<DropMode_desc>In which situations are pawns forced to drop their weapon instead of moving it to their inventory?</DropMode_desc>
-<DropMode_title>Weapon dropping criteria</DropMode_title>
+<DropMode_desc>In which situations might pawns fumble and drop their weapon instead of moving it to their inventory?</DropMode_desc>
+<DropMode_title>Weapon fumble criteria</DropMode_title>
+<FumbleRecoveryChance_title>Chance to avoid weapon fumble</FumbleRecoveryChance_title>
+<FumbleRecoveryChance_hint>Vertical axis is chance to avoid fumbling
+Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryChance_hint>
+
 <ReEquipOutOfCombat_desc>After having dropped a weapon, auto-re-equip it after combat once out of immediate danger.</ReEquipOutOfCombat_desc>
 <ReEquipOutOfCombat_title>Re-equip dropped weapons</ReEquipOutOfCombat_title>
 <ReEquipBest_desc>Auto-re-equip will find the best weapon available (instead of the closest)</ReEquipBest_desc>
@@ -114,6 +126,8 @@
 <DropMode_option_InCombat>In combat</DropMode_option_InCombat>
 <DropMode_option_Always>Always</DropMode_option_Always>
 
+<Fumbled>Fumble!</Fumbled>
+<Fumbled_dev>Fumble! ({0})</Fumbled_dev>
 
 <PresetExport_title></PresetExport_title>
 <PresetExport_desc></PresetExport_desc>

@@ -29,5 +29,7 @@ namespace PeteTimesSix.SimpleSidearms
 
         public static readonly Texture2D SpeedBiasSliderPositive = ContentFinder<Texture2D>.Get("speedBiasSliderPositive", true);
         public static readonly Texture2D SpeedBiasSliderNegative = ContentFinder<Texture2D>.Get("speedBiasSliderNegative", true);
+
+        public static readonly Texture2D FirstTimeSettingsWarningIcon = ContentFinder<Texture2D>.Get("settingsWarningIcon", true);
     }
 }

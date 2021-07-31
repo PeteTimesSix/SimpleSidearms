@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using HarmonyLib;
+using RimWorld;
 using SimpleSidearms.rimworld;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,11 @@ namespace PeteTimesSix.SimpleSidearms
 {
     public static class Extensions
     {
+        public static void DoModSettings(this Dialog_ModSettings instance, Mod mod) 
+        {
+            AccessTools.Field(typeof(Dialog_ModSettings), "selMod").SetValue(instance, mod);
+        }
+
         public static string getLabelCap(this ThingDefStuffDefPair pair)
         {
             return pair.getLabel().CapitalizeFirst();

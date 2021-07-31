@@ -14,13 +14,28 @@ namespace PeteTimesSix.SimpleSidearms.UI
 
         public static float ColumnGap = 17f;
 
-        public static void SliderLabeled(this Listing_Standard instance, string label, ref float value, float min, float max, float displayMult = 1, string valueSuffix = "", string tooltip = null)
+        public static void CheckboxLabeled(this Listing_Standard instance, string label, ref bool checkOn, string tooltip = null, Action onChange = null)
         {
-            instance.Label($"{label}: {(value * displayMult).ToString("F0")}{valueSuffix}", tooltip: null);
-            value = instance.Slider(value, min, max);
+            var valueBefore = checkOn;
+            instance.CheckboxLabeled(label, ref checkOn, tooltip);
+            if (checkOn != valueBefore)
+            {
+                onChange?.Invoke();
+            }
         }
 
-        public static void Spinner(this Listing_Standard instance, string label, ref int value, int increment = 1, int? min = null, int? max = null, string tooltip = null)
+        public static void SliderLabeled(this Listing_Standard instance, string label, ref float value, float min, float max, float displayMult = 1, int decimalPlaces = 0, string valueSuffix = "", string tooltip = null, Action onChange = null)
+        {
+            instance.Label($"{label}: {(value * displayMult).ToString($"F{decimalPlaces}")}{valueSuffix}", tooltip: tooltip);
+            var valueBefore = value;
+            value = instance.Slider(value, min, max);
+            if (value != valueBefore)
+            {
+                onChange?.Invoke();
+            }
+        }
+
+        public static void Spinner(this Listing_Standard instance, string label, ref int value, int increment = 1, int? min = null, int? max = null, string tooltip = null, Action onChange = null)
         {
             float lineHeight = Text.LineHeight;
             float labelWidth = Text.CalcSize(label).x + AfterLabelMinGap;
@@ -29,26 +44,32 @@ namespace PeteTimesSix.SimpleSidearms.UI
             var buttonSize = lineHeight;
 
             var textRect = new Rect(rect.x + buttonSize + 1, rect.y, rect.width - buttonSize * 2 - 2f, rect.height);
-            NumberField(ref value, textRect);
+            NumberField(ref value, textRect, onChange);
 
             var leftButtonRect = new Rect(rect.x, rect.y, buttonSize, buttonSize);
             var rightButtonRect = new Rect(rect.x + rect.width - buttonSize, rect.y, buttonSize, buttonSize);
             if (Widgets.ButtonText(leftButtonRect, "-") && (!min.HasValue || min <= value - increment))
             {
                 value -= increment;
+                onChange?.Invoke();
             }
             if (Widgets.ButtonText(rightButtonRect, "+") && (!max.HasValue || max >= value + increment))
             {
                 value += increment;
+                onChange?.Invoke();
             }
         }
 
-        public static void NumberField(ref int value, Rect rect)
+        public static void NumberField(ref int value, Rect rect, Action onChange = null)
         {
             string valText = Widgets.TextField(rect, value.ToString());
             if (int.TryParse(valText, out int result))
             {
-                value = result;
+                if (value != result)
+                {
+                    value = result;
+                    onChange?.Invoke();
+                }
             }
             else
             {
@@ -56,7 +77,7 @@ namespace PeteTimesSix.SimpleSidearms.UI
             }
         }
 
-        public static void EnumSelector<T>(this Listing_Standard listing, string label, ref T value, string valueLabelPrefix, string valueTooltipPostfix = "_tooltip", string tooltip = null) where T : Enum
+        public static void EnumSelector<T>(this Listing_Standard listing, string label, ref T value, string valueLabelPrefix, string valueTooltipPostfix = "_tooltip", string tooltip = null, Action onChange = null) where T : Enum
         {
             string[] names = Enum.GetNames(value.GetType());
 
@@ -137,12 +158,24 @@ namespace PeteTimesSix.SimpleSidearms.UI
                 if (valueTooltipPostfix != null)
                     TooltipHandler.TipRegion(buttonRect, (valueLabelPrefix + name + valueTooltipPostfix).Translate());
                 bool clicked = Widgets.ButtonText(buttonRect, buttonText);
-                if (clicked)
+                if (clicked && !value.Equals(enumValue))
+                {
                     value = enumValue;
+                    onChange?.Invoke();
+                }
             }
 
             listing.Gap(listing.verticalSpacing);
             GUI.color = Color.white;
+        }
+
+        public static void CurveEditor(this Listing_Standard instance, ref SimpleCurve curve) 
+        {
+            var rect = instance.GetRect(100f);
+            Widgets.DrawBoxSolid(rect, Color.black);
+            var innerRect = rect.ContractedBy(2f);
+            //SimpleCurveDrawer.DrawCurve(innerRect, curve);
+            Widgets.ButtonInvisibleDraggable(innerRect);
         }
 
         public static Listing_Standard BeginHiddenSection(this Listing_Standard instance, out float maxHeightAccumulator)

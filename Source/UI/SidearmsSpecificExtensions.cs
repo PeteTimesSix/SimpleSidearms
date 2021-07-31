@@ -21,7 +21,7 @@ namespace PeteTimesSix.SimpleSidearms.UI
         public const float WeaponListSize = (IconGap + IconSize) * 5;
 
 
-        public static void SliderSpeedBias(this Listing_Standard instance, string label, ref float value, float min, float mid, float max, bool isMelee, float displayMult = 100, string valueSuffix = "%")
+        public static void SliderSpeedBias(this Listing_Standard instance, string label, ref float value, float min, float mid, float max, bool isMelee, float displayMult = 100, string valueSuffix = "%", Action onChange = null)
         {
             Color save = GUI.color;
 
@@ -71,23 +71,28 @@ namespace PeteTimesSix.SimpleSidearms.UI
                 }
             }
 
+            var valueBefore = value;
             value = instance.Slider(value, min, max);
+            if (value != valueBefore)
+            {
+                onChange?.Invoke();
+            }
 
             GUI.color = save;
         }
 
-        public static void WeaponList(this Listing_Standard instance, ref HashSet<ThingDef> weapons, WeaponListKind listType)
+        public static void WeaponList(this Listing_Standard instance, IEnumerable<ThingDef> weapons)
         {
             Color save = GUI.color;
 
             var width = instance.GetRect(0).width;
             int iconsPerRow = (int)(width / (IconGap + IconSize));
-            int rows = (weapons.Count / iconsPerRow) + 1;
+            int rows = (weapons.Count() / iconsPerRow) + 1;
 
             var rect = instance.GetRect((rows * (IconSize + IconGap)) - IconGap);
 
             var weaponsIndexable = weapons.ToList();
-            for (int i = 0; i < weaponsIndexable.Count; i++)
+            for(int i = 0; i < weaponsIndexable.Count(); i++)
             {
                 int collum = (i % iconsPerRow);
                 int row = (i / iconsPerRow);
@@ -99,6 +104,70 @@ namespace PeteTimesSix.SimpleSidearms.UI
             }
 
             GUI.color = save;
+        }
+
+        public static void WeaponSelector(this Listing_Standard instance, IEnumerable<ThingDef> weaponOptions, HashSet<ThingDef> selectedWeapons, string selectedLabel, string unselectedLabel, Action onChange = null)
+        {
+            var unselectedWeapons = weaponOptions.Where(w => !selectedWeapons.Contains(w));
+
+            TextAnchor anchorSave = Text.Anchor;
+            Color colorSave = GUI.color;
+            GUI.color = Color.white;
+
+            var width = instance.ColumnWidth;
+            var fullRect = instance.GetRect(0);
+            Rect leftRect = fullRect.LeftHalf();
+            Rect rightRect = fullRect.RightHalf();
+
+            float selectedLabelHeight = Text.CalcHeight(selectedLabel, leftRect.width);
+            float unselectedLabelHeight = Text.CalcHeight(unselectedLabel, rightRect.width);
+
+            leftRect.height = rightRect.height = Mathf.Max(selectedLabelHeight, unselectedLabelHeight);
+
+            Text.Anchor = TextAnchor.LowerCenter;
+            Widgets.Label(leftRect, $"{selectedLabel}");
+            Widgets.Label(rightRect, $"{unselectedLabel}");
+            instance.GetRect(leftRect.height);
+
+            leftRect.y += leftRect.height;
+            rightRect.y += rightRect.height;
+
+            int iconsPerLeftRow = (int)(leftRect.width / (IconGap + IconSize));
+            int leftRows = (selectedWeapons.Count() / iconsPerLeftRow) + 1;
+            int iconsPerRightRow = (int)(rightRect.width / (IconGap + IconSize));
+            int rightRows = (unselectedWeapons.Count() / iconsPerRightRow) + 1;
+
+            leftRect.height = ((leftRows * (IconSize + IconGap)) - IconGap);
+            rightRect.height = ((rightRows * (IconSize + IconGap)) - IconGap);
+
+            instance.GetRect((Mathf.Max(leftRows, rightRows) * (IconSize + IconGap)) - IconGap);
+
+            var orderedUnselectedWeapons = unselectedWeapons.ToList().OrderBy(w => w.label).ToList();
+            var orderedSelectedWeapons = selectedWeapons.ToList().OrderBy(w => w.label).ToList();
+
+            for (int i = 0; i < orderedSelectedWeapons.Count(); i++)
+            {
+                int collum = (i % iconsPerLeftRow);
+                int row = (i / iconsPerLeftRow);
+                bool interacted = DrawIconForWeapon(orderedSelectedWeapons[i], leftRect, new Vector2(IconSize * collum + collum * IconGap, IconSize * row + row * IconGap));
+                if (interacted)
+                {
+                    selectedWeapons.Remove(orderedSelectedWeapons[i]);
+                    onChange?.Invoke();
+                }
+            }
+
+            for (int i = 0; i < orderedUnselectedWeapons.Count; i++)
+            {
+                int collum = (i % iconsPerRightRow);
+                int row = (i / iconsPerRightRow);
+                bool interacted = DrawIconForWeapon(orderedUnselectedWeapons[i], rightRect, new Vector2(IconSize * collum + collum * IconGap, IconSize * row + row * IconGap));
+                if (interacted)
+                {
+                    selectedWeapons.Add(orderedUnselectedWeapons[i]);
+                    onChange?.Invoke();
+                }
+            }
         }
 
         public static bool DrawIconForWeapon(ThingDef weaponDef, Rect contentRect, Vector2 iconOffset, bool isBackground = false)

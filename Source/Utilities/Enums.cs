@@ -10,7 +10,7 @@
         public enum PrimaryWeaponMode { Ranged, Melee, BySkill, ByGenerated }
         public enum LimitModeSingleSidearm { None, RelativeWeight, AbsoluteWeight, Selection }
         public enum LimitModeAmountOfSidearms { None, RelativeWeight, AbsoluteWeight, Slots }
-        public enum DroppingModeOptionsEnum { Never, InDistress, InCombat, Always }
+        public enum FumbleModeOptionsEnum { Never, InDistress, InCombat, Always }
         public enum DroppingModeEnum { InDistress, Combat, Calm, UsedUp }
 
     }

@@ -7,13 +7,12 @@ namespace PeteTimesSix.SimpleSidearms
 {
     public class SimpleSidearms : Mod
     {
-        public static SimpleSidearms_Settings Settings { get; private set; }
+        public static SimpleSidearms_Settings Settings { get; internal set; }
+        public static SimpleSidearms ModSingleton { get; private set; }
 
         public SimpleSidearms(ModContentPack content) : base(content)
         {
-            Settings = GetSettings<SimpleSidearms_Settings>();
-            Settings.StartupChecks();
-
+            ModSingleton = this;
             var harmony = new Harmony("PeteTimesSix.CompactHediffs");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
@@ -27,6 +26,17 @@ namespace PeteTimesSix.SimpleSidearms
         {
             Settings.DoSettingsWindowContents(inRect);
             base.DoSettingsWindowContents(inRect);
+        }
+    }
+
+    [StaticConstructorOnStartup]
+    public static class SimpleSidearms_PostInit 
+    {
+        static SimpleSidearms_PostInit()
+        {
+            SimpleSidearms.Settings = SimpleSidearms.ModSingleton.GetSettings<SimpleSidearms_Settings>();
+            InferredValues.Init();
+            SimpleSidearms.Settings.StartupChecks();
         }
     }
 

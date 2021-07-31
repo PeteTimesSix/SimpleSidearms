@@ -201,7 +201,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
 
             LocalTargetInfo target = __instance.focusTarg;
 
-            WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, target, MiscUtils.shouldDrop(DroppingModeEnum.Combat), pawn.IsColonistPlayerControlled);
+            WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, target, MiscUtils.shouldDrop(pawn, DroppingModeEnum.Combat, false), pawn.IsColonistPlayerControlled);
         }
 
         public static bool IsHunting(Pawn pawn)
