@@ -118,7 +118,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             int tick = Find.TickManager.TicksGame;
             if (tick % 100 == 0)
             {
-                if (pawn.jobs.curJob != null && pawn.jobs.curJob.def == JobDefOf.Wait_Combat && pawn.stances != null && pawn.stances.curStance is Stance_Mobile)
+                if (pawn != null && pawn.Map != null && pawn.jobs != null && pawn.jobs.curJob != null && pawn.jobs.curJob.def == JobDefOf.Wait_Combat && pawn.stances != null && pawn.stances.curStance is Stance_Mobile)
                 {
                     //pawn.jobs.EndCurrentJob(JobCondition.Succeeded);
                     

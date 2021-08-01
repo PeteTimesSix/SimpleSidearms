@@ -368,7 +368,9 @@ namespace PeteTimesSix.SimpleSidearms
                         subsection.EnumSelector("NPCDefaultWeaponMode_title".Translate(), ref NPCDefaultWeaponMode, "PrimaryWeaponMode_option_", valueTooltipPostfix: null, tooltip: "NPCDefaultWeaponMode_desc".Translate(), onChange: onChange);
 
                         subsection.EnumSelector("DropMode_title".Translate(), ref FumbleMode, "DropMode_option_", valueTooltipPostfix: null, tooltip: "DropMode_desc".Translate(), onChange: onChange);
+                        Text.Anchor = TextAnchor.MiddleLeft;
                         subsection.Label("FumbleRecoveryChance_title".Translate());
+                        Text.Anchor = TextAnchor.MiddleCenter;
                         var rect = subsection.GetRect(100f);
                         Widgets.DrawBoxSolid(rect, Color.black);
                         var innerRect = rect.ContractedBy(2f);
