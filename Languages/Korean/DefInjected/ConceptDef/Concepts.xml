@@ -2,7 +2,7 @@
 <LanguageData>
 
   <Concept_SimpleSidearmsBasic.label>SS: 보조 무기</Concept_SimpleSidearmsBasic.label>
-  <Concept_SimpleSidearmsBasic.helpText>간단한 보조 무기\n\n무기를 보조 무기로 장비하려면, 오른쪽 클릭하고 "보조 무기로 착용" 옵션을 선택하세요.\n\n무기를 들고 있는 정착민을 선택하면 화면 아래에 표시되는 작은 인터페이스에 보조 무기 목록이 있습니다. 기본 설정으로는, 정착민들은 자동으로 거리에 맞는 무기로 바꿀 것이며, 근접전을 시작하면 근접 무기로 바꿀 것입니다. 모드 설정에서 이 행동을 바꿀 수 있습니다.</Concept_SimpleSidearmsBasic.helpText>
+  <Concept_SimpleSidearmsBasic.helpText>Simple Sidearms\n\n무기를 보조 무기로 장비하려면, 오른쪽 클릭하고 "보조 무기로 착용" 옵션을 선택하세요.\n\n무기를 들고 있는 정착민을 선택하면 화면 아래에 표시되는 작은 인터페이스에 보조 무기 목록이 있습니다. 기본 설정으로는, 정착민들은 자동으로 거리에 맞는 무기로 바꿀 것이며, 근접전을 시작하면 근접 무기로 바꿀 것입니다. 모드 설정에서 이 행동을 바꿀 수 있습니다.</Concept_SimpleSidearmsBasic.helpText>
 
   <Concept_SidearmsInInventory.label>SS: 휴대 중인 보조 무기</Concept_SidearmsInInventory.label>
   <Concept_SidearmsInInventory.helpText>배경이 회색인 보조 무기는 정착민의 인벤토리에 들어 있고 사용할 수 있는 무기입니다. 왼쪽 클릭으로 바꾸고, 오른쪽 클릭으로 떨어뜨리세요.</Concept_SidearmsInInventory.helpText>
