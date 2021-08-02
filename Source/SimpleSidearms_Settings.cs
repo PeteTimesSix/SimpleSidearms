@@ -214,6 +214,9 @@ namespace PeteTimesSix.SimpleSidearms
             }
         }
 
+        Vector2 scrollPosition = new Vector2(0, 0);
+        float cachedScrollHeight = 0;
+
         internal void DoSettingsWindowContents(Rect outerRect)
         {
             SettingsEverOpened = true;
@@ -225,13 +228,37 @@ namespace PeteTimesSix.SimpleSidearms
             TextAnchor anchorSave = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleCenter;
 
+            var headerRect = outerRect.TopPartPixels(50);
+            var restOfRect = new Rect(outerRect);
+            restOfRect.y += 50;
+            restOfRect.height -= 50;
+
+            Listing_Standard prelist = new Listing_Standard();
+            prelist.Begin(headerRect);
+
+            prelist.EnumSelector("ActiveTab_title".Translate(), ref ActiveTab, "ActiveTab_option_", valueTooltipPostfix: null, tooltip: "ActiveTab_desc".Translate());
+            prelist.GapLine();
+
+            prelist.End();
+
+
+            bool needToScroll = cachedScrollHeight > outerRect.height;
+            var viewRect = new Rect(restOfRect);
+            if (needToScroll)
+            {
+                viewRect.width -= 20f;
+                viewRect.height = cachedScrollHeight;
+                Widgets.BeginScrollView(restOfRect, ref scrollPosition, viewRect);
+            }
+
             Listing_Standard listingStandard = new Listing_Standard();
-            listingStandard.Begin(outerRect);
+            listingStandard.maxOneColumn = true;
+            listingStandard.Begin(viewRect);
+
+            float initialY = listingStandard.GetRect(0).y;
             float maxWidth = listingStandard.ColumnWidth;
 
             //public enum OptionsTab { Presets, Automation, Allowances, Spawning, Misc }
-            listingStandard.EnumSelector("ActiveTab_title".Translate(), ref ActiveTab, "ActiveTab_option_", valueTooltipPostfix: null, tooltip: "ActiveTab_desc".Translate());
-            listingStandard.GapLine();
 
 
             switch (ActiveTab) 
@@ -341,7 +368,6 @@ namespace PeteTimesSix.SimpleSidearms
                         listingStandard.Label("LimitCarryInfo_title".Translate());
                         GUI.color = save;
                     }
-                    
                     break;
                 case OptionsTab.Spawning:
                     {
@@ -395,7 +421,15 @@ namespace PeteTimesSix.SimpleSidearms
                     break;
             }
 
+            cachedScrollHeight = listingStandard.CurHeight;
             listingStandard.End();
+
+            if(needToScroll)
+            {
+                Widgets.EndScrollView();
+            }
+
+            //GUI.EndGroup();
 
             if(change)
                 ApplyPreset(SettingsPreset.Custom);
