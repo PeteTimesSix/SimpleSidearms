@@ -38,15 +38,15 @@ namespace PeteTimesSix.SimpleSidearms.UI
             {
                 if (isMelee)
                 {
-                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("MeleeWeapon_Club"), iconRect, new Vector2(0, 0), true);
-                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("MeleeWeapon_LongSword"), iconRect, new Vector2(centerX - IconSize / 2, 0), true);
-                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("MeleeWeapon_Knife"), iconRect, new Vector2(iconRect.width - IconSize, 0), true);
+                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("MeleeWeapon_Club", false), iconRect, new Vector2(0, 0), true);
+                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("MeleeWeapon_LongSword", false), iconRect, new Vector2(centerX - IconSize / 2, 0), true);
+                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("MeleeWeapon_Knife", false), iconRect, new Vector2(iconRect.width - IconSize, 0), true);
                 }
                 else
                 {
-                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("Gun_Revolver"), iconRect, new Vector2(0, 0), true);
-                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("Gun_Autopistol"), iconRect, new Vector2(centerX - IconSize / 2, 0), true);
-                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("Gun_MachinePistol"), iconRect, new Vector2(iconRect.width - IconSize, 0), true);
+                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("Gun_Revolver", false), iconRect, new Vector2(0, 0), true);
+                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("Gun_Autopistol", false), iconRect, new Vector2(centerX - IconSize / 2, 0), true);
+                    DrawIconForWeapon(DefDatabase<ThingDef>.GetNamed("Gun_MachinePistol", false), iconRect, new Vector2(iconRect.width - IconSize, 0), true);
                 }
             }
             var texRect = instance.GetRect(0f); //zero to prevent actually moving the listing, but this rect has the correct x, y, and width
@@ -172,6 +172,17 @@ namespace PeteTimesSix.SimpleSidearms.UI
 
         public static bool DrawIconForWeapon(ThingDef weaponDef, Rect contentRect, Vector2 iconOffset, bool isBackground = false)
         {
+            if (weaponDef == null)
+            {
+                Log.Warning("Tried to draw an icon for a null weapon!");
+                var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
+                GUI.color = Color.white;
+                GUI.DrawTexture(iconRect, TextureResources.MissingDefIcon);
+                if (!isBackground)
+                    return Widgets.ButtonInvisible(iconRect, true);
+                else
+                    return false;
+            }
             return DrawIconForWeapon(new ThingDefStuffDefPair(weaponDef, null), contentRect, iconOffset, isBackground);
         }
 
