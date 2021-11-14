@@ -161,9 +161,12 @@ namespace PeteTimesSix.SimpleSidearms
                 if (
                     item is ThingWithComps &&
                     (!item.toThingDefStuffDefPair().isToolNotWeapon() || includeTools) &&
-                    (item.def.IsRangedWeapon || item.def.IsMeleeWeapon))
+                    (item.def.IsRangedWeapon || item.def.IsMeleeWeapon)
+                    )
                 {
-                    weapons.Add(item as ThingWithComps);
+                    var equippable = item.TryGetComp<CompEquippable>();
+                    if(equippable != null)
+                        weapons.Add(item as ThingWithComps);
                 }
             }
             return weapons;
