@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using SimpleSidearms.rimworld;
 using System;
@@ -28,16 +29,14 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void Postfix(List<Pawn> __state)
         {
-            Log.Message("CaravanEnterMapUtility_Enter");
-            if (__state?.Count > 0)
-            {
-                // check every pawn for missing sidearms and transfer ones picked up by other pawns back to the correct inventory
-                foreach (var pawn in __state)
-                    CarvanEquipmentUtility.TransferSidearmsToCorrectInventory(pawn, __state);
-            }
+            if (!(__state?.Count > 0))
+                return;
+            
+            // check every pawn for missing sidearms and transfer ones picked up by other pawns back to the correct inventory
+            foreach (var pawn in __state)
+                CaravanUtility.TransferSidearmsToCorrectInventory(pawn, __state);
         }
     }
-
     [HarmonyPatch(typeof(Dialog_SplitCaravan), "TrySplitCaravan")]
     public static class Dialog_SplitCaravan_TrySplitCaravan
     {
@@ -55,17 +54,49 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void Postfix(List<Pawn> __state)
         {
-            Log.Message("Dialog_SplitCaravan_TrySplitCaravan");
-            if (__state?.Count > 0)
-            {
-                // check every pawn for missing sidearms and transfer ones picked up by other pawns back to the correct inventory
-                foreach (var pawn in __state)
-                    CarvanEquipmentUtility.TransferSidearmsToCorrectInventory(pawn, __state);
-            }
+            if (!(__state?.Count > 0))
+                return;
+            
+            // check every pawn for missing sidearms and transfer ones picked up by other pawns back to the correct inventory
+            foreach (var pawn in __state)
+                CaravanUtility.TransferSidearmsToCorrectInventory(pawn, __state);
         }
     }
 
-    public static class CarvanEquipmentUtility
+
+    [HarmonyPatch(typeof(Caravan_TraderTracker), "ColonyThingsWillingToBuy")]
+    public class Caravan_TraderTracker_ColonyThingsWillingToBuy
+    {
+        [HarmonyPostfix]
+        public static IEnumerable<Thing> Postfix(IEnumerable<Thing> __result, Pawn playerNegotiator)
+        {
+            // get all pawns in the caravan
+            var pawns = playerNegotiator?.GetCaravan()?.pawns;
+            if (pawns?.Count > 0)
+                return CaravanUtility.RemoveRememberedWeaponsFromThingList(__result, pawns);
+
+            // just in case there is no caravan for some reason
+            return __result;
+        }
+    }
+    [HarmonyPatch(typeof(Settlement_TraderTracker), "ColonyThingsWillingToBuy")]
+    public class Settlement_TraderTracker_ColonyThingsWillingToBuy
+    {
+        [HarmonyPostfix]
+        public static IEnumerable<Thing> Postfix(IEnumerable<Thing> __result, Pawn playerNegotiator)
+        {
+            // get all pawns in the caravan
+            var pawns = playerNegotiator?.GetCaravan()?.pawns;
+            if (pawns?.Count > 0)
+                return CaravanUtility.RemoveRememberedWeaponsFromThingList(__result, pawns);
+
+            // just in case there is no caravan for some reason
+            return __result;
+        }
+    }
+
+
+    public static class CaravanUtility
     {
         public static void TransferSidearmsToCorrectInventory(Pawn pawn, List<Pawn> allPawns)
         {
@@ -151,6 +182,63 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     // continue with next weapon
                     CONTINUE:;
                 }
+            }
+        }
+
+        public static IEnumerable<Thing> RemoveRememberedWeaponsFromThingList(IEnumerable<Thing> things, IEnumerable<Pawn> pawns)
+        {
+            // get remembered weapons for all pawns
+            var rememberedNonEquippedCount = new Dictionary<ThingDefStuffDefPair, int>();
+            foreach (var pawn in pawns)
+            {
+                // check if the pawn is a colonist
+                if (!pawn.IsColonist)
+                    continue;
+
+                // retrieve siderarm memory
+                var memory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                if (memory == null)
+                    continue;
+
+                // iterate over every remembered weapon
+                foreach (var weapon in memory.RememberedWeapons)
+                {
+                    // ignore equipped remembered weapons
+                    if (pawn.equipment?.Primary?.matchesThingDefStuffDefPair(weapon) == true)
+                        continue;
+                           
+                    // count remembered weapons in inventory
+                    if (rememberedNonEquippedCount.ContainsKey(weapon))
+                        rememberedNonEquippedCount[weapon]++;
+                    else
+                        rememberedNonEquippedCount[weapon] = 1;
+                }
+            }
+
+            // sort items by quality so the highest quality items will be reserved for pawns
+            var sorted = things.ToList();
+            sorted.SortByDescending((thing) =>
+            {
+                QualityUtility.TryGetQuality(thing, out QualityCategory qc);
+                return (int)qc; // NOTE: what about high quality weapons with low hitpoints? someone might want to sell them and they would not show up...
+            });
+
+            // iterate over quality-sorted list of remembered weapons
+            foreach (var thing in sorted)
+            {
+                // if thing is a remembered weapon, skip it, removing it from the list
+                var stuffDefPair = thing.toThingDefStuffDefPair();
+                if (stuffDefPair != null
+                    && rememberedNonEquippedCount.ContainsKey(stuffDefPair)
+                    && rememberedNonEquippedCount[stuffDefPair] > 0)
+                {
+                    //Log.Message($"'{thing}' is in inventory and remembered, removing from item list");
+                    rememberedNonEquippedCount[stuffDefPair]--;
+                    continue;
+                }
+
+                // otherwise return it
+                yield return thing;
             }
         }
     }
