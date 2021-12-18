@@ -100,12 +100,18 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
     {
         public static void TransferWeaponsToCorrectInventory(List<Pawn> pawns)
         {
-            var pawnMissingWeapons = new Dictionary<Pawn, List<ThingDefStuffDefPair>>();
-            var unassignedThings = new List<ThingWithComps>();
+            if (!(pawns?.Count > 0))
+                return;
+
+            var missingWeaponsForPawn = new Dictionary<Pawn, List<ThingDefStuffDefPair>>();
+            var availableThings = new List<ThingWithComps>();
+            var availableBiocodedThings = new Dictionary<Pawn, List<ThingWithComps>>();
             foreach (var pawn in pawns)
             {
                 var pawnThings = new List<ThingWithComps>();
 
+                if (pawn.equipment?.Primary != null)
+                    pawnThings.Add(pawn.equipment.Primary);
                 var inventory = pawn.inventory?.innerContainer;
                 if (inventory != null)
                 {
@@ -114,15 +120,11 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                             && thing is ThingWithComps thingWithComps)
                             pawnThings.Add(thingWithComps);
                 }
-                if (pawn.equipment?.Primary != null)
-                    pawnThings.Add(pawn.equipment.Primary);
 
-
-                if (pawn?.IsColonist == true 
-                    && inventory != null
-                    && CompSidearmMemory.GetMemoryCompForPawn(pawn) is CompSidearmMemory memory)
+                // check if we are looking at a colonist with an inventory
+                if (pawn?.IsColonist == true && inventory != null)
                 {
-                    var pawnWeapons = new List<ThingDefStuffDefPair>(memory.RememberedWeapons);
+                    var pawnWeapons = new List<ThingDefStuffDefPair>(CompSidearmMemory.GetMemoryCompForPawn(pawn)?.RememberedWeapons);
 
                     // first remove things biocoded to this pawn; no-one else can use them anyway
                     for (int i = 0; i < pawnThings.Count;)
@@ -131,14 +133,24 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
 
                         // check if thing is biocoded to this pawn
                         var biocode = thing.TryGetComp<CompBiocodable>();
-                        if (biocode?.Biocoded == true
-                            && biocode.CodedPawn == pawn)
+                        if (biocode?.Biocoded == true)
                         {
-                            // remove from remembered weapon list
-                            var weaponMemory = thing.toThingDefStuffDefPair();
-                            if (weaponMemory != null)
-                                pawnWeapons.Remove(weaponMemory);
-                            
+                            if (biocode.CodedPawn == pawn)
+                            {
+                                // remove from remembered weapon list
+                                var weaponMemory = thing.toThingDefStuffDefPair();
+                                if (weaponMemory != null)
+                                    pawnWeapons.Remove(weaponMemory);
+                            }
+                            else
+                            {
+                                // add biocoded thing to their own list
+                                var codedPawn = biocode.CodedPawn;
+                                if (!availableBiocodedThings.ContainsKey(codedPawn))
+                                    availableBiocodedThings.Add(codedPawn, new List<ThingWithComps>());
+                                availableBiocodedThings[codedPawn].Add(thing);
+                            }
+
                             // remove from thing list
                             pawnThings.Remove(thing);
                             continue;
@@ -146,97 +158,126 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                         i++;
                     }
 
-                    // sort by quality
-                    //pawnThings.SortByDescending((thing) =>
-                    //{
-                    //    QualityUtility.TryGetQuality(thing, out QualityCategory qc);
-                    //    return (int)qc;
-                    //});
-
-                    // then remove remembered weapons and things already found on the pawn
-                    for (int i = 0; i < pawnThings.Count;)
+                    // then remove things that fit the remembered weapons found on the pawn
+                    if (pawnWeapons.Count > 0)
                     {
-                        var thing = pawnThings[i];
-
-                        // skip biocoded things and keep them in the list; they cannot be used by this pawn, things biocoded to this pawn have already been removed
-                        var biocode = thing.TryGetComp<CompBiocodable>();
-                        if (biocode?.Biocoded != true)
+                        for (int i = 0; i < pawnThings.Count;)
                         {
+                            var thing = pawnThings[i];
+
                             // check if thing is remembered
                             var weaponMemory = thing.toThingDefStuffDefPair();
                             if (weaponMemory != null && pawnWeapons.Contains(weaponMemory))
                             {
-                                // remove thing and remembered weapon
+                                // remove remembered weapon and the thing that fits it
                                 pawnWeapons.Remove(weaponMemory);
                                 pawnThings.Remove(thing);
                                 continue;
                             }
+                            i++;
                         }
-                        i++;
                     }
 
-                    // remember all weapons still in weapon list as missing
-                    if (pawnWeapons.Count > 0 && !pawnMissingWeapons.ContainsKey(pawn))
-                        pawnMissingWeapons.Add(pawn, new List<ThingDefStuffDefPair>());
+                    // finally all weapons still in the pawn's remembered weapons list are missing; we will look for them on other pawns
+                    if (pawnWeapons.Count > 0 && !missingWeaponsForPawn.ContainsKey(pawn))
+                        missingWeaponsForPawn.Add(pawn, new List<ThingDefStuffDefPair>());
                     foreach (var weapon in pawnWeapons)
-                        pawnMissingWeapons[pawn].Add(weapon);
+                        missingWeaponsForPawn[pawn].Add(weapon);
                 }
 
-                // remember all things in thing list as unassigned
+                // all things in the pawn's thing list are not remembered weapons for this pawn; they can be used by other pawns
                 foreach (var thing in pawnThings)
-                    unassignedThings.Add(thing);
+                    availableThings.Add(thing);
             }
 
-            // sort by quality
-            unassignedThings.SortByDescending((thing) =>
+            // sort by quality; this way we should give every pawn the best weapon, unless they got a biocoded one
+            availableThings.SortByDescending((thing) =>
             {
                 QualityUtility.TryGetQuality(thing, out QualityCategory qc);
                 return (int)qc;
             });
 
             // transfer unassigned weapons to pawns missing sidearms
-            foreach (var entry in pawnMissingWeapons)
+            foreach (var entry in missingWeaponsForPawn)
             {
                 var pawn = entry.Key;
                 var missingWeapons = entry.Value;
 
-                // iterate over all missing weapons
+                List<ThingWithComps> biocodedToThisPawn = null;
+                if (availableBiocodedThings.ContainsKey(pawn))
+                    biocodedToThisPawn = availableBiocodedThings[pawn];
+
+                // iterate over every missing weapon
                 for (int i = 0; i < missingWeapons.Count;)
                 {
                     var weaponMemory = missingWeapons[i];
-                    for (int j = 0; j < unassignedThings.Count;)
+
+                    // check available biocoded weapons first
+                    if (biocodedToThisPawn != null)
+                    {
+                        // iterate over biocoded items
+                        for (int j = 0; biocodedToThisPawn.Count > j;)
+                        {
+                            // get ThingDefStuffDefPair for thing
+                            var thing = biocodedToThisPawn[j];
+                            var thingMemory = thing.toThingDefStuffDefPair();
+
+                            // check if thing fits weapon memory
+                            if (weaponMemory.Equals(thingMemory))
+                            {
+                                Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' (biocoded)");
+                                // transfer weapon
+                                if (thing.holdingOwner.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1) == 1)
+                                {
+                                    // remove weapon from missing weapons list and thing from unassigned things list
+                                    missingWeapons.Remove(weaponMemory);
+                                    biocodedToThisPawn.Remove(thing);
+                                    goto CONTINUE;
+                                }
+
+                                // if it gets here, tranferring the weapon failed; this should obviously not happen
+                                Log.Error($"Failed to transfer '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}'! (biocoded)");
+                            }
+                            j++;
+                        }
+                    }
+
+                    // for each missing weapon, we check all things to find it
+                    for (int j = 0; j < availableThings.Count;)
                     {
                         // get ThingDefStuffDefPair for thing
-                        var thing = unassignedThings[j];
+                        var thing = availableThings[j];
                         var thingMemory = thing.toThingDefStuffDefPair();
+
+                        // all things in this list should have a ThingDefStuffDefPair, remove it if it does not
                         if (thingMemory == null)
                         {
                             Log.Warning($"'{thing}' had null ThingDefStuffDefPair; removing from unassigned things");
-                            unassignedThings.Remove(thing);
+                            availableThings.Remove(thing);
                             continue;
                         }
 
                         // check if thing fits weapon memory
                         if (weaponMemory.Equals(thingMemory))
                         {
-                            Log.Message($"Transferring '{thing}' from '{thing.holdingOwner}' to '{pawn}'");
+                            Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' (standard)");
                             // transfer weapon
                             if (thing.holdingOwner.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1) == 1)
                             {
                                 // remove weapon from missing weapons list and thing from unassigned things list
                                 missingWeapons.Remove(weaponMemory);
-                                unassignedThings.Remove(thing);
+                                availableThings.Remove(thing);
                                 goto CONTINUE;
                             }
 
-                            // if it gets here, tranferring the weapon failed
-                            Log.Error($"Failed trying to transfer '{thing}' from '{thing.holdingOwner}' to '{pawn}'!");
+                            // if it gets here, tranferring the weapon failed; this should obviously not happen
+                            Log.Error($"Failed to transfer '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}'! (standard)");
                         }
                         j++;
                     }
                     i++;
 
-                    // go here without increasing indices if entry was removed
+                    // if missing weapon was found go here without increasing the index
                     CONTINUE:;
                 }
             }
@@ -277,7 +318,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             sorted.SortByDescending((thing) =>
             {
                 QualityUtility.TryGetQuality(thing, out QualityCategory qc);
-                return (int)qc; // NOTE: what about high quality weapons with low hitpoints? someone might want to sell them and they would not show up...
+                return (int)qc; // NOTE: what about high quality weapons with low hitpoints?
             });
 
             // check for biocoded weapons and remove them from the list if the biocoded pawns are part of the caravan and remembers them
@@ -325,96 +366,6 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 yield return thing;
             }
         }
-
-
-#if FALSE // old code
-        public static void TransferSidearmsToCorrectInventory(Pawn pawn, List<Pawn> allPawns)
-        {
-            // only check colonists (who have an inventory)
-            if (pawn?.IsColonist == true && pawn.inventory?.innerContainer != null)
-            {
-                var dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
-
-                // retrieve sidearm memory for pawn
-                var memory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-                if (memory == null)
-                {
-                    Log.Warning($"Could not retrieve '{nameof(CompSidearmMemory)}' for '{pawn}'");
-                    return;
-                }
-
-                // check if pawn has all their weapons
-                foreach (var weaponMemory in memory.RememberedWeapons)
-                {
-                    // remember how many of this weapon type the pawn should have
-                    if (!dupeCounters.ContainsKey(weaponMemory))
-                        dupeCounters[weaponMemory] = 0;
-                    else
-                        dupeCounters[weaponMemory]++;
-
-                    // only look for missing weapons
-                    if (pawn.hasWeaponType(weaponMemory, dupeCounters[weaponMemory]))
-                        continue;
-                    //Log.Message($"'{pawn}' is missing '{weaponMemory.thing.defName}'");
-
-                    // check all other caravan pawns for the weapon we are looking for
-                    foreach (var other in allPawns)
-                    {
-                        // skip other if they are the pawn we are looking at or if they do not have an inventory
-                        if (other == pawn || !(other.inventory?.innerContainer?.Count() > 0))
-                            continue;
-
-                        // check for remembered weapons if pawn is humanlike
-                        int rememberedByOther = 0;
-                        bool equipped = false;
-                        if (other.def.race?.Humanlike == true)
-                        {
-                            // retrieve sidearm memory for other
-                            var otherMemory = CompSidearmMemory.GetMemoryCompForPawn(other);
-                            if (otherMemory != null)
-                            {
-                                // count all instances of weapon remembered by other
-                                foreach (var otherWeapon in otherMemory.RememberedWeapons)
-                                {
-                                    if (otherWeapon.Equals(weaponMemory))
-                                        rememberedByOther++;
-                                }
-                                // check if other has matching weapon equipped
-                                if (other.equipment.Primary.matchesThingDefStuffDefPair(weaponMemory))
-                                    equipped = true;
-                                //Log.Message($"'{other}' remembers {rememberedByOther} '{weaponMemory.thing}' (equipped: {equipped})");
-                            }
-                        }
-
-                        // iterate over all things in inventory
-                        foreach (var thing in other.inventory.innerContainer)
-                        {
-                            // check if thing is weapon we are looking for and is not remembered by other
-                            if (thing.matchesThingDefStuffDefPair(weaponMemory) && rememberedByOther-- == (equipped ? 1 : 0))
-                            {
-                                // transfer thing found in inventory of other to pawn
-                                //Log.Message($"Transfer '{thing}' from '{other}' to '{pawn}' (inventory)");
-                                other.inventory.innerContainer.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1);
-                                goto CONTINUE;
-                            }
-                        }
-                        // other has weapon equipped, but does not remember it
-                        if (equipped && rememberedByOther == 0)
-                        {
-                            // transfer primary of other to pawn
-                            var thing = other.equipment.Primary;
-                            //Log.Message($"Transfer '{thing}' from '{other}' to '{pawn}' (primary)");
-                            thing.holdingOwner.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1);
-                            goto CONTINUE;
-                        }
-                    }
-                    //Log.Message($"'{pawn}' could not find '{weaponMemory.thing.defName}' in any inventory");
-                    // continue with next weapon
-                    CONTINUE:;
-                }
-            }
-        }
-#endif
     }
 }
 
