@@ -31,10 +31,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         {
             if (!(__state?.Count > 0))
                 return;
-            
-            // check every pawn for missing sidearms and transfer ones picked up by other pawns back to the correct inventory
-            foreach (var pawn in __state)
-                CaravanUtility.TransferSidearmsToCorrectInventory(pawn, __state);
+
+            // check for missing sidearms and transfer ones picked up by other pawns back to the correct inventory
+            CaravanUtility.TransferWeaponsToCorrectInventory(__state);
         }
     }
     [HarmonyPatch(typeof(Dialog_SplitCaravan), "TrySplitCaravan")]
@@ -56,10 +55,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         {
             if (!(__state?.Count > 0))
                 return;
-            
-            // check every pawn for missing sidearms and transfer ones picked up by other pawns back to the correct inventory
-            foreach (var pawn in __state)
-                CaravanUtility.TransferSidearmsToCorrectInventory(pawn, __state);
+
+            // check for missing sidearms and transfer ones picked up by other pawns back to the correct inventory
+            CaravanUtility.TransferWeaponsToCorrectInventory(__state);
         }
     }
 
@@ -95,9 +93,241 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         }
     }
 
+    // TODO: Also patch Dialog_SplitCaravan.AddItemsToTransferables or rather AddToTransferables to hide remembered weapons from the Split-Caravan dialog?
+
 
     public static class CaravanUtility
     {
+        public static void TransferWeaponsToCorrectInventory(List<Pawn> pawns)
+        {
+            var pawnMissingWeapons = new Dictionary<Pawn, List<ThingDefStuffDefPair>>();
+            var unassignedThings = new List<ThingWithComps>();
+            foreach (var pawn in pawns)
+            {
+                var pawnThings = new List<ThingWithComps>();
+
+                var inventory = pawn.inventory?.innerContainer;
+                if (inventory != null)
+                {
+                    foreach (var thing in inventory)
+                        if ((thing.def.IsMeleeWeapon || thing.def.IsRangedWeapon) 
+                            && thing is ThingWithComps thingWithComps)
+                            pawnThings.Add(thingWithComps);
+                }
+                if (pawn.equipment?.Primary != null)
+                    pawnThings.Add(pawn.equipment.Primary);
+
+
+                if (pawn?.IsColonist == true 
+                    && inventory != null
+                    && CompSidearmMemory.GetMemoryCompForPawn(pawn) is CompSidearmMemory memory)
+                {
+                    var pawnWeapons = new List<ThingDefStuffDefPair>(memory.RememberedWeapons);
+
+                    // first remove things biocoded to this pawn; no-one else can use them anyway
+                    for (int i = 0; i < pawnThings.Count;)
+                    {
+                        var thing = pawnThings[i];
+
+                        // check if thing is biocoded to this pawn
+                        var biocode = thing.TryGetComp<CompBiocodable>();
+                        if (biocode?.Biocoded == true
+                            && biocode.CodedPawn == pawn)
+                        {
+                            // remove from remembered weapon list
+                            var weaponMemory = thing.toThingDefStuffDefPair();
+                            if (weaponMemory != null)
+                                pawnWeapons.Remove(weaponMemory);
+                            
+                            // remove from thing list
+                            pawnThings.Remove(thing);
+                            continue;
+                        }
+                        i++;
+                    }
+
+                    // sort by quality
+                    //pawnThings.SortByDescending((thing) =>
+                    //{
+                    //    QualityUtility.TryGetQuality(thing, out QualityCategory qc);
+                    //    return (int)qc;
+                    //});
+
+                    // then remove remembered weapons and things already found on the pawn
+                    for (int i = 0; i < pawnThings.Count;)
+                    {
+                        var thing = pawnThings[i];
+
+                        // skip biocoded things and keep them in the list; they cannot be used by this pawn, things biocoded to this pawn have already been removed
+                        var biocode = thing.TryGetComp<CompBiocodable>();
+                        if (biocode?.Biocoded != true)
+                        {
+                            // check if thing is remembered
+                            var weaponMemory = thing.toThingDefStuffDefPair();
+                            if (weaponMemory != null && pawnWeapons.Contains(weaponMemory))
+                            {
+                                // remove thing and remembered weapon
+                                pawnWeapons.Remove(weaponMemory);
+                                pawnThings.Remove(thing);
+                                continue;
+                            }
+                        }
+                        i++;
+                    }
+
+                    // remember all weapons still in weapon list as missing
+                    if (pawnWeapons.Count > 0 && !pawnMissingWeapons.ContainsKey(pawn))
+                        pawnMissingWeapons.Add(pawn, new List<ThingDefStuffDefPair>());
+                    foreach (var weapon in pawnWeapons)
+                        pawnMissingWeapons[pawn].Add(weapon);
+                }
+
+                // remember all things in thing list as unassigned
+                foreach (var thing in pawnThings)
+                    unassignedThings.Add(thing);
+            }
+
+            // sort by quality
+            unassignedThings.SortByDescending((thing) =>
+            {
+                QualityUtility.TryGetQuality(thing, out QualityCategory qc);
+                return (int)qc;
+            });
+
+            // transfer unassigned weapons to pawns missing sidearms
+            foreach (var entry in pawnMissingWeapons)
+            {
+                var pawn = entry.Key;
+                var missingWeapons = entry.Value;
+
+                // iterate over all missing weapons
+                for (int i = 0; i < missingWeapons.Count;)
+                {
+                    var weaponMemory = missingWeapons[i];
+                    for (int j = 0; j < unassignedThings.Count;)
+                    {
+                        // get ThingDefStuffDefPair for thing
+                        var thing = unassignedThings[j];
+                        var thingMemory = thing.toThingDefStuffDefPair();
+                        if (thingMemory == null)
+                        {
+                            Log.Warning($"'{thing}' had null ThingDefStuffDefPair; removing from unassigned things");
+                            unassignedThings.Remove(thing);
+                            continue;
+                        }
+
+                        // check if thing fits weapon memory
+                        if (weaponMemory.Equals(thingMemory))
+                        {
+                            Log.Message($"Transferring '{thing}' from '{thing.holdingOwner}' to '{pawn}'");
+                            // transfer weapon
+                            if (thing.holdingOwner.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1) == 1)
+                            {
+                                // remove weapon from missing weapons list and thing from unassigned things list
+                                missingWeapons.Remove(weaponMemory);
+                                unassignedThings.Remove(thing);
+                                goto CONTINUE;
+                            }
+
+                            // if it gets here, tranferring the weapon failed
+                            Log.Error($"Failed trying to transfer '{thing}' from '{thing.holdingOwner}' to '{pawn}'!");
+                        }
+                        j++;
+                    }
+                    i++;
+
+                    // go here without increasing indices if entry was removed
+                    CONTINUE:;
+                }
+            }
+        }
+
+        public static IEnumerable<Thing> RemoveRememberedWeaponsFromThingList(IEnumerable<Thing> things, IEnumerable<Pawn> pawns)
+        {
+            // get remembered weapons for all pawns
+            var rememberedNonEquippedCount = new Dictionary<ThingDefStuffDefPair, int>();
+            foreach (var pawn in pawns)
+            {
+                // check if the pawn is a colonist
+                if (!pawn.IsColonist)
+                    continue;
+
+                // retrieve siderarm memory
+                var memory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                if (memory == null)
+                    continue;
+
+                // iterate over every remembered weapon
+                foreach (var weapon in memory.RememberedWeapons)
+                {
+                    // ignore equipped remembered weapons
+                    if (pawn.equipment?.Primary?.matchesThingDefStuffDefPair(weapon) == true)
+                        continue;
+                           
+                    // count remembered weapons in inventory
+                    if (rememberedNonEquippedCount.ContainsKey(weapon))
+                        rememberedNonEquippedCount[weapon]++;
+                    else
+                        rememberedNonEquippedCount[weapon] = 1;
+                }
+            }
+
+            // sort items by quality so the highest quality items will be reserved for pawns
+            var sorted = things.ToList();
+            sorted.SortByDescending((thing) =>
+            {
+                QualityUtility.TryGetQuality(thing, out QualityCategory qc);
+                return (int)qc; // NOTE: what about high quality weapons with low hitpoints? someone might want to sell them and they would not show up...
+            });
+
+            // check for biocoded weapons and remove them from the list if the biocoded pawns are part of the caravan and remembers them
+            for (int i = 0; i < sorted.Count;)
+            {
+                var thing = sorted[i];
+                // check if thing is biocodable, is biocoded and if the pawn whom it is biocoded to is part of the caravan
+                if (thing.TryGetComp<CompBiocodable>() is CompBiocodable biocode 
+                    && biocode.Biocoded 
+                    && biocode.CodedPawn is Pawn pawn
+                    && pawns.Contains(pawn))
+                {
+                    // if the pawn whom this weapon is biocoded to remembers this weapon, remove it from the output
+                    var pair = thing.toThingDefStuffDefPair();
+                    var memory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                    if (memory != null && memory.RememberedWeapons.Contains(pair))
+                    {
+                        // if the pawn does not have the weapon in their inventory, also decrease the non-equipped count (it is already taken care of)
+                        if (pawn.equipment.Primary != thing && !pawn.inventory.innerContainer.Contains(thing))
+                            rememberedNonEquippedCount[pair]--;
+
+                        // remove thing from output
+                        sorted.Remove(thing);
+                        continue;
+                    }
+                }
+                i++;
+            }
+
+            // iterate over quality-sorted list of things in caravan inventory
+            foreach (var thing in sorted)
+            {
+                // if thing is a remembered weapon, skip it; this removes it from the output
+                var stuffDefPair = thing.toThingDefStuffDefPair();
+                if (stuffDefPair != null
+                    && rememberedNonEquippedCount.ContainsKey(stuffDefPair)
+                    && rememberedNonEquippedCount[stuffDefPair] > 0)
+                {
+                    //Log.Message($"'{thing}' is in inventory and remembered, removing from item list");
+                    rememberedNonEquippedCount[stuffDefPair]--;
+                    continue;
+                }
+
+                // otherwise return it
+                yield return thing;
+            }
+        }
+
+
+#if FALSE // old code
         public static void TransferSidearmsToCorrectInventory(Pawn pawn, List<Pawn> allPawns)
         {
             // only check colonists (who have an inventory)
@@ -184,63 +414,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 }
             }
         }
-
-        public static IEnumerable<Thing> RemoveRememberedWeaponsFromThingList(IEnumerable<Thing> things, IEnumerable<Pawn> pawns)
-        {
-            // get remembered weapons for all pawns
-            var rememberedNonEquippedCount = new Dictionary<ThingDefStuffDefPair, int>();
-            foreach (var pawn in pawns)
-            {
-                // check if the pawn is a colonist
-                if (!pawn.IsColonist)
-                    continue;
-
-                // retrieve siderarm memory
-                var memory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-                if (memory == null)
-                    continue;
-
-                // iterate over every remembered weapon
-                foreach (var weapon in memory.RememberedWeapons)
-                {
-                    // ignore equipped remembered weapons
-                    if (pawn.equipment?.Primary?.matchesThingDefStuffDefPair(weapon) == true)
-                        continue;
-                           
-                    // count remembered weapons in inventory
-                    if (rememberedNonEquippedCount.ContainsKey(weapon))
-                        rememberedNonEquippedCount[weapon]++;
-                    else
-                        rememberedNonEquippedCount[weapon] = 1;
-                }
-            }
-
-            // sort items by quality so the highest quality items will be reserved for pawns
-            var sorted = things.ToList();
-            sorted.SortByDescending((thing) =>
-            {
-                QualityUtility.TryGetQuality(thing, out QualityCategory qc);
-                return (int)qc; // NOTE: what about high quality weapons with low hitpoints? someone might want to sell them and they would not show up...
-            });
-
-            // iterate over quality-sorted list of remembered weapons
-            foreach (var thing in sorted)
-            {
-                // if thing is a remembered weapon, skip it, removing it from the list
-                var stuffDefPair = thing.toThingDefStuffDefPair();
-                if (stuffDefPair != null
-                    && rememberedNonEquippedCount.ContainsKey(stuffDefPair)
-                    && rememberedNonEquippedCount[stuffDefPair] > 0)
-                {
-                    //Log.Message($"'{thing}' is in inventory and remembered, removing from item list");
-                    rememberedNonEquippedCount[stuffDefPair]--;
-                    continue;
-                }
-
-                // otherwise return it
-                yield return thing;
-            }
-        }
+#endif
     }
 }
 
