@@ -40,13 +40,13 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
     public static class Dialog_SplitCaravan_TrySplitCaravan
     {
         [HarmonyPrefix]
-        public static void Prefix(ref Dialog_SplitCaravan __instance, out List<Pawn> __state)
+        public static void Prefix(Caravan ___caravan, out List<Pawn> __state)
         {
             __state = new List<Pawn>();
-            if (__instance?.GetType().GetField("caravan", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(__instance) is Caravan caravan)
+            if (___caravan != null)
             {
                 // save a list of all pawns that were in the caravan
-                foreach (var pawn in caravan.pawns)
+                foreach (var pawn in ___caravan.pawns)
                     __state.Add(pawn);
             }
         }
@@ -71,7 +71,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             // get all pawns in the caravan
             var pawns = playerNegotiator?.GetCaravan()?.pawns;
             if (pawns?.Count > 0)
-                return CaravanUtility.RemoveRememberedWeaponsFromThingList(__result, pawns);
+                return CaravanUtility.RemoveRememberedWeaponsFromThingList(__result.ToList(), pawns);
 
             // just in case there is no caravan for some reason
             return __result;
@@ -86,14 +86,42 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             // get all pawns in the caravan
             var pawns = playerNegotiator?.GetCaravan()?.pawns;
             if (pawns?.Count > 0)
-                return CaravanUtility.RemoveRememberedWeaponsFromThingList(__result, pawns);
+                return CaravanUtility.RemoveRememberedWeaponsFromThingList(__result.ToList(), pawns);
 
             // just in case there is no caravan for some reason
             return __result;
         }
     }
+    [HarmonyPatch(typeof(Dialog_SplitCaravan), "AddItemsToTransferables")]
+    public class Dialog_SplitCaravan_AddItemsToTransferables
+    {
+        [HarmonyPostfix]
+        public static void Postfix(Caravan ___caravan, List<TransferableOneWay> ___transferables)
+        {
+            if (___caravan?.pawns == null)
+                return;
 
-    // TODO: Also patch Dialog_SplitCaravan.AddItemsToTransferables or rather AddToTransferables to hide remembered weapons from the Split-Caravan dialog?
+            // create list of all transferable things
+            var caravanInventory = new List<Thing>();
+            foreach (var transferable in ___transferables)
+                caravanInventory.Add(transferable.AnyThing);
+
+            // remove sidearms from list
+            var things = CaravanUtility.RemoveRememberedWeaponsFromThingList(caravanInventory, ___caravan.pawns);
+
+            // remove sidearms from transferables (there surely are more efficient ways for doing this, but heh...)
+            for (int i = 0; i < ___transferables.Count;)
+            {
+                var transferable = ___transferables[i];
+                if (!things.Contains(transferable.AnyThing))
+                {
+                    ___transferables.Remove(transferable);
+                    continue;
+                }
+                i++;
+            }
+        }
+    }
 
 
     public static class CaravanUtility
@@ -110,11 +138,15 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             {
                 var pawnThings = new List<ThingWithComps>();
 
+                // add equipped weapon to list
                 if (pawn.equipment?.Primary != null)
                     pawnThings.Add(pawn.equipment.Primary);
+
+                // add all weapons in inventory to list
                 var inventory = pawn.inventory?.innerContainer;
                 if (inventory != null)
                 {
+                    // filter out all weapons in inventory
                     foreach (var thing in inventory)
                         if ((thing.def.IsMeleeWeapon || thing.def.IsRangedWeapon) 
                             && thing is ThingWithComps thingWithComps)
@@ -122,7 +154,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 }
 
                 // check if we are looking at a colonist with an inventory
-                if (pawn?.IsColonist == true && inventory != null)
+                if (pawn?.IsColonist == true)
                 {
                     var pawnWeapons = new List<ThingDefStuffDefPair>(CompSidearmMemory.GetMemoryCompForPawn(pawn)?.RememberedWeapons);
 
@@ -225,7 +257,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                             // check if thing fits weapon memory
                             if (weaponMemory.Equals(thingMemory))
                             {
-                                Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' (biocoded)");
+                                Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' [biocoded]");
                                 // transfer weapon
                                 if (thing.holdingOwner.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1) == 1)
                                 {
@@ -236,7 +268,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                                 }
 
                                 // if it gets here, tranferring the weapon failed; this should obviously not happen
-                                Log.Error($"Failed to transfer '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}'! (biocoded)");
+                                Log.Error($"Failed to transfer '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}'! [biocoded]");
                             }
                             j++;
                         }
@@ -260,7 +292,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                         // check if thing fits weapon memory
                         if (weaponMemory.Equals(thingMemory))
                         {
-                            Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' (standard)");
+                            Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' [standard]");
                             // transfer weapon
                             if (thing.holdingOwner.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1) == 1)
                             {
@@ -271,7 +303,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                             }
 
                             // if it gets here, tranferring the weapon failed; this should obviously not happen
-                            Log.Error($"Failed to transfer '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}'! (standard)");
+                            Log.Error($"Failed to transfer '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}'! [standard]");
                         }
                         j++;
                     }
@@ -283,7 +315,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             }
         }
 
-        public static IEnumerable<Thing> RemoveRememberedWeaponsFromThingList(IEnumerable<Thing> things, IEnumerable<Pawn> pawns)
+        public static List<Thing> RemoveRememberedWeaponsFromThingList(List<Thing> carvanInventory, IEnumerable<Pawn> pawns)
         {
             // get remembered weapons for all pawns
             var rememberedNonEquippedCount = new Dictionary<ThingDefStuffDefPair, int>();
@@ -305,7 +337,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     if (pawn.equipment?.Primary?.matchesThingDefStuffDefPair(weapon) == true)
                         continue;
                            
-                    // count remembered weapons in inventory
+                    // count remembered weapons which are not equipped
                     if (rememberedNonEquippedCount.ContainsKey(weapon))
                         rememberedNonEquippedCount[weapon]++;
                     else
@@ -314,17 +346,16 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             }
 
             // sort items by quality so the highest quality items will be reserved for pawns
-            var sorted = things.ToList();
-            sorted.SortByDescending((thing) =>
+            carvanInventory.SortByDescending((thing) =>
             {
                 QualityUtility.TryGetQuality(thing, out QualityCategory qc);
                 return (int)qc; // NOTE: what about high quality weapons with low hitpoints?
             });
 
             // check for biocoded weapons and remove them from the list if the biocoded pawns are part of the caravan and remembers them
-            for (int i = 0; i < sorted.Count;)
+            for (int i = 0; i < carvanInventory.Count;)
             {
-                var thing = sorted[i];
+                var thing = carvanInventory[i];
                 // check if thing is biocodable, is biocoded and if the pawn whom it is biocoded to is part of the caravan
                 if (thing.TryGetComp<CompBiocodable>() is CompBiocodable biocode 
                     && biocode.Biocoded 
@@ -336,12 +367,11 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     var memory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if (memory != null && memory.RememberedWeapons.Contains(pair))
                     {
-                        // if the pawn does not have the weapon in their inventory, also decrease the non-equipped count (it is already taken care of)
-                        if (pawn.equipment.Primary != thing && !pawn.inventory.innerContainer.Contains(thing))
-                            rememberedNonEquippedCount[pair]--;
+                        //Log.Message($"'{thing}' is biocoded and remembered by caravan member '{pawn}', removing from output");
 
                         // remove thing from output
-                        sorted.Remove(thing);
+                        carvanInventory.Remove(thing);
+                        rememberedNonEquippedCount[pair]--;
                         continue;
                     }
                 }
@@ -349,22 +379,27 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             }
 
             // iterate over quality-sorted list of things in caravan inventory
-            foreach (var thing in sorted)
+            for (int i = 0; i < carvanInventory.Count;)
             {
                 // if thing is a remembered weapon, skip it; this removes it from the output
-                var stuffDefPair = thing.toThingDefStuffDefPair();
-                if (stuffDefPair != null
-                    && rememberedNonEquippedCount.ContainsKey(stuffDefPair)
-                    && rememberedNonEquippedCount[stuffDefPair] > 0)
+                var thing = carvanInventory[i];
+                var pair = thing.toThingDefStuffDefPair();
+                if (pair != null
+                    && rememberedNonEquippedCount.ContainsKey(pair)
+                    && rememberedNonEquippedCount[pair] > 0)
                 {
-                    //Log.Message($"'{thing}' is in inventory and remembered, removing from item list");
-                    rememberedNonEquippedCount[stuffDefPair]--;
+                    //Log.Message($"'{thing}' is remembered by caravan member, removing from output");
+
+                    // remove thing from output
+                    carvanInventory.Remove(thing);
+                    rememberedNonEquippedCount[pair]--;
                     continue;
                 }
-
-                // otherwise return it
-                yield return thing;
+                i++;
             }
+
+            // return output
+            return carvanInventory;
         }
     }
 }
