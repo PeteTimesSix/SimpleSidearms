@@ -35,6 +35,13 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 <ReEquipInCombat_desc>Auto-re-equip weapons even in combat, when not actively fighting.</ReEquipInCombat_desc>
 <ReEquipInCombat_title>Re-equip during combat</ReEquipInCombat_title>
 
+<PreserveInventoryInCaravans_desc>Keep sidearms in the right inventory when returning from caravans. (Experimental, implemented by XT-0xFF @Github)</PreserveInventoryInCaravans_desc>
+<PreserveInventoryInCaravans_title>Preserve sideams through caravans</PreserveInventoryInCaravans_title>
+
+<HideSidearmsInCaravanDialogs_desc>Hide sideams in caravan dialogs, to prevent accidentaly selling them. (Experimental, implemented by XT-0xFF @Github)</HideSidearmsInCaravanDialogs_desc>
+<HideSidearmsInCaravanDialogs_title>Hide sidearms in caravan dialogs</HideSidearmsInCaravanDialogs_title>
+
+
 <LimitCarryInfo_desc></LimitCarryInfo_desc>
 <LimitCarryInfo_title>Always limited by pawn's carry capacity</LimitCarryInfo_title>
 

@@ -118,6 +118,9 @@ namespace PeteTimesSix.SimpleSidearms
         public bool ReEquipBest;
         public bool ReEquipInCombat;
 
+        public bool PreserveInventoryInCaravans;
+        public bool HideSidearmsInCaravanDialogs;
+
         public void StartupChecks()
         {
             if (LimitModeSingle_Selection == null)
@@ -212,6 +215,9 @@ namespace PeteTimesSix.SimpleSidearms
                 Scribe_Collections.Look(ref temp, "FumbleRecoveryChance");
                 FumbleRecoveryChance = temp != null ? new SimpleCurve(temp) : new SimpleCurve(defaultFumbleRecoveryChancePoints);
             }
+
+            Scribe_Values.Look(ref PreserveInventoryInCaravans, "PreserveInventoryInCaravans", defaultValue: true);
+            Scribe_Values.Look(ref HideSidearmsInCaravanDialogs, "HideSidearmsInCaravanDialogs", defaultValue: true);
         }
 
         Vector2 scrollPosition = new Vector2(0, 0);
@@ -416,6 +422,11 @@ namespace PeteTimesSix.SimpleSidearms
                             subsection.CheckboxLabeled("ReEquipInCombat_title".Translate(), ref ReEquipInCombat, "ReEquipInCombat_desc".Translate(), onChange: onChange);
                         }
 
+                        subsection.GapLine();
+
+                        subsection.CheckboxLabeled("PreserveInventoryInCaravans_title".Translate(), ref PreserveInventoryInCaravans, "PreserveInventoryInCaravans_desc".Translate(), onChange: onChange);
+                        subsection.CheckboxLabeled("HideSidearmsInCaravanDialogs_title".Translate(), ref HideSidearmsInCaravanDialogs, "HideSidearmsInCaravanDialogs_desc".Translate(), onChange: onChange);
+
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
                     }
                     break;
@@ -513,6 +524,9 @@ namespace PeteTimesSix.SimpleSidearms
             ReEquipOutOfCombat = true;
             ReEquipBest = true;
             ReEquipInCombat = true;
+
+            PreserveInventoryInCaravans = true;
+            HideSidearmsInCaravanDialogs = true;
         }
 
         public void ApplyPreset(SettingsPreset preset)
@@ -545,6 +559,9 @@ namespace PeteTimesSix.SimpleSidearms
                     ReEquipOutOfCombat = false;
                     ReEquipBest = false;
                     ReEquipInCombat = false;
+
+                    PreserveInventoryInCaravans = false;
+                    HideSidearmsInCaravanDialogs = false;
                     break;
                 case SettingsPreset.LoadoutOnly:
                     ToolAutoSwitch = false;
