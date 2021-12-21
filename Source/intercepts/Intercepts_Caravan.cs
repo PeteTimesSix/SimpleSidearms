@@ -19,6 +19,10 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         public static void Prefix(Caravan caravan, out List<Pawn> __state)
         {
             __state = new List<Pawn>();
+
+            if (!SimpleSidearms.Settings.PreserveInventoryInCaravans)
+                return;
+
             if (caravan != null)
             {
                 // save a list of all pawns that were in the caravan
@@ -29,6 +33,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void Postfix(List<Pawn> __state)
         {
+            if (!SimpleSidearms.Settings.PreserveInventoryInCaravans)
+                return;
+
             if (!(__state?.Count > 0))
                 return;
 
@@ -43,6 +50,10 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         public static void Prefix(Caravan ___caravan, out List<Pawn> __state)
         {
             __state = new List<Pawn>();
+
+            if (!SimpleSidearms.Settings.PreserveInventoryInCaravans)
+                return;
+
             if (___caravan != null)
             {
                 // save a list of all pawns that were in the caravan
@@ -53,6 +64,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void Postfix(List<Pawn> __state)
         {
+            if (!SimpleSidearms.Settings.PreserveInventoryInCaravans)
+                return;
+
             if (!(__state?.Count > 0))
                 return;
 
@@ -68,6 +82,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static IEnumerable<Thing> Postfix(IEnumerable<Thing> __result, Pawn playerNegotiator)
         {
+            if (!SimpleSidearms.Settings.HideSidearmsInCaravanDialogs)
+                return __result;
+
             // get all pawns in the caravan
             var pawns = playerNegotiator?.GetCaravan()?.pawns;
             if (pawns?.Count > 0)
@@ -83,6 +100,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static IEnumerable<Thing> Postfix(IEnumerable<Thing> __result, Pawn playerNegotiator)
         {
+            if (!SimpleSidearms.Settings.HideSidearmsInCaravanDialogs)
+                return __result;
+
             // get all pawns in the caravan
             var pawns = playerNegotiator?.GetCaravan()?.pawns;
             if (pawns?.Count > 0)
@@ -98,6 +118,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void Postfix(Caravan ___caravan, List<TransferableOneWay> ___transferables)
         {
+            if (!SimpleSidearms.Settings.HideSidearmsInCaravanDialogs)
+                return;
+
             if (___caravan?.pawns == null)
                 return;
 
@@ -257,7 +280,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                             // check if thing fits weapon memory
                             if (weaponMemory.Equals(thingMemory))
                             {
-                                Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' [biocoded]");
+                                //Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' [biocoded]");
                                 // transfer weapon
                                 if (thing.holdingOwner.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1) == 1)
                                 {
@@ -292,7 +315,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                         // check if thing fits weapon memory
                         if (weaponMemory.Equals(thingMemory))
                         {
-                            Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' [standard]");
+                            //Log.Message($"Transferring '{thing}' from '{ThingOwnerUtility.GetAnyParent<Pawn>(thing)}' ({thing.ParentHolder}) to '{pawn}' [standard]");
                             // transfer weapon
                             if (thing.holdingOwner.TryTransferToContainer(thing, pawn.inventory.innerContainer, 1) == 1)
                             {

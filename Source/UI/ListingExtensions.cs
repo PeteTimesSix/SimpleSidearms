@@ -143,7 +143,7 @@ namespace PeteTimesSix.SimpleSidearms.UI
             columnNum = 0;
             foreach (var name in names)
             {
-                if ((columnNum + 1) * buttonsWidth > buttonsRectWidth)
+                if ((columnNum + 1) * buttonsWidth > (buttonsRectWidth + 2f))
                 {
                     columnNum = 0;
                     rowNum++;
