@@ -364,7 +364,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     if (rememberedNonEquippedCount.ContainsKey(weapon))
                         rememberedNonEquippedCount[weapon]++;
                     else
-                        rememberedNonEquippedCount[weapon] = 1;
+                        rememberedNonEquippedCount.Add(weapon, 1);
                 }
             }
 
@@ -383,6 +383,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 if (thing.TryGetComp<CompBiocodable>() is CompBiocodable biocode 
                     && biocode.Biocoded 
                     && biocode.CodedPawn is Pawn pawn
+                    && pawn.IsColonist
                     && pawns.Contains(pawn))
                 {
                     // if the pawn whom this weapon is biocoded to remembers this weapon, remove it from the output
