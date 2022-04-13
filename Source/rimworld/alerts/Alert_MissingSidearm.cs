@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using Verse;
 
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+
 namespace SimpleSidearms.rimworld.alerts
 {
     public class Alert_MissingSidearm : Alert
@@ -43,39 +45,44 @@ namespace SimpleSidearms.rimworld.alerts
         [DebuggerHidden]
         public IEnumerable<Pawn> AffectedPawns()
         {
-            HashSet<Pawn> pawns = new HashSet<Pawn>();
-            if(PawnsFinder.AllMaps_FreeColonistsSpawned != null)
+            if (!Settings.ShowAlertsMissingSidearm)
+                yield break;
+            else 
             {
-                foreach (Pawn pawn in PawnsFinder.AllMaps_FreeColonistsSpawned)
+                HashSet<Pawn> pawns = new HashSet<Pawn>();
+                if (PawnsFinder.AllMaps_FreeColonistsSpawned != null)
                 {
-                    if (!pawn.IsValidSidearmsCarrier())
+                    foreach (Pawn pawn in PawnsFinder.AllMaps_FreeColonistsSpawned)
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        if (pawn.health != null && pawn.Downed)
-                            continue;
-                        if (pawn.drafter != null && pawn.Drafted)
-                            continue;
-                        if (pawn.CurJob != null && pawn.CurJob.def != null && (pawn.CurJob.def == SidearmsDefOf.EquipSecondary))
-                            continue;
-
-                        CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-                        if (pawnMemory != null)
+                        if (!pawn.IsValidSidearmsCarrier())
                         {
-                            foreach (ThingDefStuffDefPair weaponMemory in pawnMemory.RememberedWeapons)
+                            continue;
+                        }
+                        else
+                        {
+                            if (pawn.health != null && pawn.Downed)
+                                continue;
+                            if (pawn.drafter != null && pawn.Drafted)
+                                continue;
+                            if (pawn.CurJob != null && pawn.CurJob.def != null && (pawn.CurJob.def == SidearmsDefOf.EquipSecondary))
+                                continue;
+
+                            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                            if (pawnMemory != null)
                             {
-                                if (!pawn.hasWeaponType(weaponMemory))
+                                foreach (ThingDefStuffDefPair weaponMemory in pawnMemory.RememberedWeapons)
                                 {
-                                    if (pawns.Add(pawn))
-                                        yield return pawn;
+                                    if (!pawn.hasWeaponType(weaponMemory))
+                                    {
+                                        if (pawns.Add(pawn))
+                                            yield return pawn;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }         
+            }
         }
     }
 }

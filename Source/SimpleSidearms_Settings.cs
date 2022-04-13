@@ -49,6 +49,8 @@ namespace PeteTimesSix.SimpleSidearms
         public float SpeedSelectionBiasMelee;
         public float SpeedSelectionBiasRanged;
 
+        public bool AllowBlockedWeaponUse;
+
         public bool SeparateModes;
         public LimitModeSingleSidearm LimitModeSingle;
         public LimitModeAmountOfSidearms LimitModeAmount;
@@ -118,8 +120,13 @@ namespace PeteTimesSix.SimpleSidearms
         public bool ReEquipBest;
         public bool ReEquipInCombat;
 
+        public bool SkipDangerousWeapons;
+        public bool SkipEMPWeapons;
+
         public bool PreserveInventoryInCaravans;
         public bool HideSidearmsInCaravanDialogs;
+
+        public bool ShowAlertsMissingSidearm;
 
         public void StartupChecks()
         {
@@ -152,6 +159,9 @@ namespace PeteTimesSix.SimpleSidearms
 
             Scribe_Values.Look(ref SpeedSelectionBiasMelee, "SpeedSelectionBiasMelee", defaultValue: 1f);
             Scribe_Values.Look(ref SpeedSelectionBiasRanged, "SpeedSelectionBiasRanged", defaultValue: 1.1f);
+
+            Scribe_Values.Look(ref AllowBlockedWeaponUse, "AllowBlockedWeaponUse", defaultValue: false);
+
             Scribe_Values.Look(ref SeparateModes, "SeparateModes", defaultValue: false);
 
             Scribe_Values.Look(ref LimitModeSingle, "LimitModeSingle", defaultValue: LimitModeSingleSidearm.None);
@@ -204,6 +214,9 @@ namespace PeteTimesSix.SimpleSidearms
             Scribe_Values.Look(ref ReEquipBest, "ReEquipBest", defaultValue: true);
             Scribe_Values.Look(ref ReEquipInCombat, "ReEquipInCombat", defaultValue: true);
 
+            Scribe_Values.Look(ref SkipDangerousWeapons, "SkipDangerousWeapons", defaultValue: true);
+            Scribe_Values.Look(ref SkipEMPWeapons, "SkipEMPWeapons", defaultValue: false);
+
             if (Scribe.mode == LoadSaveMode.Saving)
             {
                 var temp = FumbleRecoveryChance.ToList();
@@ -218,6 +231,8 @@ namespace PeteTimesSix.SimpleSidearms
 
             Scribe_Values.Look(ref PreserveInventoryInCaravans, "PreserveInventoryInCaravans", defaultValue: true);
             Scribe_Values.Look(ref HideSidearmsInCaravanDialogs, "HideSidearmsInCaravanDialogs", defaultValue: true);
+
+            Scribe_Values.Look(ref ShowAlertsMissingSidearm, "ShowAlertsMissingSidearm", defaultValue: true);
         }
 
         Vector2 scrollPosition = new Vector2(0, 0);
@@ -324,6 +339,8 @@ namespace PeteTimesSix.SimpleSidearms
                     break;
                 case OptionsTab.Allowances:
                     {
+                        listingStandard.CheckboxLabeled("AllowBlockedWeaponUse_title".Translate(), ref AllowBlockedWeaponUse, "AllowBlockedWeaponUse_desc".Translate(), onChange: onChange);
+
                         var valBefore = SeparateModes;
                         listingStandard.CheckboxLabeled("SeparateModes_title".Translate(), ref SeparateModes, "SeparateModes_desc".Translate(), onChange: onChange);
                         if (valBefore != SeparateModes)
@@ -424,8 +441,17 @@ namespace PeteTimesSix.SimpleSidearms
 
                         subsection.GapLine();
 
+                        subsection.CheckboxLabeled("SkipDangerousWeapons_title".Translate(), ref SkipDangerousWeapons, "SkipDangerousWeapons_desc".Translate(), onChange: onChange);
+                        subsection.CheckboxLabeled("SkipEMPWeapons_title".Translate(), ref SkipEMPWeapons, "SkipEMPWeapons_desc".Translate(), onChange: onChange);
+
+                        subsection.GapLine();
+
                         subsection.CheckboxLabeled("PreserveInventoryInCaravans_title".Translate(), ref PreserveInventoryInCaravans, "PreserveInventoryInCaravans_desc".Translate(), onChange: onChange);
                         subsection.CheckboxLabeled("HideSidearmsInCaravanDialogs_title".Translate(), ref HideSidearmsInCaravanDialogs, "HideSidearmsInCaravanDialogs_desc".Translate(), onChange: onChange);
+
+                        subsection.GapLine();
+
+                        subsection.CheckboxLabeled("ShowAlertsMissingSidearm_title".Translate(), ref ShowAlertsMissingSidearm, "ShowAlertsMissingSidearm_desc".Translate(), onChange: onChange);
 
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
                     }

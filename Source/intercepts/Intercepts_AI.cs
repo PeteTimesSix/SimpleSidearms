@@ -200,8 +200,23 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             }
 
             LocalTargetInfo target = __instance.focusTarg;
+            var EMPGood = false;
+            if (target.Pawn != null)
+            {
+                if (target.Pawn.RaceProps.IsMechanoid)
+                    EMPGood = true;
+                //unfortunately pawns with EMP grenades dont seem to know they work on shield belts => without forcing the target, the pawn stops attacking
+                /*else if(target.Pawn.apparel.WornApparel.Where(a => a is ShieldBelt).Any(b => (b as ShieldBelt).ShieldState == ShieldState.Active)) //check for active shield belts
+                {
+                    EMPGood = true; 
+                } */
+            }
 
-            WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, target, MiscUtils.shouldDrop(pawn, DroppingModeEnum.Combat, false), pawn.IsColonistPlayerControlled);
+
+            bool skipManualUse = true;
+            bool skipDangerous = pawn.IsColonistPlayerControlled && Settings.SkipDangerousWeapons;
+            bool skipEMP = (pawn.IsColonistPlayerControlled && Settings.SkipEMPWeapons) || !EMPGood;
+            WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, target, MiscUtils.shouldDrop(pawn, DroppingModeEnum.Combat, false), skipManualUse, skipDangerous, skipEMP);
         }
 
         public static bool IsHunting(Pawn pawn)

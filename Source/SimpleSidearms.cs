@@ -13,7 +13,7 @@ namespace PeteTimesSix.SimpleSidearms
         public SimpleSidearms(ModContentPack content) : base(content)
         {
             ModSingleton = this;
-            var harmony = new Harmony("PeteTimesSix.CompactHediffs");
+            var harmony = new Harmony("PeteTimesSix.SimpleSidearms");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 

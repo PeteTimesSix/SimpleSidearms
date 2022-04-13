@@ -115,7 +115,7 @@ namespace SimpleSidearms.rimworld
             {
                 return preferredUnarmedEx;
             }
-            private set
+            set
             {
                 if (value == true)
                     PreferredMeleeWeapon = null;
@@ -130,7 +130,7 @@ namespace SimpleSidearms.rimworld
                     return null;
                 return defaultRangedWeaponEx.Value;
             }
-            private set
+            set
             {
                 if (value == null)
                     defaultRangedWeaponEx = null;
@@ -146,7 +146,7 @@ namespace SimpleSidearms.rimworld
                     return null;
                 return preferredMeleeWeaponEx.Value;
             }
-            private set
+            set
             {
                 if (value == null)
                     preferredMeleeWeaponEx = null;

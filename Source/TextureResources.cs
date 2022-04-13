@@ -26,12 +26,17 @@ namespace PeteTimesSix.SimpleSidearms
         public static readonly Texture2D forcedAlways = ContentFinder<Texture2D>.Get("sidearm_forced_always", true);
         public static readonly Texture2D forcedDrafted = ContentFinder<Texture2D>.Get("sidearm_forced_drafted", true);
 
+        public static readonly Texture2D blockedWeapon = ContentFinder<Texture2D>.Get("blocked_weapon", true);
+
+        public static readonly Texture2D weaponTypeManual = ContentFinder<Texture2D>.Get("weaponType_manual", true);
+        public static readonly Texture2D weaponTypeDangerous = ContentFinder<Texture2D>.Get("weaponType_dangerous", true);
+        public static readonly Texture2D weaponTypeEMP = ContentFinder<Texture2D>.Get("weaponType_emp", true);
 
         public static readonly Texture2D SpeedBiasSliderPositive = ContentFinder<Texture2D>.Get("speedBiasSliderPositive", true);
         public static readonly Texture2D SpeedBiasSliderNegative = ContentFinder<Texture2D>.Get("speedBiasSliderNegative", true);
 
         public static readonly Texture2D FirstTimeSettingsWarningIcon = ContentFinder<Texture2D>.Get("settingsWarningIcon", true);
-
+        
         public static readonly Texture2D MissingDefIcon = ContentFinder<Texture2D>.Get("missingIcon", true);
     }
 }

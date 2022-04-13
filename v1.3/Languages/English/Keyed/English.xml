@@ -35,12 +35,22 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 <ReEquipInCombat_desc>Auto-re-equip weapons even in combat, when not actively fighting.</ReEquipInCombat_desc>
 <ReEquipInCombat_title>Re-equip during combat</ReEquipInCombat_title>
 
+<SkipDangerousWeapons_desc>Disallow auto-equip of dangerous weapons (molotov cocktails, frag grenades, rocket launchers, etc.)</SkipDangerousWeapons_desc>
+<SkipDangerousWeapons_title>Skip dangerous weapons</SkipDangerousWeapons_title>
+<SkipEMPWeapons_desc>Disallow auto-equip of EMP weapons (note that pawns will only consider auto-equipping these when fighting mechanoids anyway).</SkipEMPWeapons_desc>
+<SkipEMPWeapons_title>Skip EMP weapons</SkipEMPWeapons_title>
+
 <PreserveInventoryInCaravans_desc>Keep sidearms in the right inventory when returning from caravans. (Experimental, implemented by XT-0xFF @Github)</PreserveInventoryInCaravans_desc>
 <PreserveInventoryInCaravans_title>Preserve sideams through caravans</PreserveInventoryInCaravans_title>
 
 <HideSidearmsInCaravanDialogs_desc>Hide sideams in caravan dialogs, to prevent accidentaly selling them. (Experimental, implemented by XT-0xFF @Github)</HideSidearmsInCaravanDialogs_desc>
 <HideSidearmsInCaravanDialogs_title>Hide sidearms in caravan dialogs</HideSidearmsInCaravanDialogs_title>
 
+<ShowAlertsMissingSidearm_desc>Show alerts for colonists that remember having sidearms that they no longer have and can't find a replacement for.</ShowAlertsMissingSidearm_desc>
+<ShowAlertsMissingSidearm_title>Show missing sidearm alerts</ShowAlertsMissingSidearm_title>
+
+<AllowBlockedWeaponUse_desc>Allow usage of weapons that are normally blocked (such as persona weapons, biocoded weapons, and Ideology role-restricted weapons) - see XKCD #1172</AllowBlockedWeaponUse_desc>
+<AllowBlockedWeaponUse_title>Allow use of blocked weapons</AllowBlockedWeaponUse_title>
 
 <LimitCarryInfo_desc></LimitCarryInfo_desc>
 <LimitCarryInfo_title>Always limited by pawn's carry capacity</LimitCarryInfo_title>
@@ -236,6 +246,7 @@ Right click to remove unarmed combat as preferred melee option.</DrawSidearm_giz
 <DrawSidearm_gizmoTooltipUnarmedForced>Right click to remove forced use of unarmed combat.</DrawSidearm_gizmoTooltipUnarmedForced>
 <DrawSidearm_gizmoTooltipUnarmedWhileDrafted>Left click to force use of unarmed combat until end of combat.</DrawSidearm_gizmoTooltipUnarmedWhileDrafted>
 <DrawSidearm_gizmoTooltipUnarmedForcedWhileDrafted>Right click to remove forced use of unarmed combat.</DrawSidearm_gizmoTooltipUnarmedForcedWhileDrafted>
+<DrawSidearm_blocked>Weapon unusable</DrawSidearm_blocked>
 
 <Alert_MissingSidearm_label>Colonist missing sidearm</Alert_MissingSidearm_label>
 <Alert_MissingPrimary_label>Colonist missing primary weapon</Alert_MissingPrimary_label>

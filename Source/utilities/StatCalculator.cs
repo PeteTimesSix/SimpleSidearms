@@ -136,24 +136,106 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             return true;
         }
 
-        public static bool canCarrySidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
+        public static bool canUseSidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
         {
             //nicked from EquipmentUtility.CanEquip
             CompBladelinkWeapon compBladelinkWeapon = sidearmThing.TryGetComp<CompBladelinkWeapon>();
-            if (compBladelinkWeapon != null && compBladelinkWeapon.CodedPawn != null && compBladelinkWeapon.CodedPawn != pawn)
+            if (compBladelinkWeapon != null && compBladelinkWeapon.Biocodable && compBladelinkWeapon.CodedPawn != null && compBladelinkWeapon.CodedPawn != pawn)
             {
                 errString = "BladelinkBondedToSomeoneElse".Translate();
                 return false;
             }
-            CompBiocodable compBiocodable = sidearmThing.TryGetComp<CompBladelinkWeapon>();
-            if (compBiocodable != null && compBiocodable.CodedPawn != pawn)
+            if (CompBiocodable.IsBiocoded(sidearmThing) && !CompBiocodable.IsBiocodedFor(sidearmThing, pawn))
             {
                 errString = "BiocodedCodedForSomeoneElse".Translate();
+                return false;
+            }
+            if (EquipmentUtility.AlreadyBondedToWeapon(sidearmThing, pawn))
+            {
+                errString = "BladelinkAlreadyBondedMessage".Translate(pawn.Named("PAWN"), pawn.equipment.bondedWeapon.Named("BONDEDWEAPON"));
                 return false;
             }
             if (compBladelinkWeapon != null && !compBladelinkWeapon.Biocoded)
             {
                 errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
+                return false;
+            }
+            if (sidearmThing != null && EquipmentUtility.RolePreventsFromUsing(pawn, sidearmThing, out string roleReason))
+            {
+                Log.Message($"use of {sidearmThing.Label} prevented by role");
+                errString = roleReason;
+                return false;
+            }
+
+            errString = "No issue";
+            return true;
+        }
+
+        public static bool canUseSidearmType(ThingDefStuffDefPair sidearmType, Pawn pawn, out string errString)
+        {
+            if (sidearmType != null && sidearmType.thing != null) 
+            {
+                if (ModsConfig.IdeologyActive && pawn.Ideo != null)
+                {
+                    Precept_Role role = pawn.Ideo.GetRole(pawn);
+                    if (role != null)
+                    {
+                        if (role.def.roleEffects != null && role.def.roleEffects.Any())
+                        {
+                            //hardcoded cos RoleEffect's CanEquip requires an instance of Thing
+                            if (sidearmType.thing.IsMeleeWeapon)
+                            {
+                                if (role.def.roleEffects.Any(e => e is RoleEffect_NoMeleeWeapons))
+                                {
+                                    errString = "RoleEffectWontUseMeleeWeapons".Translate();
+                                    return false;
+                                }
+                            }
+                            else if (sidearmType.thing.IsRangedWeapon)
+                            {
+                                if (role.def.roleEffects.Any(e => e is RoleEffect_NoRangedWeapons))
+                                {
+                                    errString = "RoleEffectWontUseRangedWeapons".Translate();
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            errString = "No issue";
+            return true;
+        }
+
+        public static bool canCarrySidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
+        {
+            //nicked from EquipmentUtility.CanEquip
+            CompBladelinkWeapon compBladelinkWeapon = sidearmThing.TryGetComp<CompBladelinkWeapon>();
+            if (compBladelinkWeapon != null && compBladelinkWeapon.Biocodable && compBladelinkWeapon.CodedPawn != null && compBladelinkWeapon.CodedPawn != pawn)
+            {
+                errString = "BladelinkBondedToSomeoneElse".Translate();
+                return false;
+            }
+            if (CompBiocodable.IsBiocoded(sidearmThing) && !CompBiocodable.IsBiocodedFor(sidearmThing, pawn))
+            {
+                errString = "BiocodedCodedForSomeoneElse".Translate();
+                return false;
+            }
+            if (EquipmentUtility.AlreadyBondedToWeapon(sidearmThing, pawn))
+            {
+                errString = "BladelinkAlreadyBondedMessage".Translate(pawn.Named("PAWN"), pawn.equipment.bondedWeapon.Named("BONDEDWEAPON"));
+                return false;
+            }
+            if (compBladelinkWeapon != null && !compBladelinkWeapon.Biocoded)
+            {
+                errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
+                return false;
+            }
+            if (EquipmentUtility.RolePreventsFromUsing(pawn, sidearmThing, out string roleReason))
+            {
+                errString = roleReason;
                 return false;
             }
 
@@ -162,20 +244,20 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             return canCarrySidearmType(sidearm, pawn, out errString);
         }
 
-        public static bool canCarrySidearmType(ThingDefStuffDefPair sidearm, Pawn pawn, out string errString)
+        public static bool canCarrySidearmType(ThingDefStuffDefPair sidearmType, Pawn pawn, out string errString)
         {
             float maxCapacity = MassUtility.Capacity(pawn);
             float freeCapacity = MassUtility.FreeSpace(pawn);
-            float sidearmWeight = sidearm.thing.GetStatValueAbstract(StatDefOf.Mass, sidearm.stuff);
+            float sidearmWeight = sidearmType.thing.GetStatValueAbstract(StatDefOf.Mass, sidearmType.stuff);
 
-            if (((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) && (!sidearm.isTool()))
+            if (((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) && (!sidearmType.isTool()))
             {
                 errString = "SidearmPickupFail_NotAToolForPacifist".Translate(pawn.LabelShort);
                 return false;
             }
 
             //this is duplicated in the switches later but Id rather not risk accidentaly deleting a case that might come up
-            if (!isValidSidearm(sidearm, out errString))
+            if (!isValidSidearm(sidearmType, out errString))
                 return false;
 
             if (sidearmWeight >= freeCapacity)
@@ -205,7 +287,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                         }
                         break;
                     case LimitModeSingleSidearm.Selection:
-                        if(!Settings.LimitModeSingle_Selection.Contains<ThingDef>(sidearm.thing))
+                        if(!Settings.LimitModeSingle_Selection.Contains<ThingDef>(sidearmType.thing))
                         {
                             errString = "SidearmPickupFail_NotASidearm".Translate();
                             return false;
@@ -267,7 +349,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                         }
                         break;
                 }
-                if (sidearm.thing.IsMeleeWeapon)
+                if (sidearmType.thing.IsMeleeWeapon)
                 {
                     switch (Settings.LimitModeSingleMelee)
                     {
@@ -288,7 +370,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                             }
                             break;
                         case LimitModeSingleSidearm.Selection:
-                            if (!Settings.LimitModeSingleMelee_Selection.Contains<ThingDef>(sidearm.thing))
+                            if (!Settings.LimitModeSingleMelee_Selection.Contains<ThingDef>(sidearmType.thing))
                             {
                                 errString = "SidearmPickupFail_NotASidearmMelee".Translate();
                                 return false;
@@ -322,7 +404,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                             break;
                     }
                 }
-                else if(sidearm.thing.IsRangedWeapon)
+                else if(sidearmType.thing.IsRangedWeapon)
                 {
                     switch (Settings.LimitModeSingleRanged)
                     {
@@ -343,7 +425,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                             }
                             break;
                         case LimitModeSingleSidearm.Selection: 
-                            if (!Settings.LimitModeSingleRanged_Selection.Contains<ThingDef>(sidearm.thing))
+                            if (!Settings.LimitModeSingleRanged_Selection.Contains<ThingDef>(sidearmType.thing))
                             {
                                 errString = "SidearmPickupFail_NotASidearmRanged".Translate();
                                 return false;

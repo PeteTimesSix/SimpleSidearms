@@ -429,41 +429,50 @@ namespace SimpleSidearms.rimworld
 
             ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
 
+            bool allowInteraction = StatCalculator.canUseSidearmInstance(weapon, pawn, out string interactionBlockedReason) || Settings.AllowBlockedWeaponUse;
+
             var iconRect = new Rect(contentRect.x + iconOffset.x, contentRect.y + iconOffset.y, IconSize, IconSize);
             //var iconColor = iconBaseColor;
 
             string hoverText;
-            if (pawn.Drafted)
+            if (allowInteraction)
             {
-                if (pawnMemory.ForcedWeaponWhileDrafted == weapon.toThingDefStuffDefPair())
-                    hoverText = "DrawSidearm_gizmoTooltipForcedWhileDrafted";
-                else
-                    hoverText = "DrawSidearm_gizmoTooltipWhileDrafted";
-            }
-            else
-            {
-                if (pawnMemory.ForcedWeapon == weapon.toThingDefStuffDefPair())
-                    hoverText = "DrawSidearm_gizmoTooltipForced";
-                else 
+                if (pawn.Drafted)
                 {
-                    if (weapon.def.IsRangedWeapon)
+                    if (pawnMemory.ForcedWeaponWhileDrafted == weapon.toThingDefStuffDefPair())
+                        hoverText = "DrawSidearm_gizmoTooltipForcedWhileDrafted".Translate();
+                    else
+                        hoverText = "DrawSidearm_gizmoTooltipWhileDrafted".Translate();
+                }
+                else
+                {
+                    if (pawnMemory.ForcedWeapon == weapon.toThingDefStuffDefPair())
+                        hoverText = "DrawSidearm_gizmoTooltipForced".Translate();
+                    else
                     {
-                        if (pawnMemory.DefaultRangedWeapon == weaponType)
-                            hoverText = "DrawSidearm_gizmoTooltipRangedDefault";
+                        if (weapon.def.IsRangedWeapon)
+                        {
+                            if (pawnMemory.DefaultRangedWeapon == weaponType)
+                                hoverText = "DrawSidearm_gizmoTooltipRangedDefault".Translate();
+                            else
+                                hoverText = "DrawSidearm_gizmoTooltipRanged".Translate();
+                        }
                         else
-                            hoverText = "DrawSidearm_gizmoTooltipRanged";
-                    }
-                    else 
-                    {
-                        if (pawnMemory.PreferredMeleeWeapon == weaponType)
-                            hoverText = "DrawSidearm_gizmoTooltipMeleePreferred";
-                        else
-                            hoverText = "DrawSidearm_gizmoTooltipMelee";
+                        {
+                            if (pawnMemory.PreferredMeleeWeapon == weaponType)
+                                hoverText = "DrawSidearm_gizmoTooltipMeleePreferred".Translate();
+                            else
+                                hoverText = "DrawSidearm_gizmoTooltipMelee".Translate();
+                        }
                     }
                 }
             }
+            else 
+            {
+                hoverText = "DrawSidearm_blocked".Translate() + ": " + interactionBlockedReason;
+            }
 
-            TooltipHandler.TipRegion(iconRect, string.Format(hoverText.Translate(), weapon.toThingDefStuffDefPair().getLabel()));
+            TooltipHandler.TipRegion(iconRect, string.Format(hoverText, weapon.toThingDefStuffDefPair().getLabel()));
             MouseoverSounds.DoRegion(iconRect, SoundDefOf.Mouseover_Command);
 
             Texture2D drawPocket;
@@ -513,6 +522,24 @@ namespace SimpleSidearms.rimworld
             GUI.DrawTexture(iconRect, resolvedIcon);
             GUI.color = Color.white;
 
+            if (GettersFilters.isManualUse(weapon))
+            {
+                GUI.DrawTexture(iconRect, TextureResources.weaponTypeManual);
+            }
+            if (GettersFilters.isDangerousWeapon(weapon))
+            {
+                GUI.DrawTexture(iconRect, TextureResources.weaponTypeDangerous);
+            }
+            if (GettersFilters.isEMPWeapon(weapon))
+            {
+                GUI.DrawTexture(iconRect, TextureResources.weaponTypeEMP);
+            }
+
+            if (!allowInteraction) 
+            {
+                GUI.DrawTexture(iconRect, TextureResources.blockedWeapon);
+            }
+
             if (weapon.stackCount > 1)
             {
                 var store = Text.Anchor;
@@ -540,17 +567,21 @@ namespace SimpleSidearms.rimworld
                 GUI.color = Color.white;
             }
 
-            UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventory");
-            if (weapon.def.IsRangedWeapon)
-                UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventoryRanged");
-            else
-                UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventoryMelee");
 
-            if (Widgets.ButtonInvisible(iconRect, true))
+            if (allowInteraction)
             {
-                interactedWith = SidearmsListInteraction.Weapon;
-                interactionWeapon = weapon;
-                interactionWeaponIsDuplicate = isDuplicate;
+                UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventory");
+                if (weapon.def.IsRangedWeapon)
+                    UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventoryRanged");
+                else
+                    UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventoryMelee");
+
+                if (Widgets.ButtonInvisible(iconRect, true))
+                {
+                    interactedWith = SidearmsListInteraction.Weapon;
+                    interactionWeapon = weapon;
+                    interactionWeaponIsDuplicate = isDuplicate;
+                }
             }
         }
 

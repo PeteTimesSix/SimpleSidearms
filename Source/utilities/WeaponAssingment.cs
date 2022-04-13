@@ -44,6 +44,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 return false;
             }
 
+            if (!Settings.AllowBlockedWeaponUse && !StatCalculator.canUseSidearmInstance(weapon, pawn, out string reason))
+            {
+                Log.Warning($"blocked equip of {weapon.Label} at equip-time because of: {reason}");
+                return false;
+            }
+
             var currentPrimary = pawn.equipment.Primary;
 
                 //drop current on the ground
@@ -203,6 +209,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.ForcedWeaponWhileDrafted.Value)
                 {
                     var requiredWeapon = pawnMemory.ForcedWeaponWhileDrafted.Value;
+                    if (!Settings.AllowBlockedWeaponUse && StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
+                    {
+                        //clear invalid
+                        pawnMemory.ForcedWeaponWhileDrafted = null;
+                        return;
+                    }
                     bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
@@ -226,6 +238,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.ForcedWeapon.Value)
                 {
                     var requiredWeapon = pawnMemory.ForcedWeapon.Value;
+                    if (!Settings.AllowBlockedWeaponUse && StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
+                    {
+                        //clear invalid
+                        pawnMemory.ForcedWeapon = null;
+                        return;
+                    }
                     bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
@@ -243,6 +261,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                     if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.DefaultRangedWeapon.Value)
                     {
                         var requiredWeapon = pawnMemory.DefaultRangedWeapon.Value;
+                        if (!Settings.AllowBlockedWeaponUse && StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
+                        {
+                            //clear invalid
+                            pawnMemory.DefaultRangedWeapon = null;
+                            return;
+                        }
                         bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                         if (success)
                             return;
@@ -253,7 +277,10 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
                 else
                 {
-                    (ThingWithComps weapon, float dps, float averageSpeed) bestWeapon = GettersFilters.findBestRangedWeapon(pawn, null, pawn.IsColonistPlayerControlled);
+                    bool skipManualUse = true;
+                    bool skipDangerous = pawn.IsColonistPlayerControlled && Settings.SkipDangerousWeapons;
+                    bool skipEMP = true;
+                    (ThingWithComps weapon, float dps, float averageSpeed) bestWeapon = GettersFilters.findBestRangedWeapon(pawn, null, skipManualUse, skipDangerous, skipEMP);
                     if (bestWeapon.weapon != null)
                     {
                         if (pawn.equipment.Primary != bestWeapon.weapon)
@@ -294,6 +321,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                         if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.PreferredMeleeWeapon.Value)
                         {
                             var requiredWeapon = pawnMemory.PreferredMeleeWeapon.Value;
+                            if (!Settings.AllowBlockedWeaponUse && StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
+                            {
+                                //clear invalid
+                                pawnMemory.PreferredMeleeWeapon = null;
+                                return;
+                            }
                             bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                             if (success)
                                 return;
@@ -403,7 +436,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         }
 
 
-        public static bool trySwapToMoreAccurateRangedWeapon(Pawn pawn, LocalTargetInfo target, bool dropCurrent, bool skipDangerous = true)
+        public static bool trySwapToMoreAccurateRangedWeapon(Pawn pawn, LocalTargetInfo target, bool dropCurrent, bool skipManualUse, bool skipDangerous = true, bool skipEMP = true)
         {
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
@@ -413,7 +446,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (pawnMemory.IsCurrentWeaponForced(false))
                 return false;
 
-            (ThingWithComps weapon, float dps, float averageSpeed) bestWeapon = GettersFilters.findBestRangedWeapon(pawn, target, skipDangerous, true);
+            (ThingWithComps weapon, float dps, float averageSpeed) bestWeapon = GettersFilters.findBestRangedWeapon(pawn, target, skipManualUse, skipDangerous, skipEMP, true);
 
             if (bestWeapon.weapon == null)
                 return false;

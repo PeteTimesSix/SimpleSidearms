@@ -135,7 +135,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                         else if (!StatCalculator.canCarrySidearmInstance(equipment, pawn, out errStr))
                         {
                             "CannotEquip".Translate();
-                            item3 = new FloatMenuOption("CannotEquip".Translate(labelShort) + " (" + errStr + ")", null, MenuOptionPriority.Default, null, null, 0f, null, null);
+                            item3 = new FloatMenuOption("CannotEquip".Translate(labelShort) + ": " + errStr, null, MenuOptionPriority.Default, null, null, 0f, null, null);
                             opts.Add(item3);
                         }
                         else

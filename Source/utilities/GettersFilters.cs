@@ -120,12 +120,24 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         }
 
 
-        public static (ThingWithComps weapon, float dps, float averageSpeed) findBestRangedWeapon(Pawn pawn, LocalTargetInfo? target = null, bool skipDangerous = true, bool includeEquipped = true)
+        public static (ThingWithComps weapon, float dps, float averageSpeed) findBestRangedWeapon(Pawn pawn, LocalTargetInfo? target = null, bool skipManualUse = true, bool skipDangerous = true, bool skipEMP = true, bool includeEquipped = true)
         {
             if (pawn == null || pawn.Dead || pawn.equipment == null || pawn.inventory == null)
                 return (null,-1, 0);
 
             IEnumerable<ThingWithComps> options = pawn.getCarriedWeapons(includeEquipped).Where(t => t.def.IsRangedWeapon);
+
+            if (!Settings.AllowBlockedWeaponUse)
+                options = options.Where(t => StatCalculator.canUseSidearmInstance(t, pawn, out _));
+
+            options = options.Where(t => !pawn.IsColonistPlayerControlled || !isManualUse(t));
+
+            if (skipManualUse)
+                options = options.Where(t => (!isManualUse(t)));
+            if (skipDangerous)
+                options = options.Where(t => (!isDangerousWeapon(t)));
+            if (skipEMP)
+                options = options.Where(t => !isEMPWeapon(t));
 
             if (options.Count() == 0)
                 return (null, -1, 0);
@@ -196,12 +208,15 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (pawn == null || pawn.Dead || pawn.equipment == null || pawn.inventory == null)
                 return false;
 
-            IEnumerable<Thing> options = pawn.getCarriedWeapons(includeEquipped).Where(t =>
+            IEnumerable<ThingWithComps> options = pawn.getCarriedWeapons(includeEquipped).Where(t =>
             {
             return 
                 t.def.IsMeleeWeapon ||
                 (includeRangedWithBash && t.def.IsWeapon && !t.def.tools.NullOrEmpty());
             });
+
+            if (!Settings.AllowBlockedWeaponUse)
+                options = options.Where(t => StatCalculator.canUseSidearmInstance(t, pawn, out _));
 
             if (options.Count() < 1)
                 return false;
@@ -214,8 +229,8 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             }
             else*/
             {
-                float resultDPS = options.Max(t => StatCalculator.getMeleeDPSBiased(t as ThingWithComps, pawn, Settings.SpeedSelectionBiasMelee, averageSpeed));
-                result = options.MaxBy(t => StatCalculator.getMeleeDPSBiased(t as ThingWithComps, pawn, Settings.SpeedSelectionBiasMelee, averageSpeed)) as ThingWithComps;
+                float resultDPS = options.Max(t => StatCalculator.getMeleeDPSBiased(t, pawn, Settings.SpeedSelectionBiasMelee, averageSpeed));
+                result = options.MaxBy(t => StatCalculator.getMeleeDPSBiased(t, pawn, Settings.SpeedSelectionBiasMelee, averageSpeed));
 
                 //check if pawn is better when punching
                 //if (pawn.GetStatValue(StatDefOf.MeleeDPS) > resultDPS)
@@ -225,6 +240,19 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             }
         }
 
+        public static bool isManualUse(ThingWithComps weapon)
+        {
+            if (weapon == null)
+                return false;
+            CompEquippable equip = weapon.TryGetComp<CompEquippable>();
+            if (equip == null)
+                return false;
+            if (equip.PrimaryVerb.verbProps.onlyManualCast)
+                return true;
+            else
+                return false;
+        }
+
         public static bool isDangerousWeapon(ThingWithComps weapon)
         {
             if (weapon == null)
@@ -232,7 +260,20 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             CompEquippable equip = weapon.TryGetComp<CompEquippable>();
             if (equip == null)
                 return false;
-            if (equip.PrimaryVerb.IsIncendiary() || equip.PrimaryVerb.verbProps.onlyManualCast || equip.PrimaryVerb.verbProps.ai_IsBuildingDestroyer)
+            if (equip.PrimaryVerb.IsIncendiary() || equip.PrimaryVerb.verbProps.ai_IsBuildingDestroyer)
+                return true;
+            else
+                return false;
+        }
+
+        public static bool isEMPWeapon(ThingWithComps weapon)
+        {
+            if (weapon == null)
+                return false;
+            CompEquippable equip = weapon.TryGetComp<CompEquippable>();
+            if (equip == null)
+                return false;
+            if (equip.PrimaryVerb.IsEMP())
                 return true;
             else
                 return false;
