@@ -179,7 +179,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 // check if we are looking at a colonist with an inventory
                 if (pawn?.IsColonist == true)
                 {
-                    var pawnWeapons = new List<ThingDefStuffDefPair>(CompSidearmMemory.GetMemoryCompForPawn(pawn)?.RememberedWeapons);
+                    var pawnWeapons = CompSidearmMemory.GetMemoryCompForPawn(pawn)?.RememberedWeapons;
+                    // get a copy to avoid modifying the original and ensure the list isnt null (accounting for nonhumanlike colonists)
+                    pawnWeapons = pawnWeapons != null ? new List<ThingDefStuffDefPair>(pawnWeapons) : new List<ThingDefStuffDefPair>();
 
                     // first remove things biocoded to this pawn; no-one else can use them anyway
                     for (int i = 0; i < pawnThings.Count;)
