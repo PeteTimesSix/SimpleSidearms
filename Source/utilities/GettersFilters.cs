@@ -146,15 +146,17 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
             if (target.HasValue)
             {
-                CellRect cellRect = (!target.Value.HasThing) ? CellRect.SingleCell(target.Value.Cell) : target.Value.Thing.OccupiedRect();
-                float targetDistance = cellRect.ClosestDistSquaredTo(pawn.Position);
+                var targetDistance = target.Value.Cell.DistanceTo(pawn.Position);
 
                 options = options.Where(t =>
                 {
-                    VerbProperties atkProps = (t.GetComp<CompEquippable>())?.PrimaryVerb?.verbProps;
-                    if (atkProps == null)
+                    var primaryVerb = (t.GetComp<CompEquippable>())?.PrimaryVerb;
+                    var verbProps = primaryVerb?.verbProps;
+                    if (verbProps == null)
                         return false;
-                    return atkProps.range >= targetDistance;
+                    var minRange = verbProps.EffectiveMinRange(target.Value, pawn);
+                    var maxRange = verbProps.AdjustedRange(primaryVerb, pawn);
+                    return (targetDistance >= minRange && targetDistance <= maxRange);
                 });
 
                 if (options.Count() == 0)
@@ -165,7 +167,8 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 foreach(ThingWithComps candidate in options) 
                 {
                     float dps = StatCalculator.RangedDPS(candidate, Settings.SpeedSelectionBiasRanged, averageSpeed, targetDistance);
-                    if(dps > best.dps) 
+                    //Log.Message($"DPS (target {target} aware) for {candidate} is {dps}");
+                    if (dps > best.dps) 
                     {
                         best = (candidate, dps, averageSpeed);
                     }
@@ -178,6 +181,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 foreach (ThingWithComps candidate in options)
                 {
                     float dps = StatCalculator.RangedDPSAverage(candidate, Settings.SpeedSelectionBiasRanged, averageSpeed);
+                    //Log.Message($"DPS (no target) for {candidate} is {dps}");
                     if (dps > best.dps)
                     {
                         best = (candidate, dps, averageSpeed);
@@ -260,7 +264,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             CompEquippable equip = weapon.TryGetComp<CompEquippable>();
             if (equip == null)
                 return false;
-            if (equip.PrimaryVerb.IsIncendiary() || equip.PrimaryVerb.verbProps.ai_IsBuildingDestroyer)
+            if (equip.PrimaryVerb.IsIncendiary_Melee() || equip.PrimaryVerb.IsIncendiary_Ranged() || equip.PrimaryVerb.verbProps.ai_IsBuildingDestroyer)
                 return true;
             else
                 return false;

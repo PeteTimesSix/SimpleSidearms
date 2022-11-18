@@ -17,7 +17,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
         public static bool equipSpecificWeaponTypeFromInventory(Pawn pawn, ThingDefStuffDefPair weapon, bool dropCurrent, bool intentionalDrop)
         {
-            ThingWithComps match = pawn.inventory.innerContainer.Where(t => { return t is ThingWithComps && t.toThingDefStuffDefPair() == weapon; }).OrderByDescending(t => t.MarketValue).FirstOrDefault() as ThingWithComps;
+            ThingWithComps match = pawn.inventory.innerContainer
+                .Where(t => { return t is ThingWithComps && t.toThingDefStuffDefPair() == weapon; })
+                .Cast<ThingWithComps>()
+                .Where(t => { return StatCalculator.canUseSidearmInstance(t, pawn, out _); })
+                .OrderByDescending(t => t.MarketValue)
+                .FirstOrDefault();
             if (match != null)
                 return equipSpecificWeaponFromInventory(pawn, match, dropCurrent, intentionalDrop);
             else
@@ -127,7 +132,6 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         {
             var bestSkillc = Math.Max(pawn.skills.GetSkill(SkillDefOf.Shooting).Level, pawn.skills.GetSkill(SkillDefOf.Melee).Level);
             var chancec = Settings.FumbleRecoveryChance.Evaluate(bestSkillc);
-            Log.Message($"aaaa {pawn.Label} {chancec}");
             if (!Prefs.DevMode)
             {
                 MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, Prefs.DevMode ? "Fumbled".Translate() : "Fumbled".Translate());
@@ -209,12 +213,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.ForcedWeaponWhileDrafted.Value)
                 {
                     var requiredWeapon = pawnMemory.ForcedWeaponWhileDrafted.Value;
-                    if (!Settings.AllowBlockedWeaponUse && StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
+                    /*if (!Settings.AllowBlockedWeaponUse && !StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
                     {
                         //clear invalid
                         pawnMemory.ForcedWeaponWhileDrafted = null;
                         return;
-                    }
+                    }*/
                     bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
@@ -238,12 +242,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.ForcedWeapon.Value)
                 {
                     var requiredWeapon = pawnMemory.ForcedWeapon.Value;
-                    if (!Settings.AllowBlockedWeaponUse && StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
+                    /*if (!Settings.AllowBlockedWeaponUse && !StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
                     {
                         //clear invalid
                         pawnMemory.ForcedWeapon = null;
                         return;
-                    }
+                    }*/
                     bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                     if (success)
                         return;
@@ -261,12 +265,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                     if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.DefaultRangedWeapon.Value)
                     {
                         var requiredWeapon = pawnMemory.DefaultRangedWeapon.Value;
-                        if (!Settings.AllowBlockedWeaponUse && StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
+                        /*if (!Settings.AllowBlockedWeaponUse && !StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
                         {
                             //clear invalid
                             pawnMemory.DefaultRangedWeapon = null;
                             return;
-                        }
+                        }*/
                         bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                         if (success)
                             return;
@@ -321,12 +325,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                         if (pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != pawnMemory.PreferredMeleeWeapon.Value)
                         {
                             var requiredWeapon = pawnMemory.PreferredMeleeWeapon.Value;
-                            if (!Settings.AllowBlockedWeaponUse && StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
+                            /*if (!Settings.AllowBlockedWeaponUse && !StatCalculator.canCarrySidearmType(requiredWeapon, pawn, out _))
                             {
                                 //clear invalid
                                 pawnMemory.PreferredMeleeWeapon = null;
                                 return;
-                            }
+                            }*/
                             bool success = equipSpecificWeaponTypeFromInventory(pawn, requiredWeapon, MiscUtils.shouldDrop(pawn, dropMode, false), false);
                             if (success)
                                 return;
@@ -451,9 +455,9 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (bestWeapon.weapon == null)
                 return false;
 
-            CellRect cellRect = (!target.HasThing) ? CellRect.SingleCell(target.Cell) : target.Thing.OccupiedRect();
-            float range = cellRect.ClosestDistSquaredTo(pawn.Position);
-            float currentDPS = StatCalculator.RangedDPS(pawn.equipment.Primary, Settings.SpeedSelectionBiasRanged, bestWeapon.averageSpeed, range);
+
+            var targetDistance = target.Cell.DistanceTo(pawn.Position);
+            float currentDPS = StatCalculator.RangedDPS(pawn.equipment.Primary, Settings.SpeedSelectionBiasRanged, bestWeapon.averageSpeed, targetDistance);
             
             if (bestWeapon.dps < currentDPS + MiscUtils.ANTI_OSCILLATION_FACTOR)
                 return false;

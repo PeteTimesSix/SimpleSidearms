@@ -162,7 +162,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             }
             if (sidearmThing != null && EquipmentUtility.RolePreventsFromUsing(pawn, sidearmThing, out string roleReason))
             {
-                Log.Message($"use of {sidearmThing.Label} prevented by role");
+                //Log.Message($"use of {sidearmThing.Label} prevented by role");
                 errString = roleReason;
                 return false;
             }
@@ -209,42 +209,31 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             return true;
         }
 
+        [Obsolete("use CanPickupSidearmInstance instead")]
         public static bool canCarrySidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
         {
-            //nicked from EquipmentUtility.CanEquip
-            CompBladelinkWeapon compBladelinkWeapon = sidearmThing.TryGetComp<CompBladelinkWeapon>();
-            if (compBladelinkWeapon != null && compBladelinkWeapon.Biocodable && compBladelinkWeapon.CodedPawn != null && compBladelinkWeapon.CodedPawn != pawn)
-            {
-                errString = "BladelinkBondedToSomeoneElse".Translate();
-                return false;
-            }
-            if (CompBiocodable.IsBiocoded(sidearmThing) && !CompBiocodable.IsBiocodedFor(sidearmThing, pawn))
-            {
-                errString = "BiocodedCodedForSomeoneElse".Translate();
-                return false;
-            }
-            if (EquipmentUtility.AlreadyBondedToWeapon(sidearmThing, pawn))
-            {
-                errString = "BladelinkAlreadyBondedMessage".Translate(pawn.Named("PAWN"), pawn.equipment.bondedWeapon.Named("BONDEDWEAPON"));
-                return false;
-            }
-            if (compBladelinkWeapon != null && !compBladelinkWeapon.Biocoded && !compBladelinkWeapon.TraitsListForReading.Any(t => t.neverBond == true))
-            {
-                errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
-                return false;
-            }
-            if (EquipmentUtility.RolePreventsFromUsing(pawn, sidearmThing, out string roleReason))
-            {
-                errString = roleReason;
-                return false;
-            }
-
-            ThingDefStuffDefPair sidearm = sidearmThing.toThingDefStuffDefPair();
-            
-            return canCarrySidearmType(sidearm, pawn, out errString);
+            return CanPickupSidearmInstance(sidearmThing, pawn, out errString);
         }
 
+        [Obsolete("use CanPickupSidearmType instead")]
         public static bool canCarrySidearmType(ThingDefStuffDefPair sidearmType, Pawn pawn, out string errString)
+        {
+            return CanPickupSidearmType(sidearmType, pawn, out errString);
+        }
+
+        public static bool CanPickupSidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
+        {
+            var canUseSpecifically = canUseSidearmInstance(sidearmThing, pawn, out string errStringSpecific);
+            if(!canUseSpecifically)
+            {
+                errString = errStringSpecific;
+                return false;
+            }
+            ThingDefStuffDefPair sidearmType = sidearmThing.toThingDefStuffDefPair();
+            return CanPickupSidearmType(sidearmType, pawn, out errString);
+        }
+
+        public static bool CanPickupSidearmType(ThingDefStuffDefPair sidearmType, Pawn pawn, out string errString)
         {
             float maxCapacity = MassUtility.Capacity(pawn);
             float freeCapacity = MassUtility.FreeSpace(pawn);
@@ -538,15 +527,15 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             return DpsAvg / 3f;
         }
 
-        public static float RangedDPS(ThingWithComps weapon, float speedBias, float averageSpeed, float range)
+        public static float RangedDPS(ThingWithComps weapon, float speedBias, float averageSpeed, float distance)
         {
             Verb atkVerb = (weapon.GetComp<CompEquippable>()).PrimaryVerb;
             VerbProperties atkProps = atkVerb.verbProps;
 
-            if (atkProps.range * atkProps.range < range || atkProps.minRange * atkProps.minRange > range)
+            if (atkProps.range * atkProps.range < distance || atkProps.minRange * atkProps.minRange > distance)
                 return -1;
 
-            float hitChance = atkProps.GetHitChanceFactor(weapon, range);
+            float hitChance = atkProps.GetHitChanceFactor(weapon, distance);
             float damage = (atkProps.defaultProjectile == null) ? 0 : atkProps.defaultProjectile.projectile.GetDamageAmount(weapon);
             int burstShot = atkProps.burstShotCount;
             float speedFactor = RangedSpeed(weapon);

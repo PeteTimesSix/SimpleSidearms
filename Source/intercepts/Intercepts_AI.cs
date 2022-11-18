@@ -144,7 +144,6 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix()]
         public static void DraftedSetter(Pawn_DraftController __instance)
         {
-            //Log.Message("undraft intercept: " + __instance.Drafted);
             if (!__instance.Drafted)
             {
                 Pawn pawn = __instance.pawn;

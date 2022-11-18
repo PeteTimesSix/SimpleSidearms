@@ -86,7 +86,7 @@ namespace SimpleSidearms.rimworld
                     //filter out nonsensical material weapons
                 validSidearms = validSidearms.Where(w => w.stuff == null || (w.stuff != ThingDefOf.Gold && w.stuff != ThingDefOf.Silver && w.stuff != ThingDefOf.Uranium));
                     //filter out weapons the pawn cant carry
-                validSidearms = validSidearms.Where(w => StatCalculator.canCarrySidearmType(w, pawn, out _));
+                validSidearms = validSidearms.Where(w => StatCalculator.CanPickupSidearmType(w, pawn, out _));
 
                 bool onlyMelee = (pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler));
                 bool onlyRanged = (pawn.story != null && pawn.story.traits.HasTrait(TraitDef.Named("Wimp"))); //wimp has no defOf
@@ -154,7 +154,7 @@ namespace SimpleSidearms.rimworld
 
             if (!foundAnyMap) 
             {
-                Log.Message("SimpleSidearms warning: no weaponTag sidearm map found for following source tags: (" + String.Join(",", sourceTags)+"), defaulting to source tags for sidearms");
+                //Log.Message("SimpleSidearms info: no weaponTag sidearm map found for following source tags: (" + String.Join(",", sourceTags)+"), defaulting to source tags for sidearms");
                 //as a fallback, use the source tags 
                 resultTags.AddRange(sourceTags);
             }

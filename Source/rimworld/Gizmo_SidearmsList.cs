@@ -235,8 +235,8 @@ namespace SimpleSidearms.rimworld
                 GUI.DrawTexture(position, TextureResources.FirstTimeSettingsWarningIcon);
                 if (Widgets.ButtonInvisible(position))
                 {
-                    var dialog = new Dialog_ModSettings();
-                    dialog.DoModSettings(ModSingleton);
+                    var dialog = new Dialog_ModSettings(ModSingleton);
+                    //Find.WindowStack.Add(new Dialog_ModSettings(mod));
                     Find.WindowStack.Add(dialog);
                 }
                 TooltipHandler.TipRegion(position, "FirstTimeSettingsWarning".Translate());
@@ -664,6 +664,7 @@ namespace SimpleSidearms.rimworld
             }
             else {
                 handleInteraction(interactedWith, ev);
+                interactedWith = SidearmsListInteraction.None;
                 //iconClickAction(ev.button);
             }
 

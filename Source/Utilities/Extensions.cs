@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using SimpleSidearms.rimworld;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
@@ -53,7 +54,8 @@ namespace PeteTimesSix.SimpleSidearms
         public static ThingDefStuffDefPair toThingDefStuffDefPair(this Thing thing)
         {
             if (thing == null)
-                return default(ThingDefStuffDefPair);
+                throw new ArgumentException("cannot turn null to ThingDefStuffDef pair!");
+                //return default(ThingDefStuffDefPair);
             return new ThingDefStuffDefPair(thing.def, thing.Stuff);
         }
 

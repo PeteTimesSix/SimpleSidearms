@@ -95,72 +95,55 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         {
             try
             {
+                if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+                    return;
+                if (pawn.IsQuestLodger())
+                    return;
+
                 IntVec3 c = IntVec3.FromVector3(clickPos);
+
+                if (!pawn.CanReach(new LocalTargetInfo(c), PathEndMode.ClosestTouch, Danger.Deadly))
+                    return;
+
                 if (pawn.equipment != null)
                 {
-                    ThingWithComps equipment = null;
-                    List<Thing> thingList = c.GetThingList(pawn.Map);
-                    for (int i = 0; i < thingList.Count; i++)
+                    foreach (var thing in c.GetThingList(pawn.Map))
                     {
-                        if (thingList[i].TryGetComp<CompEquippable>() != null)
+                        var thingWithComps = thing as ThingWithComps;
+                        if (thingWithComps == null)
+                            continue;
+                        if (!thingWithComps.def.IsWeapon)
+                            continue;
+                        if (thingWithComps.IsBurning())
+                            continue;
+
+                        bool toolUse = ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) || thingWithComps.toThingDefStuffDefPair().isToolNotWeapon();
+                        string textPostfix = toolUse ? "AsTool".Translate() : "AsSidearm".Translate();
+                        if (!StatCalculator.canUseSidearmInstance(thingWithComps, pawn, out string errStr))
                         {
-                            equipment = (ThingWithComps)thingList[i];
-                            break;
-                        }
-                    }
-                    if (equipment != null)
-                    {
-                        string labelShort = equipment.LabelShort;
-                        string errStr;
-                        FloatMenuOption item3;
-                        /*if ((!equipment.toThingStuffPair().isToolNotWeapon()) && ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0))
-                        {
-                        }*/
-                        //if (!pawn.CanReach(equipment, PathEndMode.ClosestTouch, Danger.Deadly, false, TraverseMode.ByPawn))
-                        if (!pawn.CanReach(new LocalTargetInfo(equipment), PathEndMode.ClosestTouch, Danger.Deadly))
-                        {
-                        }
-                        else if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-                        {
-                        }
-                        else if (!equipment.def.IsWeapon)
-                        {
-                        }
-                        else if (equipment.IsBurning())
-                        {
-                        }
-                        else if (pawn.IsQuestLodger())
-                        {
-                        }
-                        else if (!StatCalculator.canCarrySidearmInstance(equipment, pawn, out errStr))
-                        {
-                            "CannotEquip".Translate();
-                            item3 = new FloatMenuOption("CannotEquip".Translate(labelShort) + ": " + errStr, null, MenuOptionPriority.Default, null, null, 0f, null, null);
-                            opts.Add(item3);
+                            string orderText = "CannotEquip".Translate(thingWithComps.LabelShort) + textPostfix;
+
+                            var order = new FloatMenuOption(orderText + ": " + errStr, null, MenuOptionPriority.Default, null, null, 0f, null, null);
+                            opts.Add(order);
                         }
                         else
                         {
-                            string text2 = "Equip".Translate(labelShort);
-                            if(((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) || equipment.toThingDefStuffDefPair().isToolNotWeapon())
-                                text2 += "AsTool".Translate();
-                            else
-                                text2 += "AsSidearm".Translate();
+                            string orderText = "Equip".Translate(thingWithComps.LabelShort) + textPostfix;
 
-
-                            if (equipment.def.IsRangedWeapon && pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler))
+                            if (thingWithComps.def.IsRangedWeapon && pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler))
                             {
-                                text2 = text2 + " " + "EquipWarningBrawler".Translate();
+                                orderText = orderText + " " + "EquipWarningBrawler".Translate();
                             }
 
-                            item3 = FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text2, delegate
+                            var order = FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(orderText, delegate
                             {
-                                equipment.SetForbidden(false, true);
-                                pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(SidearmsDefOf.EquipSecondary, equipment), JobTag.Misc);
+                                thingWithComps.SetForbidden(false, true);
+                                pawn.jobs.TryTakeOrderedJob(JobMaker.MakeJob(SidearmsDefOf.EquipSecondary, thingWithComps), JobTag.Misc);
                                 //MoteMaker.MakeStaticMote(equipment.DrawPos, equipment.Map, ThingDefOf.Mote_FeedbackEquip, 1f); //why is this gone?
-                            
+
                                 PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-                            }, MenuOptionPriority.High, null, null, 0f, null, null), pawn, equipment, "ReservedBy");
-                            opts.Add(item3);
+                            }, MenuOptionPriority.High, null, null, 0f, null, null), pawn, thingWithComps, "ReservedBy");
+                            opts.Add(order);
                         }
                     }
                 }
