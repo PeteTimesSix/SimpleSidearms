@@ -132,7 +132,6 @@ namespace SimpleSidearms.rimworld
             }
             set
             {
-                Log.Message($"setting default ranged weapon to {(value.HasValue ? value.Value.thing.label : "null")}");
                 if (value == null)
                     defaultRangedWeaponEx = null;
                 else

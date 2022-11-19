@@ -164,12 +164,33 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
     [HarmonyPatch(typeof(Stance_Warmup), "StanceTick")]
     public static class Stance_Warmup_StanceTick_Postfix
     {
-        public static Type ceRangedVerb;
-        public static Type CERangedVerb {
-            get {
-                if(ceRangedVerb == null)
-                    ceRangedVerb = AccessTools.TypeByName("CombatExtended.Verb_ShootCE");
-                return ceRangedVerb;
+
+        public struct AttackJobDataStore
+        {
+            bool playerForced;
+            int maxNumStaticAttacks;
+            int expiryInterval;
+            bool endIfCantShootTargetFromCurPos;
+
+            public static AttackJobDataStore? FromJob(Job job) 
+            {
+                if (job == null || job.def.driverClass != typeof(JobDriver_AttackStatic))
+                    return null;
+                return new AttackJobDataStore()
+                {
+                    playerForced = job.playerForced,
+                    maxNumStaticAttacks = job.maxNumStaticAttacks,
+                    expiryInterval = job.expiryInterval,
+                    endIfCantShootTargetFromCurPos = job.endIfCantShootTargetFromCurPos
+                };
+            }
+
+            public void ApplyToJob(Job job) 
+            {
+                job.playerForced = playerForced;
+                job.maxNumStaticAttacks = maxNumStaticAttacks;
+                job.expiryInterval = expiryInterval;
+                job.endIfCantShootTargetFromCurPos = endIfCantShootTargetFromCurPos;
             }
         }
 
@@ -211,11 +232,25 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 } */
             }
 
+            var curJob = pawn.CurJob;
+            var jobData = AttackJobDataStore.FromJob(curJob);
 
             bool skipManualUse = true;
             bool skipDangerous = pawn.IsColonistPlayerControlled && Settings.SkipDangerousWeapons;
             bool skipEMP = (pawn.IsColonistPlayerControlled && Settings.SkipEMPWeapons) || !EMPGood;
-            WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, target, MiscUtils.shouldDrop(pawn, DroppingModeEnum.Combat, false), skipManualUse, skipDangerous, skipEMP);
+
+            bool swapped = WeaponAssingment.trySwapToMoreAccurateRangedWeapon(pawn, target, MiscUtils.shouldDrop(pawn, DroppingModeEnum.Combat, false), skipManualUse, skipDangerous, skipEMP);
+            if(swapped)
+            {
+                //pawn.TryStartAttack(target); //this only gets me one attack. Were it so easy.
+
+                if (jobData.HasValue)
+                {
+                    Job job = JobMaker.MakeJob(JobDefOf.AttackStatic, target);
+                    jobData.Value.ApplyToJob(job);
+                    pawn.jobs.TryTakeOrderedJob(job, new JobTag?(JobTag.Misc), false);
+                }
+            }
         }
 
         public static bool IsHunting(Pawn pawn)

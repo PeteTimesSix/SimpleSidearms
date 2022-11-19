@@ -38,31 +38,53 @@ namespace SimpleSidearms.rimworld
             var contentRect = gizmoRect.ContractedBy(ContentPadding);
             Widgets.DrawWindowBackground(gizmoRect);
 
-            string curJob = parent.CurJobDef == null ? "null" : parent.CurJobDef.defName;
-            if (!curJobs.ContainsKey(parent))
+            if(parent == null)
             {
-                curJobs[parent] = curJob;
-                lastJobs[parent] = "none yet";
+                var str1Rect = new Rect(contentRect.x, contentRect.y - 3f, contentRect.width, 22f);
+                GUI.color = Color.white;
+                GUI.Label(str1Rect, "Pawn is null");
             }
-            else if(curJobs[parent] != curJob)
+            else 
             {
-                lastJobs[parent] = curJobs[parent];
-                curJobs[parent] = curJob;
-            }
-            string curJobDriverStr = parent.jobs.curDriver == null ? "null" : parent.jobs.curDriver.ToString();
-            string toilStr = "null";
-            string toilActiveSkillStr = "null";
-            if (parent?.jobs?.curDriver != null) 
-            {
-                Toil toil = Traverse.Create(parent.jobs.curDriver).Property("CurToil").GetValue() as Toil;
-                if (toil != null)
+                string curJob = parent.CurJobDef == null ? "null" : parent.CurJobDef.defName;
+                if (!curJobs.ContainsKey(parent))
                 {
-                    toilStr = toil.ToString();
-                    if (toil.activeSkill != null)
-                        toilActiveSkillStr = toil.activeSkill().ToString();
+                    curJobs[parent] = curJob;
+                    lastJobs[parent] = "none yet";
                 }
-            }
+                else if (curJobs[parent] != curJob)
+                {
+                    lastJobs[parent] = curJobs[parent];
+                    curJobs[parent] = curJob;
+                }
+                string curJobDriverStr = parent.jobs?.curDriver == null ? "null" : parent.jobs.curDriver.ToString();
+                //string toilStr = "null";
+                //string toilActiveSkillStr = "null";
+                /*if (parent?.jobs?.curDriver != null)
+                {
+                    Toil toil = Traverse.Create(parent.jobs.curDriver).Property("CurToil").GetValue() as Toil;
+                    if (toil != null)
+                    {
+                        toilStr = toil.ToString();
+                        if (toil.activeSkill != null)
+                            toilActiveSkillStr = toil.activeSkill().ToString();
+                    }
+                }*/
 
+
+                var font = Text.Font;
+                Text.Font = GameFont.Tiny;
+
+                float offset = 0;
+                printBool("Idle:", parent.mindState?.IsIdle, contentRect, 0); offset += 10f;
+                printStringPair("Job:", curJobs.ContainsKey(parent) ? curJobs[parent] : "null", Color.white, contentRect, offset); offset += 10f;
+                printStringPair("Last job:", lastJobs.ContainsKey(parent) ? lastJobs[parent] : "null", Color.white, contentRect, offset); offset += 10f;
+                printStringPair("JobDriver:", curJobDriverStr, Color.white, contentRect, offset); offset += 10f;
+                //printStringPair("Toil:", toilStr, Color.white, contentRect, offset); offset += 10f;
+                //printStringPair("T. actSk:", toilActiveSkillStr, Color.white, contentRect, offset);
+
+                Text.Font = font;
+            }
 
             if (Widgets.ButtonText(contentRect.RightPartPixels(15), "<>"))
             {
@@ -72,19 +94,6 @@ namespace SimpleSidearms.rimworld
 
                 tickManager.DoSingleTick();
             }
-
-            var font = Text.Font;
-            Text.Font = GameFont.Tiny;
-
-            float offset = 0;
-            printBool("Idle:", parent.mindState.IsIdle, contentRect, 0);                        offset += 10f;
-            printStringPair("Job:", curJobs[parent], Color.white, contentRect, offset);         offset += 10f;
-            printStringPair("Last job:", lastJobs[parent], Color.white, contentRect, offset);   offset += 10f;
-            printStringPair("JobDriver:", curJobDriverStr, Color.white, contentRect, offset);   offset += 10f;
-            printStringPair("Toil:", toilStr, Color.white, contentRect, offset);                offset += 10f;
-            printStringPair("T. actSk:", toilActiveSkillStr, Color.white, contentRect, offset); offset += 10f;
-
-            Text.Font = font;
 
             return new GizmoResult(GizmoState.Clear);
         }
@@ -96,10 +105,10 @@ namespace SimpleSidearms.rimworld
             GUI.Label(str1Rect, str);
         }
 
-        public void printBool(string label, bool value, Rect contentRect, float offset)
+        public void printBool(string label, bool? value, Rect contentRect, float offset)
         {
-            Color color = value ? Color.green : Color.red;
-            printStringPair(label, value.ToString(), color, contentRect, offset);
+            Color color = value.HasValue ? (value.Value ? Color.green : Color.red) : Color.gray;
+            printStringPair(label, value.HasValue ? value.Value.ToString() : "null", color, contentRect, offset);
         }
 
         public void printStringPair(string str1, string str2, Color secondStrColor, Rect contentRect, float offset)
