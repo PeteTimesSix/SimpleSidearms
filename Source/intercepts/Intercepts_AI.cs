@@ -23,9 +23,34 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void _ctor(Toil __instance) 
         {
-            if (Settings.ToolAutoSwitch == true) 
+            //making new toils is supposed to come through the pool now. But probably there's plenty of mods who dont do that still?
+            if (!ToilMaker_MakeToil_Patches.inToilMaker)
+                ToilMaker_MakeToil_Patches.CheckForTools(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(ToilMaker), nameof(ToilMaker.MakeToil))]
+    public static class ToilMaker_MakeToil_Patches
+    {
+        public static bool inToilMaker = false;
+
+        [HarmonyPrefix]
+        public static void Prefix(Toil __result)
+        {
+            inToilMaker = true;
+        }
+
+        [HarmonyPostfix]
+        public static void Postfix(Toil __result)
+        {
+            inToilMaker = false;
+            CheckForTools(__result);
+        }
+
+        public static void CheckForTools(Toil toil) 
+        {
+            if (Settings.ToolAutoSwitch == true)
             {
-                Toil toil = __instance;
                 if (toil == null)
                     return;
 
@@ -54,6 +79,8 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     else if (activeSkill != null && SkillStatMap.Map.ContainsKey(activeSkill))
                         possiblyActiveStats.AddRange(SkillStatMap.Map[activeSkill]);
 
+                    //Log.Message($"{toil} has active stats: {string.Join(",", possiblyActiveStats.Select(s => s.LabelCap))}");
+
                     bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(pawn, possiblyActiveStats);
                     if (usingAppropriateTool)
                     {
@@ -73,7 +100,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                     if (pawnMemory != null)
                     {
-                        if(pawnMemory.autotoolToil == toil)
+                        if (pawnMemory.autotoolToil == toil)
                             pawnMemory.delayIdleSwitchTimestamp = Find.TickManager.TicksGame;
                         else
                             pawnMemory.autotoolToil = null;

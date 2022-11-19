@@ -47,6 +47,16 @@ namespace PeteTimesSix.SimpleSidearms
                     }
                 }
             }
+
+            //ListMapping();
+        }
+
+        public static void ListMapping() 
+        {
+            foreach(var (skill, stats) in map) 
+            {
+                Log.Message($"{skill.LabelCap} maps to: {string.Join(",", stats.Select(s => s.LabelCap))}");
+            }
         }
     }
 }
