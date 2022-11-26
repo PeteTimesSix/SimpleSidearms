@@ -37,6 +37,13 @@ namespace PeteTimesSix.SimpleSidearms
             SimpleSidearms.Settings = SimpleSidearms.ModSingleton.GetSettings<SimpleSidearms_Settings>();
             InferredValues.Init();
             SimpleSidearms.Settings.StartupChecks();
+
+            if (SimpleSidearms.Settings.NeedsResaving)
+            {
+                Log.Message($"SS: Resaving settings by request (one-time migration or clearing out invalid defs).");
+                SimpleSidearms.Settings.NeedsResaving = false;
+                SimpleSidearms.ModSingleton.WriteSettings();
+            }
         }
     }
 

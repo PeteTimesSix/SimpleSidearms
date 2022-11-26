@@ -32,6 +32,8 @@ namespace PeteTimesSix.SimpleSidearms
 
     public class SimpleSidearms_Settings : ModSettings
     {
+        public bool NeedsResaving = false;
+
         public OptionsTab ActiveTab = OptionsTab.Presets;
 
         public bool SettingsEverOpened = false;
@@ -65,6 +67,7 @@ namespace PeteTimesSix.SimpleSidearms
         public float LimitModeSingle_AbsoluteMass;
         public float LimitModeSingle_RelativeMass;
         public HashSet<ThingDef> LimitModeSingle_Selection;
+        private HashSet<string> LimitModeSingle_Selection_AsStringCache;
 
         private HashSet<ThingDef> LimitModeSingle_Match_Cache;
         #endregion
@@ -78,6 +81,7 @@ namespace PeteTimesSix.SimpleSidearms
         public float LimitModeSingleMelee_AbsoluteMass;
         public float LimitModeSingleMelee_RelativeMass;
         public HashSet<ThingDef> LimitModeSingleMelee_Selection;
+        private HashSet<string> LimitModeSingleMelee_Selection_AsStringCache;
 
         private HashSet<ThingDef> LimitModeSingleMelee_Match_Cache;
         #endregion
@@ -90,6 +94,7 @@ namespace PeteTimesSix.SimpleSidearms
         public float LimitModeSingleRanged_AbsoluteMass;
         public float LimitModeSingleRanged_RelativeMass;
         public HashSet<ThingDef> LimitModeSingleRanged_Selection;
+        private HashSet<string> LimitModeSingleRanged_Selection_AsStringCache;
 
         private HashSet<ThingDef> LimitModeSingleRanged_Match_Cache;
         #endregion
@@ -175,7 +180,6 @@ namespace PeteTimesSix.SimpleSidearms
 
             Scribe_Values.Look(ref LimitModeSingle_AbsoluteMass, "LimitModeSingle_AbsoluteMass", defaultValue: 1.9f);
             Scribe_Values.Look(ref LimitModeSingle_RelativeMass, "LimitModeSingle_RelativeMass", defaultValue: 0.25f);
-            Scribe_Collections.Look(ref LimitModeSingle_Selection, "LimitModeSingle_Selection", LookMode.Def);
 
             Scribe_Values.Look(ref LimitModeAmount_AbsoluteMass, "LimitModeAmount_AbsoluteMass", defaultValue: 10f);
             Scribe_Values.Look(ref LimitModeAmount_RelativeMass, "LimitModeAmount_RelativeMass", defaultValue: 0.5f);
@@ -183,7 +187,6 @@ namespace PeteTimesSix.SimpleSidearms
 
             Scribe_Values.Look(ref LimitModeSingleMelee_AbsoluteMass, "LimitModeSingleMelee_AbsoluteMass", defaultValue: 1.9f);
             Scribe_Values.Look(ref LimitModeSingleMelee_RelativeMass, "LimitModeSingleMelee_RelativeMass", defaultValue: 0.25f);
-            Scribe_Collections.Look(ref LimitModeSingleMelee_Selection, "LimitModeSingleMelee_Selection", LookMode.Def);
 
             Scribe_Values.Look(ref LimitModeAmountMelee_AbsoluteMass, "LimitModeAmountMelee_AbsoluteMass", defaultValue: 10f);
             Scribe_Values.Look(ref LimitModeAmountMelee_RelativeMass, "LimitModeAmountMelee_RelativeMass", defaultValue: 0.5f);
@@ -191,7 +194,6 @@ namespace PeteTimesSix.SimpleSidearms
 
             Scribe_Values.Look(ref LimitModeSingleRanged_AbsoluteMass, "LimitModeSingleRanged_AbsoluteMass", defaultValue: 2.55f);
             Scribe_Values.Look(ref LimitModeSingleRanged_RelativeMass, "LimitModeSingleRanged_RelativeMass", defaultValue: 0.25f);
-            Scribe_Collections.Look(ref LimitModeSingleRanged_Selection, "LimitModeSingleRanged_Selection", LookMode.Def);
 
             Scribe_Values.Look(ref LimitModeAmountRanged_AbsoluteMass, "LimitModeAmountRanged_AbsoluteMass", defaultValue: 10f);
             Scribe_Values.Look(ref LimitModeAmountRanged_RelativeMass, "LimitModeAmountRanged_RelativeMass", defaultValue: 0.5f);
@@ -200,6 +202,91 @@ namespace PeteTimesSix.SimpleSidearms
             Scribe_Values.Look(ref LimitModeAmountTotal_AbsoluteMass, "LimitModeAmountTotal_AbsoluteMass", defaultValue: 10f);
             Scribe_Values.Look(ref LimitModeAmountTotal_RelativeMass, "LimitModeAmountTotal_RelativeMass", defaultValue: 0.5f);
             Scribe_Values.Look(ref LimitModeAmountTotal_Slots, "LimitModeAmountTotal_Slots", defaultValue: 4);
+
+            //avoid errors on removed defs
+            if (Scribe.mode == LoadSaveMode.Saving)
+            {
+                var singlesAsStrings = LimitModeSingle_Selection.Where(t => t != null).Select(t => t.defName).ToList();
+                var singleMeleeAsStrings = LimitModeSingleMelee_Selection.Where(t => t != null).Select(t => t.defName).ToList();
+                var singleRangedAsStrings = LimitModeSingleRanged_Selection.Where(t => t != null).Select(t => t.defName).ToList();
+
+                Scribe_Collections.Look(ref singlesAsStrings, "LimitModeSingle_Selection_defNames", LookMode.Value);
+                Scribe_Collections.Look(ref singleMeleeAsStrings, "LimitModeSingleMelee_Selection_defNames", LookMode.Value);
+                Scribe_Collections.Look(ref singleRangedAsStrings, "LimitModeSingleRanged_Selection_defNames", LookMode.Value);
+
+                HashSet<ThingDef> emptyCol = new HashSet<ThingDef>();
+
+                Scribe_Collections.Look(ref emptyCol, "LimitModeSingle_Selection", LookMode.Def);
+                Scribe_Collections.Look(ref emptyCol, "LimitModeSingleMelee_Selection", LookMode.Def);
+                Scribe_Collections.Look(ref emptyCol, "LimitModeSingleRanged_Selection", LookMode.Def);
+            }
+            else
+            {
+                Scribe_Collections.Look(ref LimitModeSingle_Selection, "LimitModeSingle_Selection", LookMode.Def);
+                Scribe_Collections.Look(ref LimitModeSingleMelee_Selection, "LimitModeSingleMelee_Selection", LookMode.Def);
+                Scribe_Collections.Look(ref LimitModeSingleRanged_Selection, "LimitModeSingleRanged_Selection", LookMode.Def);
+
+                if (Scribe.mode == LoadSaveMode.LoadingVars)
+                {
+                    Scribe_Collections.Look(ref LimitModeSingle_Selection_AsStringCache, "LimitModeSingle_Selection_defNames", LookMode.Value);
+                    Scribe_Collections.Look(ref LimitModeSingleMelee_Selection_AsStringCache, "LimitModeSingleMelee_Selection_defNames", LookMode.Value);
+                    Scribe_Collections.Look(ref LimitModeSingleRanged_Selection_AsStringCache, "LimitModeSingleRanged_Selection_defNames", LookMode.Value);
+                    if (LimitModeSingle_Selection_AsStringCache == null) 
+                        LimitModeSingle_Selection_AsStringCache = new HashSet<string>();
+                    if (LimitModeSingleMelee_Selection_AsStringCache == null)
+                        LimitModeSingleMelee_Selection_AsStringCache = new HashSet<string>();
+                    if (LimitModeSingleRanged_Selection_AsStringCache == null)
+                        LimitModeSingleRanged_Selection_AsStringCache = new HashSet<string>();
+                }
+                else if (Scribe.mode == LoadSaveMode.PostLoadInit)
+                {
+                    if ((LimitModeSingle_Selection != null && LimitModeSingle_Selection.Any()) ||
+                        (LimitModeSingleMelee_Selection != null && LimitModeSingleMelee_Selection.Any()) ||
+                        (LimitModeSingleRanged_Selection != null && LimitModeSingleRanged_Selection.Any()))
+                    {
+                        Log.Warning($"SS: LimitMode collection contained defs. This will need a one-time migration resave.");
+                        NeedsResaving = true;
+                    }
+
+                    foreach (var defName in LimitModeSingle_Selection_AsStringCache) 
+                    {
+                        var def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+                        if(def == null) 
+                        {
+                            //Log.Warning($"SS: LimitModeSingle_Selection contained unknown def {defName}. Removing.");
+                            NeedsResaving = true;
+                            continue;
+                        }
+                        LimitModeSingle_Selection.Add(def);
+                    }
+                    foreach (var defName in LimitModeSingleMelee_Selection_AsStringCache)
+                    {
+                        var def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+                        if (def == null)
+                        {
+                            //Log.Warning($"SS: LimitModeSingleMelee_Selection contained unknown def {defName}. Removing.");
+                            NeedsResaving = true;
+                            continue;
+                        }
+                        LimitModeSingleMelee_Selection.Add(def);
+                    }
+                    foreach (var defName in LimitModeSingleRanged_Selection_AsStringCache)
+                    {
+                        var def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+                        if (def == null)
+                        {
+                            //Log.Warning($"SS: LimitModeSingleRanged_Selection contained unknown def {defName}. Removing.");
+                            NeedsResaving = true;
+                            continue;
+                        }
+                        LimitModeSingleRanged_Selection.Add(def);
+                    }
+
+                    LimitModeSingle_Selection_AsStringCache = null;
+                    LimitModeSingleMelee_Selection_AsStringCache = null;
+                    LimitModeSingleRanged_Selection_AsStringCache = null;
+                }
+            } 
 
             Scribe_Values.Look(ref SidearmSpawnChance, "SidearmSpawnChance", defaultValue: 0.5f);
             Scribe_Values.Look(ref SidearmSpawnChanceDropoff, "SidearmSpawnChanceDropoff", defaultValue: 0.25f);
