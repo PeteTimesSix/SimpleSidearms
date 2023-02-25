@@ -119,7 +119,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
 
                         bool toolUse = ((pawn.CombinedDisabledWorkTags & WorkTags.Violent) != 0) || thingWithComps.toThingDefStuffDefPair().isToolNotWeapon();
                         string textPostfix = toolUse ? "AsTool".Translate() : "AsSidearm".Translate();
-                        if (!StatCalculator.canUseSidearmInstance(thingWithComps, pawn, out string errStr))
+                        if (!StatCalculator.CanPickupSidearmInstance(thingWithComps, pawn, out string errStr))
                         {
                             string orderText = "CannotEquip".Translate(thingWithComps.LabelShort) + textPostfix;
 

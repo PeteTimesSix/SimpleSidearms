@@ -142,13 +142,12 @@
 
 
 <SidearmPickupFail_NoFreeSpace>Kein freier Platz</SidearmPickupFail_NoFreeSpace>
-<SidearmPickupFail_TooHeavyForSidearm>Über dem Maximalgewicht (Geteilt)</SidearmPickupFail_TooHeavyForSidearm>
-<SidearmPickupFail_TooHeavyForSidearmMelee>Über dem Maximalgewicht (Nahkampf)</SidearmPickupFail_TooHeavyForSidearmMelee>
-<SidearmPickupFail_TooHeavyForSidearmRanged>Über dem Maximalgewicht (Fernkampf)</SidearmPickupFail_TooHeavyForSidearmRanged>
-<SidearmPickupFail_SidearmsTooHeavy>Seitenwaffe ist zu schwer</SidearmPickupFail_SidearmsTooHeavy>
-<SidearmPickupFail_SidearmsTooHeavyMelee>Nahkampf-Seitenwaffe ist zu schwer</SidearmPickupFail_SidearmsTooHeavyMelee>
-<SidearmPickupFail_SidearmsTooHeavyRanged>Fernkampf-Seitenwaffe ist zu schwer</SidearmPickupFail_SidearmsTooHeavyRanged>
-<SidearmPickupFail_SidearmsTooHeavyInTotal>Zu voll beladen, für eine Seitenwaffe</SidearmPickupFail_SidearmsTooHeavyInTotal>
+<SidearmPickupFail_TooHeavyForSidearmMelee>Nahkampf-Seitenwaffe ist zu schwer</SidearmPickupFail_TooHeavyForSidearmMelee>
+<SidearmPickupFail_TooHeavyForSidearmRanged>Fernkampf-Seitenwaffe ist zu schwer</SidearmPickupFail_TooHeavyForSidearmRanged>
+<SidearmPickupFail_TooHeavyForSidearm>Zu voll beladen, für eine Seitenwaffe</SidearmPickupFail_TooHeavyForSidearm>
+<SidearmPickupFail_SidearmsTooHeavyMelee>Über dem Maximalgewicht (Nahkampf)</SidearmPickupFail_SidearmsTooHeavyMelee>
+<SidearmPickupFail_SidearmsTooHeavyRanged>Über dem Maximalgewicht (Fernkampf)</SidearmPickupFail_SidearmsTooHeavyRanged>
+<SidearmPickupFail_SidearmsTooHeavyInTotal>Über dem Maximalgewicht (Geteilt)</SidearmPickupFail_SidearmsTooHeavyInTotal>
 <SidearmPickupFail_NotASidearm>Ist keine Seitenwaffe</SidearmPickupFail_NotASidearm>
 <SidearmPickupFail_NotASidearmMelee>Ist keine Nahkampf-Seitenwaffe</SidearmPickupFail_NotASidearmMelee>
 <SidearmPickupFail_NotASidearmRanged>Ist keine Fernkampf-Seitenwaffe</SidearmPickupFail_NotASidearmRanged>

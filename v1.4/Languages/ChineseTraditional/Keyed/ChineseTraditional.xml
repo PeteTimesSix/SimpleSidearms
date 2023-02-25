@@ -142,13 +142,12 @@
 
 
   <SidearmPickupFail_NoFreeSpace>沒有剩餘空間了</SidearmPickupFail_NoFreeSpace>
-  <SidearmPickupFail_TooHeavyForSidearm>裝備過重</SidearmPickupFail_TooHeavyForSidearm>
-  <SidearmPickupFail_TooHeavyForSidearmMelee>近戰武器過重</SidearmPickupFail_TooHeavyForSidearmMelee>
-  <SidearmPickupFail_TooHeavyForSidearmRanged>遠程武器過重</SidearmPickupFail_TooHeavyForSidearmRanged>
-  <SidearmPickupFail_SidearmsTooHeavy>這個副武器太重了</SidearmPickupFail_SidearmsTooHeavy>
-  <SidearmPickupFail_SidearmsTooHeavyMelee>這個近戰副武器太重了</SidearmPickupFail_SidearmsTooHeavyMelee>
-  <SidearmPickupFail_SidearmsTooHeavyRanged>這個遠程副武器太重了</SidearmPickupFail_SidearmsTooHeavyRanged>
-  <SidearmPickupFail_SidearmsTooHeavyInTotal>這個副武器太重了</SidearmPickupFail_SidearmsTooHeavyInTotal>
+  <SidearmPickupFail_TooHeavyForSidearmMelee>這個近戰副武器太重了</SidearmPickupFail_TooHeavyForSidearmMelee>
+  <SidearmPickupFail_TooHeavyForSidearmRanged>這個遠程副武器太重了</SidearmPickupFail_TooHeavyForSidearmRanged>
+  <SidearmPickupFail_TooHeavyForSidearm>這個副武器太重了</SidearmPickupFail_TooHeavyForSidearm>
+  <SidearmPickupFail_SidearmsTooHeavyMelee>近戰武器過重</SidearmPickupFail_SidearmsTooHeavyMelee>
+  <SidearmPickupFail_SidearmsTooHeavyRanged>遠程武器過重</SidearmPickupFail_SidearmsTooHeavyRanged>
+  <SidearmPickupFail_SidearmsTooHeavyInTotal>裝備過重</SidearmPickupFail_SidearmsTooHeavyInTotal>
   <SidearmPickupFail_NotASidearm>不是一個副武器</SidearmPickupFail_NotASidearm>
   <SidearmPickupFail_NotASidearmMelee>不是一個副武器</SidearmPickupFail_NotASidearmMelee>
   <SidearmPickupFail_NotASidearmRanged>不是一個副武器</SidearmPickupFail_NotASidearmRanged>

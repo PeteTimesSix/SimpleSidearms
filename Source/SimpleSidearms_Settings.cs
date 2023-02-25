@@ -132,6 +132,7 @@ namespace PeteTimesSix.SimpleSidearms
         public bool HideSidearmsInCaravanDialogs;
 
         public bool ShowAlertsMissingSidearm;
+        public bool PlaySounds;
 
         public void StartupChecks()
         {
@@ -320,6 +321,7 @@ namespace PeteTimesSix.SimpleSidearms
             Scribe_Values.Look(ref HideSidearmsInCaravanDialogs, "HideSidearmsInCaravanDialogs", defaultValue: true);
 
             Scribe_Values.Look(ref ShowAlertsMissingSidearm, "ShowAlertsMissingSidearm", defaultValue: true);
+            Scribe_Values.Look(ref PlaySounds, "PlaySounds", defaultValue: true);
         }
 
         Vector2 scrollPosition = new Vector2(0, 0);
@@ -539,6 +541,10 @@ namespace PeteTimesSix.SimpleSidearms
                         subsection.GapLine();
 
                         subsection.CheckboxLabeled("ShowAlertsMissingSidearm_title".Translate(), ref ShowAlertsMissingSidearm, "ShowAlertsMissingSidearm_desc".Translate(), onChange: onChange);
+
+                        subsection.GapLine();
+
+                        subsection.CheckboxLabeled("SidearmsPlaySounds_title".Translate(), ref PlaySounds, "SidearmsPlaySounds_desc".Translate(), onChange: onChange);
 
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
                     }

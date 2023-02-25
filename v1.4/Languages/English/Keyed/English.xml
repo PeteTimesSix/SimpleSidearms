@@ -49,6 +49,9 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 <ShowAlertsMissingSidearm_desc>Show alerts for colonists that remember having sidearms that they no longer have and can't find a replacement for.</ShowAlertsMissingSidearm_desc>
 <ShowAlertsMissingSidearm_title>Show missing sidearm alerts</ShowAlertsMissingSidearm_title>
 
+<SidearmsPlaySounds_desc>Play sounds when swapping weapons.</SidearmsPlaySounds_desc>
+<SidearmsPlaySounds_title>Play sounds</SidearmsPlaySounds_title>
+
 <AllowBlockedWeaponUse_desc>Allow usage of weapons that are normally blocked (such as persona weapons, biocoded weapons, and Ideology role-restricted weapons) - see XKCD #1172</AllowBlockedWeaponUse_desc>
 <AllowBlockedWeaponUse_title>Allow use of blocked weapons</AllowBlockedWeaponUse_title>
 
@@ -178,13 +181,12 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 
 
 <SidearmPickupFail_NoFreeSpace>No free space</SidearmPickupFail_NoFreeSpace>
-<SidearmPickupFail_TooHeavyForSidearm>Loadout too heavy</SidearmPickupFail_TooHeavyForSidearm>
-<SidearmPickupFail_TooHeavyForSidearmMelee>Melee loadout too heavy</SidearmPickupFail_TooHeavyForSidearmMelee>
-<SidearmPickupFail_TooHeavyForSidearmRanged>Ranged loadout too heavy</SidearmPickupFail_TooHeavyForSidearmRanged>
-<SidearmPickupFail_SidearmsTooHeavy>Too heavy for a sidearm</SidearmPickupFail_SidearmsTooHeavy>
-<SidearmPickupFail_SidearmsTooHeavyMelee>Too heavy for a melee sidearm</SidearmPickupFail_SidearmsTooHeavyMelee>
-<SidearmPickupFail_SidearmsTooHeavyRanged>Too heavy for a ranged sidearm</SidearmPickupFail_SidearmsTooHeavyRanged>
-<SidearmPickupFail_SidearmsTooHeavyInTotal>Too heavy for a sidearm</SidearmPickupFail_SidearmsTooHeavyInTotal>
+<SidearmPickupFail_TooHeavyForSidearmMelee>Too heavy for a melee sidearm</SidearmPickupFail_TooHeavyForSidearmMelee>
+<SidearmPickupFail_TooHeavyForSidearmRanged>Too heavy for a ranged sidearm</SidearmPickupFail_TooHeavyForSidearmRanged>
+<SidearmPickupFail_TooHeavyForSidearm>Too heavy for a sidearm</SidearmPickupFail_TooHeavyForSidearm>
+<SidearmPickupFail_SidearmsTooHeavyMelee>Melee loadout too heavy</SidearmPickupFail_SidearmsTooHeavyMelee>
+<SidearmPickupFail_SidearmsTooHeavyRanged>Ranged loadout too heavy</SidearmPickupFail_SidearmsTooHeavyRanged>
+<SidearmPickupFail_SidearmsTooHeavyInTotal>Loadout too heavy</SidearmPickupFail_SidearmsTooHeavyInTotal>
 <SidearmPickupFail_NotASidearm>Not a sidearm</SidearmPickupFail_NotASidearm>
 <SidearmPickupFail_NotASidearmMelee>Not a sidearm</SidearmPickupFail_NotASidearmMelee>
 <SidearmPickupFail_NotASidearmRanged>Not a sidearm</SidearmPickupFail_NotASidearmRanged>

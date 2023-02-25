@@ -127,13 +127,12 @@
 
 
 <SidearmPickupFail_NoFreeSpace>Pas de place disponible</SidearmPickupFail_NoFreeSpace>
-<SidearmPickupFail_TooHeavyForSidearm>Équipement trop lourd</SidearmPickupFail_TooHeavyForSidearm>
-<SidearmPickupFail_TooHeavyForSidearmMelee>Équipement de mélée trop lourd</SidearmPickupFail_TooHeavyForSidearmMelee>
-<SidearmPickupFail_TooHeavyForSidearmRanged>Équipement à distance trop lourd</SidearmPickupFail_TooHeavyForSidearmRanged>
-<SidearmPickupFail_SidearmsTooHeavy>Trop lourd pour une arme secondaire</SidearmPickupFail_SidearmsTooHeavy>
-<SidearmPickupFail_SidearmsTooHeavyMelee>Trop lourd pour une arme secondaire de mélée</SidearmPickupFail_SidearmsTooHeavyMelee>
-<SidearmPickupFail_SidearmsTooHeavyRanged>Trop lourd pour une arme secondaire à distance</SidearmPickupFail_SidearmsTooHeavyRanged>
-<SidearmPickupFail_SidearmsTooHeavyInTotal>Trop lourd pour une arme secondaire</SidearmPickupFail_SidearmsTooHeavyInTotal>
+<SidearmPickupFail_TooHeavyForSidearmMelee>Trop lourd pour une arme secondaire de mélée</SidearmPickupFail_TooHeavyForSidearmMelee>
+<SidearmPickupFail_TooHeavyForSidearmRanged>Trop lourd pour une arme secondaire à distance</SidearmPickupFail_TooHeavyForSidearmRanged>
+<SidearmPickupFail_TooHeavyForSidearm>Trop lourd pour une arme secondaire</SidearmPickupFail_TooHeavyForSidearm>
+<SidearmPickupFail_SidearmsTooHeavyMelee>Équipement de mélée trop lourd</SidearmPickupFail_SidearmsTooHeavyMelee>
+<SidearmPickupFail_SidearmsTooHeavyRanged>Équipement à distance trop lourd</SidearmPickupFail_SidearmsTooHeavyRanged>
+<SidearmPickupFail_SidearmsTooHeavyInTotal>Équipement trop lourd</SidearmPickupFail_SidearmsTooHeavyInTotal>
 <SidearmPickupFail_NotASidearm>Pas une arme secondaire</SidearmPickupFail_NotASidearm>
 <SidearmPickupFail_NotASidearmMelee>Pas une arme secondaire</SidearmPickupFail_NotASidearmMelee>
 <SidearmPickupFail_NotASidearmRanged>Pas une arme secondaire</SidearmPickupFail_NotASidearmRanged>

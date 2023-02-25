@@ -115,7 +115,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 pawn.equipment.AddEquipment(weapon as ThingWithComps);
                 Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = false;
 
-                if (weapon.def.soundInteract != null)
+                if (weapon.def.soundInteract != null && Settings.PlaySounds)
                 {
                     weapon.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
                 }

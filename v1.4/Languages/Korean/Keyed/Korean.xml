@@ -147,13 +147,12 @@
 
 
   <SidearmPickupFail_NoFreeSpace>남은 공간 없음</SidearmPickupFail_NoFreeSpace>
-  <SidearmPickupFail_TooHeavyForSidearm>장비 너무 무거움</SidearmPickupFail_TooHeavyForSidearm>
-  <SidearmPickupFail_TooHeavyForSidearmMelee>근접 장비 너무 무거움</SidearmPickupFail_TooHeavyForSidearmMelee>
-  <SidearmPickupFail_TooHeavyForSidearmRanged>원거리 장비 너무 무거움</SidearmPickupFail_TooHeavyForSidearmRanged>
-  <SidearmPickupFail_SidearmsTooHeavy>보조 무기로는 너무 무거움</SidearmPickupFail_SidearmsTooHeavy>
-  <SidearmPickupFail_SidearmsTooHeavyMelee>근접 보조 무기로는 너무 무거움</SidearmPickupFail_SidearmsTooHeavyMelee>
-  <SidearmPickupFail_SidearmsTooHeavyRanged>원거리 보조 무기로는 너무 무거움</SidearmPickupFail_SidearmsTooHeavyRanged>
-  <SidearmPickupFail_SidearmsTooHeavyInTotal>보조 무기로는 너무 무거움</SidearmPickupFail_SidearmsTooHeavyInTotal>
+  <SidearmPickupFail_TooHeavyForSidearmMelee>근접 부무장으로는 너무 무겁습니다</SidearmPickupFail_TooHeavyForSidearmMelee>
+  <SidearmPickupFail_TooHeavyForSidearmRanged>원거리 부무장으로는 너무 무겁습니다</SidearmPickupFail_TooHeavyForSidearmRanged>
+  <SidearmPickupFail_TooHeavyForSidearm>부무장으로는 너무 무겁습니다</SidearmPickupFail_TooHeavyForSidearm>
+  <SidearmPickupFail_SidearmsTooHeavyMelee>근접 로드아웃이 너무 무겁습니다</SidearmPickupFail_SidearmsTooHeavyMelee>
+  <SidearmPickupFail_SidearmsTooHeavyRanged>원거리 로드아웃이 너무 무겁습니다</SidearmPickupFail_SidearmsTooHeavyRanged>
+  <SidearmPickupFail_SidearmsTooHeavyInTotal>로드아웃이 너무 무겁습니다</SidearmPickupFail_SidearmsTooHeavyInTotal>
   <SidearmPickupFail_NotASidearm>보조 무기 아님</SidearmPickupFail_NotASidearm>
   <SidearmPickupFail_NotASidearmMelee>보조 무기 아님</SidearmPickupFail_NotASidearmMelee>
   <SidearmPickupFail_NotASidearmRanged>보조 무기 아님</SidearmPickupFail_NotASidearmRanged>

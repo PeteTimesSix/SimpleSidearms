@@ -6,6 +6,7 @@ using System.Text;
 using Verse;
 using Verse.AI;
 using Verse.Sound;
+using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
 
 namespace SimpleSidearms.rimworld
 {
@@ -47,7 +48,7 @@ namespace SimpleSidearms.rimworld
                         thingWithComps2 = thingWithComps;
                     }
                     bool success = this.pawn.inventory.innerContainer.TryAdd(thingWithComps2);
-                    if (thingWithComps.def.soundInteract != null)
+                    if (thingWithComps.def.soundInteract != null && Settings.PlaySounds)
                     {
                         thingWithComps.def.soundInteract.PlayOneShot(new TargetInfo(this.pawn.Position, this.pawn.Map, false));
                     }
