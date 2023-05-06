@@ -90,7 +90,7 @@ namespace SimpleSidearms.rimworld
 
                 if (Widgets.ButtonText(contentRect.RightPartPixels(15), "<>"))
                 {
-                    var tickManager = Find.TickManager;
+                    var tickManager = Current.gameInt.tickManager;
                     if (!tickManager.Paused)
                         tickManager.TogglePaused();
 

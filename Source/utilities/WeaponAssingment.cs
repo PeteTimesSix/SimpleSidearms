@@ -122,7 +122,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             }
 
             //avoid hunting stackoverflowexception
-            if (pawn.jobs != null && pawn.jobs.curJob != null && pawn.jobs.curJob.def == JobDefOf.Hunt)
+            if (pawn.CurJobDef == JobDefOf.Hunt)
                 pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, true);
 
             return true;
@@ -392,7 +392,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                     //change targets if shooting something else, or has no set target (or nothing)
                     if (changed && (attacker != pawn.mindState.enemyTarget || pawn.mindState.enemyTarget == null))
                     {
-                        if (pawn.jobs.curJob.def == JobDefOf.AttackStatic)
+                        if (pawn.CurJobDef == JobDefOf.AttackStatic)
                         {
                             Job atkJob = JobMaker.MakeJob(JobDefOf.AttackMelee, attacker);
                             atkJob.maxNumMeleeAttacks = 1;
@@ -420,9 +420,6 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
 
             if (pawnMemory == null)
-                return false;
-
-            if (!pawn.RaceProps.Humanlike)
                 return false;
 
             if (pawn.equipment.Primary != null)

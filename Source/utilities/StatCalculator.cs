@@ -139,35 +139,46 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         public static bool canUseSidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
         {
             //nicked from EquipmentUtility.CanEquip
-            CompBladelinkWeapon compBladelinkWeapon = sidearmThing.TryGetComp<CompBladelinkWeapon>();
-            if (compBladelinkWeapon != null && compBladelinkWeapon.Biocodable && compBladelinkWeapon.CodedPawn != null && compBladelinkWeapon.CodedPawn != pawn)
+            if (sidearmThing.GetComp<CompBladelinkWeapon>() is CompBladelinkWeapon compBladelinkWeapon)
             {
-                errString = "BladelinkBondedToSomeoneElse".Translate();
-                return false;
+                if (compBladelinkWeapon.Biocodable && compBladelinkWeapon.CodedPawn != pawn)
+                {
+                    errString = "BladelinkBondedToSomeoneElse".Translate();
+                    return false;
+                }
+
+                if (!compBladelinkWeapon.Biocoded)
+                {
+                    var list = compBladelinkWeapon.TraitsListForReading;
+                    for (int i = list.Count; i-- > 0;) if (list[i].neverBond) goto SkipNeverBonded;
+                    
+                    errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
+                    return false;
+                }
+
+                SkipNeverBonded:
+                //Method only applies to CompBladelinkWeapon, may as well gate it in here
+                if (EquipmentUtility.AlreadyBondedToWeapon(sidearmThing, pawn))
+                {
+                    errString = "BladelinkAlreadyBondedMessage".Translate(pawn.Named("PAWN"), pawn.equipment.bondedWeapon.Named("BONDEDWEAPON"));
+                    return false;
+                }
             }
+            
             if (CompBiocodable.IsBiocoded(sidearmThing) && !CompBiocodable.IsBiocodedFor(sidearmThing, pawn))
             {
                 errString = "BiocodedCodedForSomeoneElse".Translate();
                 return false;
             }
-            if (EquipmentUtility.AlreadyBondedToWeapon(sidearmThing, pawn))
-            {
-                errString = "BladelinkAlreadyBondedMessage".Translate(pawn.Named("PAWN"), pawn.equipment.bondedWeapon.Named("BONDEDWEAPON"));
-                return false;
-            }
-            if (compBladelinkWeapon != null && !compBladelinkWeapon.Biocoded && !compBladelinkWeapon.TraitsListForReading.Any(t => t.neverBond == true))
-            {
-                errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
-                return false;
-            }
-            if (sidearmThing != null && EquipmentUtility.RolePreventsFromUsing(pawn, sidearmThing, out string roleReason))
+            
+            if (EquipmentUtility.RolePreventsFromUsing(pawn, sidearmThing, out string roleReason))
             {
                 //Log.Message($"use of {sidearmThing.Label} prevented by role");
                 errString = roleReason;
                 return false;
             }
 
-            errString = "No issue";
+            errString = "";
             return true;
         }
 

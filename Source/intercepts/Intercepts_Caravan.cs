@@ -189,7 +189,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                         var thing = pawnThings[i];
 
                         // check if thing is biocoded to this pawn
-                        var biocode = thing.TryGetComp<CompBiocodable>();
+                        var biocode = thing.GetComp<CompBiocodable>();
                         if (biocode?.Biocoded == true)
                         {
                             if (biocode.CodedPawn == pawn)
