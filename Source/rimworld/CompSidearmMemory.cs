@@ -211,7 +211,7 @@ namespace SimpleSidearms.rimworld
                 return;
             }
             if (_cache == null) _cache = new Dictionary<int, CompSidearmMemory>();
-            _cache.Add(Owner.thingIDNumber, this);
+            _cache.AddDistinct(Owner.thingIDNumber, this);
         }
 
         public override void PostExposeData()
