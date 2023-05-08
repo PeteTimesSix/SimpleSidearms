@@ -155,7 +155,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 errString = "BladelinkAlreadyBondedMessage".Translate(pawn.Named("PAWN"), pawn.equipment.bondedWeapon.Named("BONDEDWEAPON"));
                 return false;
             }
-            if (compBladelinkWeapon != null && !compBladelinkWeapon.Biocoded && !compBladelinkWeapon.TraitsListForReading.Any(t => t.neverBond == true))
+            if (compBladelinkWeapon != null && compBladelinkWeapon.Props.biocodeOnEquip && !compBladelinkWeapon.Biocoded && !compBladelinkWeapon.TraitsListForReading.Any(t => t.neverBond == true))
             {
                 errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
                 return false;
