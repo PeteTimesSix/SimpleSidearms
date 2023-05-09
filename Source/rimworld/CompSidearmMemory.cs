@@ -12,9 +12,10 @@ using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
 namespace SimpleSidearms.rimworld
 {
+    [StaticConstructorOnStartup] //Just for _cache
     public class CompSidearmMemory : ThingComp
     {
-        public static Dictionary<int, CompSidearmMemory> _cache;
+        public static Dictionary<int, CompSidearmMemory> _cache = new Dictionary<int, CompSidearmMemory>();
 
         public List<ThingDefStuffDefPair> rememberedWeapons = new List<ThingDefStuffDefPair>();
         public List<ThingDefStuffDefPair> RememberedWeapons
