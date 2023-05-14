@@ -101,7 +101,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     if (pawnMemory != null)
                     {
                         if (pawnMemory.autotoolToil == toil)
-                            pawnMemory.delayIdleSwitchTimestamp = Current.gameInt.tickManager.ticksGameInt;
+                            pawnMemory.delayIdleSwitchTimestamp = Find.TickManager.TicksGame;
                         else
                             pawnMemory.autotoolToil = null;
                     }
@@ -128,13 +128,19 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
     public static class AutoUndrafter_AutoUndraftTick_Postfix
     {
         public const int autoRetrieveDelay = 300;
+        private static AccessTools.FieldRef<AutoUndrafter, int> lastNonWaitingTick;
+
+        static AutoUndrafter_AutoUndraftTick_Postfix() 
+        {
+            lastNonWaitingTick = AccessTools.FieldRefAccess<AutoUndrafter, int>(AccessTools.Field(typeof(AutoUndrafter), "lastNonWaitingTick"));
+        }
 
         [HarmonyPostfix]
         public static void AutoUndraftTick(AutoUndrafter __instance, Pawn ___pawn)
         {
             //Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
             Pawn pawn = ___pawn;
-            int tick = Current.gameInt.tickManager.ticksGameInt;
+            int tick = Find.TickManager.TicksGame;
             if (tick % 100 == 0)
             {
                 if (pawn != null && pawn.Map != null && pawn.CurJobDef == JobDefOf.Wait_Combat && pawn.stances != null && pawn.stances.curStance is Stance_Mobile)
@@ -142,7 +148,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     //pawn.jobs.EndCurrentJob(JobCondition.Succeeded);
                     
                     WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, DroppingModeEnum.Combat);
-                    if (tick - __instance.lastNonWaitingTick > autoRetrieveDelay)
+                    if (tick - lastNonWaitingTick(__instance) > autoRetrieveDelay)
                     {
                         Job retrieval = JobGiver_RetrieveWeapon.TryGiveJobStatic(pawn, true);
                         if (retrieval != null)

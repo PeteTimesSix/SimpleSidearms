@@ -36,9 +36,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void TryCastShot(Verb_MeleeAttack __instance)
         {
-            if (__instance.currentTarget != null)
+            if (__instance.CurrentTarget != null)
             {
-                Thing targetThing = __instance.currentTarget.Thing;
+                Thing targetThing = __instance.CurrentTarget.Thing;
                 if (__instance.CasterPawn != null && targetThing != null && targetThing is Pawn && !(targetThing as Pawn).Dead && (targetThing as Pawn).RaceProps.Humanlike && (targetThing as Pawn).equipment != null)
                 {
                     WeaponAssingment.doCQC(targetThing as Pawn, __instance.CasterPawn);

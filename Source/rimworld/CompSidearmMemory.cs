@@ -208,7 +208,7 @@ namespace SimpleSidearms.rimworld
             //Self-destruct: animals don't need this comp
             if (!Owner.RaceProps.Humanlike)
             {
-                Owner.comps.Remove(this);
+                Owner.AllComps.Remove(this);
                 return;
             }
             if (_cache == null) _cache = new Dictionary<int, CompSidearmMemory>();
@@ -442,7 +442,7 @@ namespace SimpleSidearms.rimworld
             }
             if (withDelay)
             {
-                if ((Current.gameInt.tickManager.ticksGameInt - this.delayIdleSwitchTimestamp) < 60)
+                if ((Find.TickManager.TicksGame - this.delayIdleSwitchTimestamp) < 60)
                 {
                     return true;
                 }
