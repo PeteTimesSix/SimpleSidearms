@@ -60,7 +60,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     List<ThingDefStuffDefPair> meleeWeaponMemories = new List<ThingDefStuffDefPair>();
 
                     var rememberedWeapons = pawnMemory.RememberedWeapons;
-                    for (int i = rememberedWeapons.Count; i-- > 0;)
+                    for (int i = rememberedWeapons.Count - 1; i >= 0; i--)
                     {
                         ThingDefStuffDefPair weapon = rememberedWeapons[i];
                         if (weapon.thing.IsMeleeWeapon)

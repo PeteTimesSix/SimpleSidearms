@@ -18,7 +18,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void HuntersWithoutRangedWeapon(Alert_HunterLacksRangedWeapon __instance, List<Pawn> __result)
         {
-            for (int i = __result.Count; i-- > 0;)
+            for (int i = __result.Count - 1; i >= 0; i--)
             {
                 Pawn pawn = __result[i];
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);

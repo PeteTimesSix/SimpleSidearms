@@ -139,43 +139,46 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         public static bool canUseSidearmInstance(ThingWithComps sidearmThing, Pawn pawn, out string errString)
         {
             //nicked from EquipmentUtility.CanEquip
-            if (sidearmThing.GetComp<CompBladelinkWeapon>() is CompBladelinkWeapon compBladelinkWeapon)
+            if (sidearmThing != null)
             {
-                if (compBladelinkWeapon.Biocodable && compBladelinkWeapon.CodedPawn != pawn)
+                if (sidearmThing.GetComp<CompBladelinkWeapon>() is CompBladelinkWeapon compBladelinkWeapon)
                 {
-                    errString = "BladelinkBondedToSomeoneElse".Translate();
-                    return false;
-                }
+                    if (compBladelinkWeapon.Biocodable && compBladelinkWeapon.CodedPawn != pawn)
+                    {
+                        errString = "BladelinkBondedToSomeoneElse".Translate();
+                        return false;
+                    }
 
-                if (!compBladelinkWeapon.Biocoded)
-                {
-                    var list = compBladelinkWeapon.TraitsListForReading;
-                    for (int i = list.Count; i-- > 0;) if (list[i].neverBond) goto SkipNeverBonded;
-                    
-                    errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
-                    return false;
-                }
+                    if (!compBladelinkWeapon.Biocoded)
+                    {
+                        var list = compBladelinkWeapon.TraitsListForReading;
+                        for (int i = list.Count - 1; i >= 0; i--) if (list[i].neverBond) goto SkipNeverBonded;
+                        
+                        errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
+                        return false;
+                    }
 
-                SkipNeverBonded:
-                //Method only applies to CompBladelinkWeapon, may as well gate it in here
-                if (EquipmentUtility.AlreadyBondedToWeapon(sidearmThing, pawn))
+                    SkipNeverBonded:
+                    //Method only applies to CompBladelinkWeapon, may as well gate it in here
+                    if (EquipmentUtility.AlreadyBondedToWeapon(sidearmThing, pawn))
+                    {
+                        errString = "BladelinkAlreadyBondedMessage".Translate(pawn.Named("PAWN"), pawn.equipment.bondedWeapon.Named("BONDEDWEAPON"));
+                        return false;
+                    }
+                }
+                
+                if (CompBiocodable.IsBiocoded(sidearmThing) && !CompBiocodable.IsBiocodedFor(sidearmThing, pawn))
                 {
-                    errString = "BladelinkAlreadyBondedMessage".Translate(pawn.Named("PAWN"), pawn.equipment.bondedWeapon.Named("BONDEDWEAPON"));
+                    errString = "BiocodedCodedForSomeoneElse".Translate();
                     return false;
                 }
-            }
-            
-            if (CompBiocodable.IsBiocoded(sidearmThing) && !CompBiocodable.IsBiocodedFor(sidearmThing, pawn))
-            {
-                errString = "BiocodedCodedForSomeoneElse".Translate();
-                return false;
-            }
-            
-            if (EquipmentUtility.RolePreventsFromUsing(pawn, sidearmThing, out string roleReason))
-            {
-                //Log.Message($"use of {sidearmThing.Label} prevented by role");
-                errString = roleReason;
-                return false;
+                
+                if (EquipmentUtility.RolePreventsFromUsing(pawn, sidearmThing, out string roleReason))
+                {
+                    //Log.Message($"use of {sidearmThing.Label} prevented by role");
+                    errString = roleReason;
+                    return false;
+                }
             }
 
             errString = "";

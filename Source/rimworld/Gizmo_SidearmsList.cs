@@ -87,7 +87,7 @@ namespace SimpleSidearms.rimworld
             this.carriedWeapons = carriedWeapons;
             this.carriedRangedWeapons = new List<ThingWithComps>();
             this.carriedMeleeWeapons = new List<ThingWithComps>();
-            for (int i = carriedWeapons.Count; i-- > 0;)
+            for (int i = carriedWeapons.Count - 1; i >= 0; i--)
             {
                 var tmp = carriedWeapons[i];
                 if (tmp.def.IsRangedWeapon) carriedRangedWeapons.Add(tmp);
@@ -96,7 +96,7 @@ namespace SimpleSidearms.rimworld
             this.weaponMemories = weaponMemories;
             this.rangedWeaponMemories = new List<ThingDefStuffDefPair>();
             this.meleeWeaponMemories = new List<ThingDefStuffDefPair>();
-            for (int i = weaponMemories.Count; i-- > 0;)
+            for (int i = weaponMemories.Count - 1; i >= 0; i--)
             {
                 var tmp = weaponMemories[i];
                 if (tmp.thing.IsRangedWeapon) rangedWeaponMemories.Add(tmp);

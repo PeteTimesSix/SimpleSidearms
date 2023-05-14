@@ -73,7 +73,7 @@ namespace PeteTimesSix.SimpleSidearms
             float best = 0;
             found = false;
             var equippedStatOffsets = tool.thing.equippedStatOffsets;
-            for (int i = equippedStatOffsets.Count; i-- > 0;)
+            for (int i = equippedStatOffsets.Count - 1; i >= 0; i--)
             {
                 StatModifier modifier = equippedStatOffsets[i];
                 if (stats.Contains(modifier.stat)) 
@@ -161,7 +161,7 @@ namespace PeteTimesSix.SimpleSidearms
             }
 
             var innerContainer = pawn.inventory.innerContainer;
-            for (int i = innerContainer.Count; i-- > 0;)
+            for (int i = innerContainer.Count - 1; i >= 0; i--)
             {
                 if (
                     innerContainer[i] is ThingWithComps item &&

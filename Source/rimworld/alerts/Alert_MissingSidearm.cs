@@ -35,7 +35,7 @@ namespace SimpleSidearms.rimworld.alerts
         public override AlertReport GetReport()
         {
             //Run 1/4th as often
-            if (ticks-- != 0) return AlertReport.Inactive;
+            if (ticks - 1 != 0) return AlertReport.Inactive;
             ticks = 4;
 
             Pawn pawn = this.AffectedPawns().FirstOrDefault<Pawn>();
@@ -56,7 +56,7 @@ namespace SimpleSidearms.rimworld.alerts
                 HashSet<Pawn> pawns = new HashSet<Pawn>();
                 if (PawnsFinder.AllMaps_FreeColonistsSpawned is List<Pawn> allMaps_FreeColonistsSpawned)
                 {
-                    for (int i = allMaps_FreeColonistsSpawned.Count; i-- > 0;)
+                    for (int i = allMaps_FreeColonistsSpawned.Count - 1; i >= 0; i--)
                     {
                         Pawn pawn = allMaps_FreeColonistsSpawned[i];
                         if (!pawn.IsValidSidearmsCarrier())
