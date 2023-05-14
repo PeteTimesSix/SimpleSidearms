@@ -53,23 +53,24 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 || DebugSettings.godMode) && __instance.equipment != null && __instance.inventory != null
                 )
             {
-                IEnumerable<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons(includeTools: true);
-
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(__instance);
                 if (pawnMemory != null)
                 {
                     List<ThingDefStuffDefPair> rangedWeaponMemories = new List<ThingDefStuffDefPair>();
                     List<ThingDefStuffDefPair> meleeWeaponMemories = new List<ThingDefStuffDefPair>();
 
-                    foreach (ThingDefStuffDefPair weapon in pawnMemory.RememberedWeapons)
+                    var rememberedWeapons = pawnMemory.RememberedWeapons;
+                    for (int i = rememberedWeapons.Count - 1; i >= 0; i--)
                     {
+                        ThingDefStuffDefPair weapon = rememberedWeapons[i];
                         if (weapon.thing.IsMeleeWeapon)
                             meleeWeaponMemories.Add(weapon);
                         else if (weapon.thing.IsRangedWeapon)
                             rangedWeaponMemories.Add(weapon);
                     }
 
-                    yield return new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons);
+                    List<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons(includeTools: true);
+                    yield return new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons, pawnMemory);
 
                     if (DebugSettings.godMode)
                     {

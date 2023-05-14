@@ -72,8 +72,10 @@ namespace PeteTimesSix.SimpleSidearms
 
             float best = 0;
             found = false;
-            foreach (StatModifier modifier in tool.thing.equippedStatOffsets)
+            var equippedStatOffsets = tool.thing.equippedStatOffsets;
+            for (int i = equippedStatOffsets.Count - 1; i >= 0; i--)
             {
+                StatModifier modifier = equippedStatOffsets[i];
                 if (stats.Contains(modifier.stat)) 
                 {
                     found = true;
@@ -124,7 +126,7 @@ namespace PeteTimesSix.SimpleSidearms
 
         public static bool IsValidSidearmsCarrier(this Pawn pawn) 
         {
-            return pawn != null && !pawn.Dead && pawn.equipment != null && pawn.inventory != null && pawn.RaceProps.Humanlike;
+            return pawn != null && pawn.equipment != null && pawn.inventory != null && !pawn.Dead;
         }
 
         public static PrimaryWeaponMode getSkillWeaponPreference(this Pawn pawn)
@@ -145,7 +147,7 @@ namespace PeteTimesSix.SimpleSidearms
                 return PrimaryWeaponMode.Ranged; //slight bias towards ranged but *shrug*
         }
 
-        public static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeTools = false)
+        public static List<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeTools = false)
         {
             List<ThingWithComps> weapons = new List<ThingWithComps>();
 
@@ -154,21 +156,22 @@ namespace PeteTimesSix.SimpleSidearms
 
             if (includeEquipped)
             {
-                if (pawn.equipment.Primary != null && (!pawn.equipment.Primary.toThingDefStuffDefPair().isToolNotWeapon() || includeTools))
+                if (pawn.equipment.Primary is ThingWithComps primary && (includeTools || !primary.toThingDefStuffDefPair().isToolNotWeapon()))
                     weapons.Add(pawn.equipment.Primary);
             }
 
-            foreach (Thing item in pawn.inventory.innerContainer)
+            var innerContainer = pawn.inventory.innerContainer;
+            for (int i = innerContainer.Count - 1; i >= 0; i--)
             {
                 if (
-                    item is ThingWithComps &&
-                    (!item.toThingDefStuffDefPair().isToolNotWeapon() || includeTools) &&
+                    innerContainer[i] is ThingWithComps item &&
+                    (includeTools || !item.toThingDefStuffDefPair().isToolNotWeapon()) &&
                     (item.def.IsRangedWeapon || item.def.IsMeleeWeapon)
                     )
                 {
-                    var equippable = item.TryGetComp<CompEquippable>();
+                    var equippable = item.GetComp<CompEquippable>();
                     if(equippable != null)
-                        weapons.Add(item as ThingWithComps);
+                        weapons.Add(item);
                 }
             }
             return weapons;
@@ -190,9 +193,8 @@ namespace PeteTimesSix.SimpleSidearms
             int dupesSoFar = 0;
 
             if (pawn.equipment != null)
-                if (pawn.equipment.Primary != null)
-                    if (pawn.equipment.Primary.matchesThingDefStuffDefPair(weapon))
-                        dupesSoFar++;
+                if (pawn.equipment.Primary is ThingWithComps primary && primary.matchesThingDefStuffDefPair(weapon))
+                    dupesSoFar++;
 
             if (dupesSoFar - dupesToSkip >= countToSatisfy)
             {

@@ -16,20 +16,17 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
     public static class Alert_HunterLacksRangedWeapon_HuntersWithoutRangedWeapon_Postfix
     {
         [HarmonyPostfix]
-        public static void HuntersWithoutRangedWeapon(Alert_HunterLacksRangedWeapon __instance, ref List<Pawn> __result)
+        public static void HuntersWithoutRangedWeapon(Alert_HunterLacksRangedWeapon __instance, List<Pawn> __result)
         {
-            List<Pawn> editedList = new List<Pawn>();
-            foreach (Pawn pawn in __result)
+            for (int i = __result.Count - 1; i >= 0; i--)
             {
+                Pawn pawn = __result[i];
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                 if (pawnMemory != null && pawn.IsValidSidearmsCarrier() && pawnMemory.IsUsingAutotool(true, true))
                 {
-                    continue;
+                    __result.Remove(pawn);
                 }
-                //if I implement default-melee ranged hunting, the check goes here
-                editedList.Add(pawn);
             }
-            __result = editedList;
         }
     }
 }

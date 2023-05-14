@@ -12,8 +12,10 @@ using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 
 namespace SimpleSidearms.rimworld
 {
+    [StaticConstructorOnStartup] //Just for _cache
     public class CompSidearmMemory : ThingComp
     {
+        public static Dictionary<int, CompSidearmMemory> _cache = new Dictionary<int, CompSidearmMemory>();
 
         public List<ThingDefStuffDefPair> rememberedWeapons = new List<ThingDefStuffDefPair>();
         public List<ThingDefStuffDefPair> RememberedWeapons
@@ -24,10 +26,7 @@ namespace SimpleSidearms.rimworld
                     generateRememberedWeaponsFromEquipped();
                 if (!nullchecked)
                     NullChecks();
-                List<ThingDefStuffDefPair> fakery = new List<ThingDefStuffDefPair>();
-                foreach (var wep in rememberedWeapons)
-                    fakery.Add(wep);
-                return fakery;
+                return rememberedWeapons;
             }
         }
 
@@ -204,6 +203,18 @@ namespace SimpleSidearms.rimworld
             }
         }
 
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            //Self-destruct: animals don't need this comp
+            if (!Owner.RaceProps.Humanlike)
+            {
+                Owner.AllComps.Remove(this);
+                return;
+            }
+            if (_cache == null) _cache = new Dictionary<int, CompSidearmMemory>();
+            _cache.AddDistinct(Owner.thingIDNumber, this);
+        }
+
         public override void PostExposeData()
         {
             Scribe_Collections.Look<ThingDefStuffDefPair>(ref rememberedWeapons, "rememberedWeapons", LookMode.Deep);
@@ -229,16 +240,8 @@ namespace SimpleSidearms.rimworld
         {
             if (pawn == null)
                 return null;
-            if (!pawn.RaceProps.Humanlike)
-            {
-                Log.Warning("CompSidearmMemory accessed for non-humanlike pawn " + pawn.Label);
-                return null;
 
-            }
-            CompSidearmMemory memory = pawn.TryGetComp<CompSidearmMemory>();
-            if (memory == null)
-                return null;
-
+            _cache.TryGetValue(pawn.thingIDNumber, out CompSidearmMemory memory);
             return memory;
         }
 
@@ -478,7 +481,7 @@ namespace SimpleSidearms.rimworld
                 //Log.Warning("Remembered weapons list of " + this.Owner.LabelCap + " was missing, regenerating...");
                 generateRememberedWeaponsFromEquipped();
             }
-            for (int i = rememberedWeapons.Count() - 1; i >= 0; i--)
+            for (int i = rememberedWeapons.Count - 1; i >= 0; i--)
             {
                 try
                 {

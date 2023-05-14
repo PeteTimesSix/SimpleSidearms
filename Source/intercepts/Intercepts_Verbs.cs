@@ -19,9 +19,8 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void SelfConsume(Verb_ShootOneUse __instance)
         {
-            if (__instance.caster is Pawn)
+            if (__instance.caster is Pawn pawn)
             {
-                Pawn pawn = (__instance.caster as Pawn);
                 ThingDefStuffDefPair weapon = __instance.EquipmentSource.toThingDefStuffDefPair();
                 bool anotherFound = WeaponAssingment.equipSpecificWeaponTypeFromInventory(pawn, weapon, false, false);
                 if (!anotherFound)
@@ -37,12 +36,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void TryCastShot(Verb_MeleeAttack __instance)
         {
-            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-            FieldInfo field = (__instance.GetType()).GetField("currentTarget", bindFlags);
-            object fieldValue = field.GetValue(__instance);
-            if (fieldValue != null && fieldValue is LocalTargetInfo)
+            if (__instance.CurrentTarget != null)
             {
-                Thing targetThing = ((LocalTargetInfo)fieldValue).Thing;
+                Thing targetThing = __instance.CurrentTarget.Thing;
                 if (__instance.CasterPawn != null && targetThing != null && targetThing is Pawn && !(targetThing as Pawn).Dead && (targetThing as Pawn).RaceProps.Humanlike && (targetThing as Pawn).equipment != null)
                 {
                     WeaponAssingment.doCQC(targetThing as Pawn, __instance.CasterPawn);

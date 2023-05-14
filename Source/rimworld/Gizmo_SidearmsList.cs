@@ -38,15 +38,16 @@ namespace SimpleSidearms.rimworld
 
         //public Texture2D[] iconTextures;
         public Action hotkeyAction;
+        CompSidearmMemory pawnMemory;
 
         public Pawn parent;
-        public IEnumerable<ThingWithComps> carriedWeapons;
-        public IEnumerable<ThingWithComps> carriedRangedWeapons { get { return carriedWeapons.Where(w => w.def.IsRangedWeapon); } }
-        public IEnumerable<ThingWithComps> carriedMeleeWeapons { get { return carriedWeapons.Where(w => w.def.IsMeleeWeapon); } }
+        public List<ThingWithComps> carriedWeapons;
+        public List<ThingWithComps> carriedRangedWeapons;
+        public List<ThingWithComps> carriedMeleeWeapons;
 
-        public IEnumerable<ThingDefStuffDefPair> weaponMemories;
-        public IEnumerable<ThingDefStuffDefPair> rangedWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsRangedWeapon); } }
-        public IEnumerable<ThingDefStuffDefPair> meleeWeaponMemories { get { return weaponMemories.Where(w => w.thing.IsMeleeWeapon); } }
+        public List<ThingDefStuffDefPair> weaponMemories;
+        public List<ThingDefStuffDefPair> rangedWeaponMemories;
+        public List<ThingDefStuffDefPair> meleeWeaponMemories;
 
         public enum SidearmsListInteraction
         {
@@ -65,12 +66,11 @@ namespace SimpleSidearms.rimworld
 
         public override float GetWidth(float maxWidth)
         {
-            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
             if (pawnMemory == null)
                 return 75;
             int biggerCount = Math.Max(
-                carriedRangedWeapons.Count() + countMissingRangedWeapons(pawnMemory, parent),
-                carriedMeleeWeapons.Count() + countMissingMeleeWeapons(pawnMemory, parent) + 1
+                carriedRangedWeapons.Count + countMissingRangedWeapons(pawnMemory, parent),
+                carriedMeleeWeapons.Count + countMissingMeleeWeapons(pawnMemory, parent) + 1
                 );
             float width = SelectorPanelWidth + ContentPadding + (IconSize * biggerCount) + IconGap * (biggerCount - 1) + ContentPadding;
             if (!Settings.SettingsEverOpened)
@@ -78,12 +78,30 @@ namespace SimpleSidearms.rimworld
             return Math.Min(Math.Max(width, MinGizmoSize), maxWidth);
         }
 
-        public Gizmo_SidearmsList(Pawn parent, IEnumerable<ThingWithComps> carriedWeapons, IEnumerable<ThingDefStuffDefPair> weaponMemories)
+        public Gizmo_SidearmsList(Pawn parent, List<ThingWithComps> carriedWeapons, List<ThingDefStuffDefPair> weaponMemories, CompSidearmMemory pawnMemory)
         {
             this.parent = parent;
 
+            this.pawnMemory = pawnMemory;
+            
             this.carriedWeapons = carriedWeapons;
+            this.carriedRangedWeapons = new List<ThingWithComps>();
+            this.carriedMeleeWeapons = new List<ThingWithComps>();
+            for (int i = carriedWeapons.Count - 1; i >= 0; i--)
+            {
+                var tmp = carriedWeapons[i];
+                if (tmp.def.IsRangedWeapon) carriedRangedWeapons.Add(tmp);
+                else if (tmp.def.IsMeleeWeapon) carriedMeleeWeapons.Add(tmp);
+            }
             this.weaponMemories = weaponMemories;
+            this.rangedWeaponMemories = new List<ThingDefStuffDefPair>();
+            this.meleeWeaponMemories = new List<ThingDefStuffDefPair>();
+            for (int i = weaponMemories.Count - 1; i >= 0; i--)
+            {
+                var tmp = weaponMemories[i];
+                if (tmp.thing.IsRangedWeapon) rangedWeaponMemories.Add(tmp);
+                else if (tmp.thing.IsMeleeWeapon) meleeWeaponMemories.Add(tmp);
+            }
             tutorTag = "SidearmsList";
             this.defaultLabel = "DrawSidearm_gizmoTitle".Translate();
             this.defaultDesc = "DrawSidearm_gizmoTooltip".Translate();
@@ -110,19 +128,18 @@ namespace SimpleSidearms.rimworld
             var contentRect = gizmoRect.ContractedBy(ContentPadding);
             Widgets.DrawWindowBackground(gizmoRect);
 
-            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
             if (pawnMemory == null)
                 return new GizmoResult(GizmoState.Clear);
 
             int total = 0;
             Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
             {
-                var rangedWeapons = carriedRangedWeapons.ToList();
-                rangedWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
+                carriedRangedWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
 
                 int i = 0;
-                foreach (var weapon in rangedWeapons)
+                for (int j = carriedRangedWeapons.Count; j-- > 0;)
                 {
+                    var weapon = carriedRangedWeapons[j];
                     ThingDefStuffDefPair weaponMemory = weapon.toThingDefStuffDefPair();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
@@ -141,9 +158,8 @@ namespace SimpleSidearms.rimworld
 
             if (pawnMemory != null)
             {
-                var rangedWeaponMemoriesSorted = rangedWeaponMemories.ToList();
-                rangedWeaponMemoriesSorted.SortStable((a, b) => { return (int)((b.Price - a.Price) * 1000); });
-                var grouped = rangedWeaponMemoriesSorted.GroupBy(m => m);
+                rangedWeaponMemories.SortStable((a, b) => { return (int)((b.Price - a.Price) * 1000); });
+                var grouped = rangedWeaponMemories.GroupBy(m => m);
 
                 int j = 0;
                 foreach (var group in grouped)
@@ -170,11 +186,11 @@ namespace SimpleSidearms.rimworld
             total = 0;
 
             {
-                var meleeWeapons = carriedMeleeWeapons.ToList();
-                meleeWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
+                carriedMeleeWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
                 int i = 0;
-                foreach(var weapon in meleeWeapons)
+                for (int j = carriedMeleeWeapons.Count; j-- > 0;)
                 {
+                    var weapon = carriedMeleeWeapons[j];
                     ThingDefStuffDefPair weaponMemory = weapon.toThingDefStuffDefPair();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
@@ -189,13 +205,12 @@ namespace SimpleSidearms.rimworld
                 total += i;
             }
 
-            dupeCounters.Clear();
+            dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
 
             if (pawnMemory != null)
             {
-                var meleeWeaponMemoriesSorted = meleeWeaponMemories.ToList();
-                meleeWeaponMemoriesSorted.SortStable((a, b) => { return (int)((b.Price - a.Price) * 1000); });
-                var grouped = meleeWeaponMemoriesSorted.GroupBy(m => m);
+                meleeWeaponMemories.SortStable((a, b) => { return (int)((b.Price - a.Price) * 1000); });
+                var grouped = meleeWeaponMemories.GroupBy(m => m);
 
                 int j = 0;
                 foreach (var group in grouped)
@@ -675,7 +690,6 @@ namespace SimpleSidearms.rimworld
         public const int RIGHT_CLICK = 1;
         public void handleInteraction(SidearmsListInteraction interaction, Event ev)
         {
-            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
             if (pawnMemory == null)
                 return;
 
@@ -984,10 +998,7 @@ namespace SimpleSidearms.rimworld
 
             Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
 
-            var weaponMemories = meleeWeaponMemories.ToList();
-            var grouped = weaponMemories.GroupBy(m => m);
-
-            foreach (var group in grouped)
+            foreach (var group in meleeWeaponMemories.GroupBy(m => m))
             {
                 var weapon = group.Key;
                 var stackCount = group.Count();
@@ -1013,10 +1024,8 @@ namespace SimpleSidearms.rimworld
             int count = 0;
 
             Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
-            var weaponMemories = rangedWeaponMemories.ToList();
-            var grouped = weaponMemories.GroupBy(m => m);
 
-            foreach (var group in grouped)
+            foreach (var group in rangedWeaponMemories.GroupBy(m => m))
             {
                 var weapon = group.Key;
                 var stackCount = group.Count();

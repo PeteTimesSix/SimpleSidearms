@@ -248,7 +248,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         {
             if (weapon == null)
                 return false;
-            CompEquippable equip = weapon.TryGetComp<CompEquippable>();
+            CompEquippable equip = weapon.GetComp<CompEquippable>();
             if (equip == null)
                 return false;
             if (equip.PrimaryVerb.verbProps.onlyManualCast)
@@ -261,7 +261,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         {
             if (weapon == null)
                 return false;
-            CompEquippable equip = weapon.TryGetComp<CompEquippable>();
+            CompEquippable equip = weapon.GetComp<CompEquippable>();
             if (equip == null)
                 return false;
             if (equip.PrimaryVerb.IsIncendiary_Melee() || equip.PrimaryVerb.IsIncendiary_Ranged() || equip.PrimaryVerb.verbProps.ai_IsBuildingDestroyer)
@@ -274,7 +274,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         {
             if (weapon == null)
                 return false;
-            CompEquippable equip = weapon.TryGetComp<CompEquippable>();
+            CompEquippable equip = weapon.GetComp<CompEquippable>();
             if (equip == null)
                 return false;
             if (equip.PrimaryVerb.IsEMP())
