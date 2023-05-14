@@ -152,7 +152,10 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                     if (!compBladelinkWeapon.Biocoded)
                     {
                         var list = compBladelinkWeapon.TraitsListForReading;
-                        for (int i = list.Count - 1; i >= 0; i--) if (list[i].neverBond) goto SkipNeverBonded;
+                        if (!compBladelinkWeapon.Props.biocodeOnEquip) 
+                            goto SkipNeverBonded;
+                        for (int i = list.Count - 1; i >= 0; i--) if (list[i].neverBond) 
+                            goto SkipNeverBonded;
                         
                         errString = "SidearmPickupFail_NotYetBladelinkBonded".Translate();
                         return false;
