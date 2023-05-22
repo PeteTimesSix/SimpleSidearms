@@ -11,6 +11,8 @@ using Verse;
 using Verse.Sound;
 using static PeteTimesSix.SimpleSidearms.Utilities.Enums;
 using static PeteTimesSix.SimpleSidearms.SimpleSidearms;
+using PeteTimesSix.SimpleSidearms.Compat;
+using Verse.AI;
 
 namespace SimpleSidearms.rimworld
 {
@@ -56,6 +58,7 @@ namespace SimpleSidearms.rimworld
             SelectorSkill,
             SelectorMelee,
             Weapon,
+            UnmemorisedWeapon,
             WeaponMemory,
             Unarmed
         }
@@ -64,7 +67,14 @@ namespace SimpleSidearms.rimworld
         public ThingDefStuffDefPair? interactionWeaponType;
         public bool interactionWeaponIsDuplicate;
 
+        public static float lastFrameWidth = 0f;
+
         public override float GetWidth(float maxWidth)
+        {
+            return lastFrameWidth;
+        }
+        
+        /*public override float GetWidth(float maxWidth)
         {
             if (pawnMemory == null)
                 return 75;
@@ -76,7 +86,7 @@ namespace SimpleSidearms.rimworld
             if (!Settings.SettingsEverOpened)
                 width += (FirstTimeSettingsWarningWidth + 2);
             return Math.Min(Math.Max(width, MinGizmoSize), maxWidth);
-        }
+        }*/
 
         public Gizmo_SidearmsList(Pawn parent, List<ThingWithComps> carriedWeapons, List<ThingDefStuffDefPair> weaponMemories, CompSidearmMemory pawnMemory)
         {
@@ -109,7 +119,137 @@ namespace SimpleSidearms.rimworld
 
         public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
         {
-            return GizmoOnGUI_old(topLeft, maxWidth);
+            return GizmoOnGUI_New(topLeft, maxWidth, parms);
+        }
+
+        public GizmoResult GizmoOnGUI_New(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
+        {
+            var gizmoRect = new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), MinGizmoSize);
+
+            if (Mouse.IsOver(gizmoRect))
+            {
+                LessonAutoActivator.TeachOpportunity(SidearmsDefOf.Concept_SimpleSidearmsBasic, OpportunityType.Important);
+            }
+
+            Widgets.DrawWindowBackground(gizmoRect);
+            var contentRect = gizmoRect.ContractedBy(ContentPadding);
+
+            Rect selectorPanel = new Rect(gizmoRect.x + ContentPadding, gizmoRect.y + ContentPadding, SelectorPanelWidth - ContentPadding * 2, MinGizmoSize - ContentPadding * 2);
+            DrawPreferenceSelector(parent, pawnMemory, selectorPanel);
+
+            var widthRanged = DrawRangedList(contentRect);
+            var widthMelee = DrawMeleeList(contentRect);
+
+            UIHighlighter.HighlightOpportunity(gizmoRect, "SidearmList");
+
+            if (!Settings.SettingsEverOpened)
+            {
+                Rect position = new Rect((gizmoRect.x + gizmoRect.width - (FirstTimeSettingsWarningWidth + 2)), gizmoRect.y + 4, FirstTimeSettingsWarningWidth, FirstTimeSettingsWarningWidth);
+                float brightness = Pulser.PulseBrightness(1f, 0.5f);
+                GUI.color = new Color(brightness, brightness, 0f);
+                GUI.DrawTexture(position, TextureResources.FirstTimeSettingsWarningIcon);
+                if (Widgets.ButtonInvisible(position))
+                {
+                    var dialog = new Dialog_ModSettings(ModSingleton);
+                    Find.WindowStack.Add(dialog);
+                }
+                TooltipHandler.TipRegion(position, "FirstTimeSettingsWarning".Translate());
+            }
+
+            GUI.color = Color.white;
+
+            if (parent.IsColonistPlayerControlled)
+                DrawGizmoLabel(defaultLabel, gizmoRect);
+            else
+                DrawGizmoLabel(defaultLabel + " (godmode)", gizmoRect);
+
+            lastFrameWidth = Math.Max(widthRanged, widthMelee) + selectorPanel.width + ContentPadding * 2;
+            if (!Settings.SettingsEverOpened)
+                lastFrameWidth += (FirstTimeSettingsWarningWidth + 2);
+
+            return interactedWith != SidearmsListInteraction.None ? new GizmoResult(GizmoState.Interacted, Event.current) : new GizmoResult(GizmoState.Clear);
+        }
+
+        public float DrawRangedList(Rect contentRect) 
+        {
+            carriedRangedWeapons = carriedRangedWeapons
+                .OrderByDescending(t => t == parent.equipment.Primary ? 2 : ((Tacticowl.active && Tacticowl.isOffHand(t)) ? 1 : 0))
+                .ThenByDescending(t => t.MarketValue).ToList();
+            var unsatisfiedRangedMemories = new List<ThingDefStuffDefPair>(rangedWeaponMemories);
+
+            var found = new HashSet<ThingDefStuffDefPair>();
+
+            int pos = 0;
+            for (; pos < carriedRangedWeapons.Count; pos++)
+            {
+                var weapon = carriedRangedWeapons[pos];
+                ThingDefStuffDefPair weaponMemory = weapon.toThingDefStuffDefPair();
+                bool isDupe = found.Contains(weaponMemory);
+                found.Add(weaponMemory);
+
+                var iconPos = new Vector2((IconSize * pos) + IconGap * (pos - 1) + SelectorPanelWidth, 0);
+                DrawIconForWeapon(parent, pawnMemory, weapon, unsatisfiedRangedMemories, isDupe, contentRect, iconPos);
+            }
+
+            if(unsatisfiedRangedMemories.Count > 0) 
+            {
+                unsatisfiedRangedMemories.SortStable((a, b) => { return (int)((b.thing.BaseMarketValue - a.thing.BaseMarketValue) * 1000); });
+                while (unsatisfiedRangedMemories.Any())
+                {
+                    var entry = unsatisfiedRangedMemories[0];
+                    var remainingCount = unsatisfiedRangedMemories.Count(m => m == entry);
+
+                    var iconPos = new Vector2((IconSize * pos) + IconGap * (pos - 1) + SelectorPanelWidth, 0);
+                    DrawIconForWeaponMemory(parent, pawnMemory, entry, remainingCount, found.Contains(entry), contentRect, iconPos);
+                    unsatisfiedRangedMemories.RemoveAll(m => m == entry);
+                    pos++;
+                }
+            }
+
+            return (pos * IconSize + IconGap) - IconGap;
+        }
+
+        public float DrawMeleeList(Rect contentRect) 
+        {
+            carriedMeleeWeapons = carriedMeleeWeapons
+                .OrderByDescending(t => t == parent.equipment.Primary ? 2 : ((Tacticowl.active && Tacticowl.isOffHand(t)) ? 1 : 0))
+                .ThenByDescending(t => t.MarketValue).ToList();
+            var unsatisfiedMeleeMemories = new List<ThingDefStuffDefPair>(meleeWeaponMemories);
+
+            var found = new HashSet<ThingDefStuffDefPair>();
+
+            int pos = 0;
+            for (; pos < carriedMeleeWeapons.Count; pos++)
+            {
+                var weapon = carriedMeleeWeapons[pos];
+                ThingDefStuffDefPair weaponMemory = weapon.toThingDefStuffDefPair();
+                bool isDupe = found.Contains(weaponMemory);
+                found.Add(weaponMemory);
+
+                var iconPos = new Vector2((IconSize * pos) + IconGap * (pos - 1) + SelectorPanelWidth, IconSize + IconGap);
+                DrawIconForWeapon(parent, pawnMemory, weapon, unsatisfiedMeleeMemories, isDupe, contentRect, iconPos);
+            }
+
+            if (unsatisfiedMeleeMemories.Count > 0)
+            {
+                unsatisfiedMeleeMemories.SortStable((a, b) => { return (int)((b.thing.BaseMarketValue - a.thing.BaseMarketValue) * 1000); });
+                while (unsatisfiedMeleeMemories.Any())
+                {
+                    var entry = unsatisfiedMeleeMemories[0];
+                    var remainingCount = unsatisfiedMeleeMemories.Count(m => m == entry);
+
+                    var iconPos = new Vector2((IconSize * pos) + IconGap * (pos - 1) + SelectorPanelWidth, IconSize + IconGap);
+                    DrawIconForWeaponMemory(parent, pawnMemory, entry, remainingCount, found.Contains(entry), contentRect, iconPos);
+                    unsatisfiedMeleeMemories.RemoveAll(m => m == entry);
+                    pos++;
+                }
+            }
+
+            var unarmedIconOffset = new Vector2((IconSize * pos) + (IconGap * (pos - 1)) + SelectorPanelWidth, IconSize + IconGap);
+            DrawIconForUnarmed(parent, pawnMemory, contentRect, unarmedIconOffset);
+            pos++;
+
+            return (pos * IconSize) + (IconGap * (pos - 1));
         }
 
         private GizmoResult GizmoOnGUI_old(Vector2 topLeft, float maxWidth)
@@ -131,24 +271,25 @@ namespace SimpleSidearms.rimworld
             if (pawnMemory == null)
                 return new GizmoResult(GizmoState.Clear);
 
+            var unsatisfiedRangedMemories = new List<ThingDefStuffDefPair>(rangedWeaponMemories);
+
             int total = 0;
             Dictionary<ThingDefStuffDefPair, int> dupeCounters = new Dictionary<ThingDefStuffDefPair, int>();
             {
                 carriedRangedWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
 
                 int i = 0;
-                for (int j = carriedRangedWeapons.Count; j-- > 0;)
+                for (; i < carriedRangedWeapons.Count; i++)
                 {
-                    var weapon = carriedRangedWeapons[j];
+                    var weapon = carriedRangedWeapons[i];
                     ThingDefStuffDefPair weaponMemory = weapon.toThingDefStuffDefPair();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
                     bool isDupe = dupeCounters[weaponMemory] > 0;
                     var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1) + SelectorPanelWidth, 0);
-                    DrawIconForWeapon(parent, pawnMemory, weapon, isDupe, contentRect, iconOffset);
+                    DrawIconForWeapon(parent, pawnMemory, weapon, unsatisfiedRangedMemories, isDupe, contentRect, iconOffset);
 
-                    i++;
                     dupeCounters[weaponMemory] += weapon.stackCount;
                 }
                 total += i;
@@ -182,24 +323,25 @@ namespace SimpleSidearms.rimworld
                 }
             }
 
+            var unsatisfiedMeleeMemories = new List<ThingDefStuffDefPair>(meleeWeaponMemories);
+
             dupeCounters.Clear();
             total = 0;
 
             {
                 carriedMeleeWeapons.SortStable((a, b) => { return (int)((b.MarketValue - a.MarketValue) * 1000); });
                 int i = 0;
-                for (int j = carriedMeleeWeapons.Count; j-- > 0;)
+                for (; i < carriedMeleeWeapons.Count; i++)
                 {
-                    var weapon = carriedMeleeWeapons[j];
+                    var weapon = carriedMeleeWeapons[i];
                     ThingDefStuffDefPair weaponMemory = weapon.toThingDefStuffDefPair();
                     if (!dupeCounters.ContainsKey(weaponMemory))
                         dupeCounters[weaponMemory] = 0;
 
                     bool isDupe = dupeCounters[weaponMemory] > 0;
                     var iconOffset = new Vector2((IconSize * i) + IconGap * (i - 1) + SelectorPanelWidth, IconSize + IconGap);
-                    DrawIconForWeapon(parent, pawnMemory, weapon, isDupe, contentRect, iconOffset);
+                    DrawIconForWeapon(parent, pawnMemory, weapon, unsatisfiedMeleeMemories, isDupe, contentRect, iconOffset);
 
-                    i++;
                     dupeCounters[weaponMemory] += weapon.stackCount;
                 }
                 total += i;
@@ -437,7 +579,7 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        public void DrawIconForWeapon(Pawn pawn, CompSidearmMemory pawnMemory, ThingWithComps weapon, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
+        public void DrawIconForWeapon(Pawn pawn, CompSidearmMemory pawnMemory, ThingWithComps weapon, List<ThingDefStuffDefPair> unsatisfiedMemories, bool isDuplicate, Rect contentRect, Vector2 iconOffset)
         {
             if (weapon is null || weapon.def is null || weapon.def.uiIcon is null)
                 return;
@@ -454,14 +596,14 @@ namespace SimpleSidearms.rimworld
             {
                 if (pawn.Drafted)
                 {
-                    if (pawnMemory.ForcedWeaponWhileDrafted == weapon.toThingDefStuffDefPair())
+                    if (pawnMemory.ForcedWeaponWhileDrafted == weaponType)
                         hoverText = "DrawSidearm_gizmoTooltipForcedWhileDrafted".Translate();
                     else
                         hoverText = "DrawSidearm_gizmoTooltipWhileDrafted".Translate();
                 }
                 else
                 {
-                    if (pawnMemory.ForcedWeapon == weapon.toThingDefStuffDefPair())
+                    if (pawnMemory.ForcedWeapon == weaponType)
                         hoverText = "DrawSidearm_gizmoTooltipForced".Translate();
                     else
                     {
@@ -487,12 +629,15 @@ namespace SimpleSidearms.rimworld
                 hoverText = "DrawSidearm_blocked".Translate() + ": " + interactionBlockedReason;
             }
 
-            TooltipHandler.TipRegion(iconRect, string.Format(hoverText, weapon.toThingDefStuffDefPair().getLabel()));
+            TooltipHandler.TipRegion(iconRect, string.Format(hoverText, weapon.Label));
             MouseoverSounds.DoRegion(iconRect, SoundDefOf.Mouseover_Command);
 
+            bool isMemorised = unsatisfiedMemories.Contains(weaponType);
+
             Texture2D drawPocket;
-            if (pawnMemory.RememberedWeapons.Contains(weapon.toThingDefStuffDefPair()))
+            if (isMemorised)
             {
+                unsatisfiedMemories.Remove(weaponType);
                 drawPocket = TextureResources.drawPocket;
             }
             else
@@ -541,13 +686,21 @@ namespace SimpleSidearms.rimworld
             {
                 GUI.DrawTexture(iconRect, TextureResources.weaponTypeManual);
             }
+            if (GettersFilters.isEMPWeapon(weapon))
+            {
+                GUI.DrawTexture(iconRect, TextureResources.weaponTypeEMP);
+            }
             if (GettersFilters.isDangerousWeapon(weapon))
             {
                 GUI.DrawTexture(iconRect, TextureResources.weaponTypeDangerous);
             }
-            if (GettersFilters.isEMPWeapon(weapon))
+            if (VFECore.active && Tacticowl.active && Tacticowl.canBeOffHand(weaponType.thing))
             {
-                GUI.DrawTexture(iconRect, TextureResources.weaponTypeEMP);
+                GUI.DrawTexture(iconRect, TextureResources.weaponTypeShieldCompat);
+            }
+            if (Tacticowl.active && Tacticowl.canBeOffHand(weaponType.thing))
+            {
+                GUI.DrawTexture(iconRect, TextureResources.weaponTypeOffhandCompat);
             }
 
             if (!allowInteraction) 
@@ -563,25 +716,31 @@ namespace SimpleSidearms.rimworld
                 Text.Anchor = store;
             }
 
-            if (!isDuplicate)
+            //if ( || ((pawn.equipment.Primary == null || pawn.equipment.Primary.toThingDefStuffDefPair() != weaponType) && !isDuplicate))
             {
-                GUI.color = Color.white;
-
-
-                if (pawnMemory.ForcedWeaponWhileDrafted == weaponType)
+                if (pawnMemory.ForcedWeaponWhileDrafted == weaponType && pawn.equipment.Primary == weapon)
                     GUI.DrawTexture(iconRect, TextureResources.forcedDrafted);
 
-                if (pawnMemory.ForcedWeapon == weaponType)
+                if (pawnMemory.ForcedWeapon == weaponType && pawn.equipment.Primary == weapon)
                     GUI.DrawTexture(iconRect, TextureResources.forcedAlways);
 
                 if (weaponType.thing.IsRangedWeapon & pawnMemory.DefaultRangedWeapon == weaponType)
                     GUI.DrawTexture(iconRect, TextureResources.defaultRanged);
                 else if (pawnMemory.PreferredMeleeWeapon == weaponType)
                     GUI.DrawTexture(iconRect, TextureResources.preferredMelee);
-
-                GUI.color = Color.white;
             }
 
+            if (pawn.equipment.Primary == weapon)
+            {
+                if (Tacticowl.active && !Tacticowl.isTwoHanded(weaponType.thing))
+                    GUI.DrawTexture(iconRect, TextureResources.weaponHeldMainhand);
+                else
+                    GUI.DrawTexture(iconRect, TextureResources.weaponHeldTwohand);
+            }
+            else if (Tacticowl.active && Tacticowl.isOffHand(weapon))
+            {
+                GUI.DrawTexture(iconRect, TextureResources.weaponHeldOffhand);
+            }
 
             if (allowInteraction)
             {
@@ -593,7 +752,10 @@ namespace SimpleSidearms.rimworld
 
                 if (Widgets.ButtonInvisible(iconRect, true))
                 {
-                    interactedWith = SidearmsListInteraction.Weapon;
+                    if (isMemorised)
+                        interactedWith = SidearmsListInteraction.Weapon;
+                    else
+                        interactedWith = SidearmsListInteraction.UnmemorisedWeapon;
                     interactionWeapon = weapon;
                     interactionWeaponIsDuplicate = isDuplicate;
                 }
@@ -719,46 +881,72 @@ namespace SimpleSidearms.rimworld
                         pawnMemory.primaryWeaponMode = PrimaryWeaponMode.Melee;
                         break;
                     case SidearmsListInteraction.Weapon:
-                        Thing weapon = interactionWeapon;
-                        ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
-                        if (parent.Drafted)
                         {
-                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
-                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-
-                            pawnMemory.SetWeaponAsForced(weaponType, true);
-                            if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
-                                WeaponAssingment.equipSpecificWeaponTypeFromInventory(parent, weaponType, MiscUtils.shouldDrop(parent, dropMode, false), false);
-                        }
-                        else if (pawnMemory.DefaultRangedWeapon == weaponType || pawnMemory.PreferredMeleeWeapon == weaponType || weaponType.isToolNotWeapon())
-                        {
-                            if(weaponType.thing.IsRangedWeapon)
-                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
-                            else
-                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
-                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-
-                            pawnMemory.SetWeaponAsForced(weaponType, false);
-                            if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
-                                WeaponAssingment.equipSpecificWeaponTypeFromInventory(parent, weaponType, MiscUtils.shouldDrop(parent, dropMode, false), false);
-                        }
-                        else
-                        {
-                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-                            if (weaponType.thing.IsRangedWeapon)
+                            ThingWithComps weapon = interactionWeapon;
+                            ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
+                            if (parent.Drafted)
                             {
-                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
-                                pawnMemory.SetRangedWeaponTypeAsDefault(weaponType);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                pawnMemory.SetWeaponAsForced(weaponType, true);
+                                if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
+                                {
+                                    WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                }
+                            }
+                            else if (pawnMemory.DefaultRangedWeapon == weaponType || pawnMemory.PreferredMeleeWeapon == weaponType || weaponType.isToolNotWeapon())
+                            {
+                                if (weaponType.thing.IsRangedWeapon)
+                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
+                                else
+                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                pawnMemory.SetWeaponAsForced(weaponType, false);
+                                if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
+                                {
+                                    WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                }
                             }
                             else
                             {
-                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
-                                pawnMemory.SetMeleeWeaponTypeAsPreferred(weaponType);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+                                if (weaponType.thing.IsRangedWeapon)
+                                {
+                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
+                                    pawnMemory.SetRangedWeaponTypeAsDefault(weaponType);
+                                }
+                                else
+                                {
+                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
+                                    pawnMemory.SetMeleeWeaponTypeAsPreferred(weaponType);
+                                }
+                            }
+                        }
+                        break;
+                    case SidearmsListInteraction.UnmemorisedWeapon:
+                        {
+                            ThingWithComps weapon = interactionWeapon;
+                            ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
+                            if (parent.Drafted)
+                            {
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                pawnMemory.SetWeaponAsForced(weaponType, true);
+                                if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
+                                {
+                                    WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                }
+                            }
+                            else
+                            {
+                                pawnMemory.InformOfAddedSidearm(weapon);
                             }
                         }
                         break;
                     case SidearmsListInteraction.WeaponMemory:
-
                         ThingDefStuffDefPair weaponMemory = interactionWeaponType.Value;
                         if (parent.Drafted)
                         {
@@ -823,76 +1011,114 @@ namespace SimpleSidearms.rimworld
                     case SidearmsListInteraction.SelectorMelee:
                         break;
                     case SidearmsListInteraction.Weapon:
-                        Thing weapon = interactionWeapon;
-                        ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
-
-                        if (interactionWeaponIsDuplicate)
                         {
-                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsDropping, KnowledgeAmount.SpecificInteraction);
-                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+                            ThingWithComps weapon = interactionWeapon;
+                            ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
 
-                            WeaponAssingment.dropSidearm(parent, weapon, true);
+                            /*if (interactionWeaponIsDuplicate)
+                            {
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsDropping, KnowledgeAmount.SpecificInteraction);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                WeaponAssingment.dropSidearm(parent, weapon, true);
+                            }
+                            else*/
+                            {
+                                if (parent.Drafted)
+                                {
+                                    if (pawnMemory.ForcedWeaponWhileDrafted == weaponType && parent.equipment.Primary == weapon)
+                                    {
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                        pawnMemory.UnsetForcedWeapon(true);
+                                    }
+                                    else
+                                    {
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsDropping, KnowledgeAmount.SpecificInteraction);
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                        WeaponAssingment.DropSidearm(parent, weapon, true, false);
+                                    }
+                                }
+                                else
+                                {
+                                    if (pawnMemory.ForcedWeapon == weaponType && parent.equipment.Primary == weapon)
+                                    {
+                                        if (weaponType.thing.IsRangedWeapon)
+                                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
+                                        else
+                                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                        pawnMemory.UnsetForcedWeapon(false);
+                                    }
+                                    else if (weaponType.thing.IsRangedWeapon & pawnMemory.DefaultRangedWeapon == weaponType)
+                                    {
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                        pawnMemory.UnsetRangedWeaponDefault();
+                                    }
+                                    else if (pawnMemory.PreferredMeleeWeapon == weaponType)
+                                    {
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                        pawnMemory.UnsetMeleeWeaponPreference();
+                                    }
+                                    else
+                                    {
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsDropping, KnowledgeAmount.SpecificInteraction);
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                        WeaponAssingment.DropSidearm(parent, weapon, true, true);
+                                    }
+                                }
+                            }
                         }
-                        else
+                        break;
+                    case SidearmsListInteraction.UnmemorisedWeapon:
                         {
+                            ThingWithComps weapon = interactionWeapon;
+                            ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
+
                             if (parent.Drafted)
                             {
-                                if (pawnMemory.ForcedWeaponWhileDrafted == weaponType)
+                                if(pawnMemory.ForcedWeaponWhileDrafted == weaponType && parent.equipment.Primary == weapon)
                                 {
                                     PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
                                     PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
                                     pawnMemory.UnsetForcedWeapon(true);
                                 }
-                            }
-                            else
-                            {
-                                if (pawnMemory.ForcedWeapon == weaponType)
-                                {
-                                    if (weaponType.thing.IsRangedWeapon)
-                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
-                                    else
-                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-
-                                    pawnMemory.UnsetForcedWeapon(false);
-                                }
-                                else if (weaponType.thing.IsRangedWeapon & pawnMemory.DefaultRangedWeapon == weaponType)
-                                {
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-
-                                    pawnMemory.UnsetRangedWeaponDefault();
-                                }
-                                else if (pawnMemory.PreferredMeleeWeapon == weaponType)
-                                {
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-
-                                    pawnMemory.UnsetMeleeWeaponPreference();
-                                }
                                 else
                                 {
                                     PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsDropping, KnowledgeAmount.SpecificInteraction);
                                     PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
-                                    WeaponAssingment.dropSidearm(parent, weapon, true);
+                                    WeaponAssingment.DropSidearm(parent, weapon, true, false);
                                 }
                             }
-                        }
+                            else{
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsDropping, KnowledgeAmount.SpecificInteraction);
+                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
+                                WeaponAssingment.DropSidearm(parent, weapon, true, false);
+                            }
+                        }
                         break;
                     case SidearmsListInteraction.WeaponMemory:
                         ThingDefStuffDefPair weaponMemory = interactionWeaponType.Value;
 
-                        if (interactionWeaponIsDuplicate)
+                        /*if (interactionWeaponIsDuplicate)
                         {
                             PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsMissing, KnowledgeAmount.SmallInteraction);
                             PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
                             pawnMemory.ForgetSidearmMemory(weaponMemory);
                         }
-                        else
+                        else*/
                         {
                             if (parent.Drafted)
                             {

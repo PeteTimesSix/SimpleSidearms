@@ -212,7 +212,7 @@ namespace SimpleSidearms.rimworld
                 return;
             }
             if (_cache == null) _cache = new Dictionary<int, CompSidearmMemory>();
-            _cache.AddDistinct(Owner.thingIDNumber, this);
+            _cache[Owner.thingIDNumber] = this;
         }
 
         public override void PostExposeData()
@@ -394,11 +394,11 @@ namespace SimpleSidearms.rimworld
             if (weapon != null)
             {
                 ThingDefStuffDefPair weaponType = weapon.toThingDefStuffDefPair();
-                var carriedOfType = Owner.getCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
-                var rememberedOfType = rememberedWeapons.Where(w => w == weaponType);
+                //var carriedOfType = Owner.getCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
+                //var rememberedOfType = rememberedWeapons.Where(w => w == weaponType);
 
-                if (rememberedOfType.Count() < carriedOfType.Sum(c => c.stackCount))
-                    rememberedWeapons.Add(weapon.toThingDefStuffDefPair());
+                //if (rememberedOfType.Count() < carriedOfType.Sum(c => c.stackCount))
+                rememberedWeapons.Add(weapon.toThingDefStuffDefPair());
             }
         }
 

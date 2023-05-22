@@ -26,11 +26,18 @@ namespace PeteTimesSix.SimpleSidearms
         public static readonly Texture2D forcedAlways = ContentFinder<Texture2D>.Get("sidearm_forced_always", true);
         public static readonly Texture2D forcedDrafted = ContentFinder<Texture2D>.Get("sidearm_forced_drafted", true);
 
+        public static readonly Texture2D weaponHeldTwohand = ContentFinder<Texture2D>.Get("weapon_held_twohand", true);
+        public static readonly Texture2D weaponHeldMainhand = ContentFinder<Texture2D>.Get("weapon_held_mainhand", true);
+        public static readonly Texture2D weaponHeldOffhand = ContentFinder<Texture2D>.Get("weapon_held_offhand", true);
+
         public static readonly Texture2D blockedWeapon = ContentFinder<Texture2D>.Get("blocked_weapon", true);
 
         public static readonly Texture2D weaponTypeManual = ContentFinder<Texture2D>.Get("weaponType_manual", true);
         public static readonly Texture2D weaponTypeDangerous = ContentFinder<Texture2D>.Get("weaponType_dangerous", true);
         public static readonly Texture2D weaponTypeEMP = ContentFinder<Texture2D>.Get("weaponType_emp", true);
+
+        public static readonly Texture2D weaponTypeOffhandCompat = ContentFinder<Texture2D>.Get("weaponType_offhandcompat", true);
+        public static readonly Texture2D weaponTypeShieldCompat = ContentFinder<Texture2D>.Get("weaponType_shieldcompat", true);
 
         public static readonly Texture2D SpeedBiasSliderPositive = ContentFinder<Texture2D>.Get("speedBiasSliderPositive", true);
         public static readonly Texture2D SpeedBiasSliderNegative = ContentFinder<Texture2D>.Get("speedBiasSliderNegative", true);

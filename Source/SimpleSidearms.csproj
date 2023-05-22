@@ -37,6 +37,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Compat\OptionalPatches.cs" />
+    <Compile Include="Compat\Tacticowl.cs" />
+    <Compile Include="Compat\VFECore.cs" />
     <Compile Include="Intercepts\Intercepts_Caravan.cs" />
     <Compile Include="UI\CurveEditorPublic.cs" />
     <Compile Include="UI\ListingExtensions.cs" />

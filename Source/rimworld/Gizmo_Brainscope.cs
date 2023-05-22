@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using PeteTimesSix.SimpleSidearms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,6 +85,13 @@ namespace SimpleSidearms.rimworld
                     printStringPair("JobDriver:", curJobDriverStr, Color.white, contentRect, offset); offset += 10f;
                     //printStringPair("Toil:", toilStr, Color.white, contentRect, offset); offset += 10f;
                     //printStringPair("T. actSk:", toilActiveSkillStr, Color.white, contentRect, offset);
+                    CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(parent);
+                    if(pawnMemory != null)
+                    {
+                        printStringPair("def. rng:", pawnMemory.DefaultRangedWeapon?.getLabel() ?? "null", Color.white, contentRect, offset); offset += 10f;
+                        printStringPair("pref. mle:", pawnMemory.PreferredMeleeWeapon?.getLabel() ?? "null", Color.white, contentRect, offset); offset += 10f;
+                        printStringPair("forced:", pawnMemory.ForcedWeapon?.getLabel() ?? "null", Color.white, contentRect, offset); offset += 10f;
+                    }
 
                     Text.Font = font;
                 }

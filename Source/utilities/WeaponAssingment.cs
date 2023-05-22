@@ -1,4 +1,5 @@
-﻿using PeteTimesSix.SimpleSidearms.Intercepts;
+﻿using PeteTimesSix.SimpleSidearms.Compat;
+using PeteTimesSix.SimpleSidearms.Intercepts;
 using RimWorld;
 using SimpleSidearms.rimworld;
 using System;
@@ -49,6 +50,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 return false;
             }
 
+            if (Tacticowl.active && Tacticowl.isOffHand(weapon)) //equipping weapon already wielded as offhand, need to stop offhanding first
+            {
+                pawn.equipment.Remove(weapon);
+                Tacticowl.setOffHand(pawn, weapon, removing: true);
+            }
+
             if (!Settings.AllowBlockedWeaponUse && !StatCalculator.canUseSidearmInstance(weapon, pawn, out string reason))
             {
                 Log.Warning($"blocked equip of {weapon.Label} at equip-time because of: {reason}");
@@ -86,7 +93,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                     ));
             }
 
-            if (pawn.equipment.Primary != null) 
+            /*if (pawn.equipment.Primary != null) 
             {
                 Log.Warning(String.Format("Failed to remove current primary equipment {0} (initially was {1}) when swapping to {2} on pawn {3} (colonist: {4}) (dropping: {5}, current drop mode: {6}). Aborting swap. Please report this!", 
                     pawn.equipment.Primary != null ? pawn.equipment.Primary.LabelCap : "NULL", 
@@ -98,8 +105,8 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                     Settings.FumbleMode
                     ));
                 return false;
-            }
-
+            }*/
+            
             if (weapon == null)
             {
                
@@ -463,7 +470,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             return true;
         }
 
-        public static void dropSidearm(Pawn pawn, Thing weapon, bool intentionalDrop)
+        public static void DropSidearm(Pawn pawn, ThingWithComps weapon, bool intentionalDrop, bool unmemorise)
         {
             if (weapon == null)
                 return;
@@ -473,10 +480,10 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (!intentionalDrop)
                 DoFumbleMote(pawn);
 
-            if (pawn.equipment.Primary == weapon)
+            if (pawn.equipment.Primary == weapon || (Tacticowl.active && Tacticowl.isOffHand(weapon)))
             {
                 Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
-                pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out _, pawn.Position, false);
+                pawn.equipment.TryDropEquipment(weapon, out _, pawn.Position, false);
                 Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
             }
             else
@@ -489,13 +496,16 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 else
                 {
                     pawn.inventory.innerContainer.TryDrop(weapon, pawn.Position, pawn.Map, ThingPlaceMode.Near, out _, null);
-                }   
+                }
             }
 
-            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-            if (pawnMemory == null)
-                return;
-            pawnMemory.InformOfDroppedSidearm(weapon, intentionalDrop);
+            if (unmemorise)
+            {
+                CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+                if (pawnMemory == null)
+                    return;
+                pawnMemory.InformOfDroppedSidearm(weapon, intentionalDrop);
+            }
         }
     }
 }
