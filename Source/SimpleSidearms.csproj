@@ -37,6 +37,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Intercepts\Intecepts_World.cs" />
     <Compile Include="Intercepts\Intercepts_Caravan.cs" />
     <Compile Include="UI\CurveEditorPublic.cs" />
     <Compile Include="UI\ListingExtensions.cs" />
