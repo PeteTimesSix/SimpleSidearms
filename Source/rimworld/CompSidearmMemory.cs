@@ -212,6 +212,8 @@ namespace SimpleSidearms.rimworld
                 return;
             }
             if (_cache == null) _cache = new Dictionary<int, CompSidearmMemory>();
+            if (_cache.ContainsKey(Owner.thingIDNumber) && _cache[Owner.thingIDNumber] != this)
+                Log.Warning($"SS: Pawn {Owner} had snuck in their memory comp from the previous game!");
             _cache[Owner.thingIDNumber] = this;
         }
 
