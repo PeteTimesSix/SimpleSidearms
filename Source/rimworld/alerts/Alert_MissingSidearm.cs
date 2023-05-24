@@ -59,7 +59,7 @@ namespace SimpleSidearms.rimworld.alerts
                     for (int i = allMaps_FreeColonistsSpawned.Count - 1; i >= 0; i--)
                     {
                         Pawn pawn = allMaps_FreeColonistsSpawned[i];
-                        if (!pawn.IsValidSidearmsCarrier())
+                        if (!pawn.IsValidSidearmsCarrierRightNow())
                         {
                             continue;
                         }

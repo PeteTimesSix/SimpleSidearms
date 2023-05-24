@@ -16,7 +16,7 @@ namespace SimpleSidearms.rimworld
                 return null;
             else
             {
-                if (!pawn.IsValidSidearmsCarrier())
+                if (!pawn.IsValidSidearmsCarrierRightNow())
                     return null;
 
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);

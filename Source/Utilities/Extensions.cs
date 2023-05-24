@@ -124,9 +124,15 @@ namespace PeteTimesSix.SimpleSidearms
             return retVal;
         }
 
+        public static bool IsValidSidearmsCarrierRightNow(this Pawn pawn)
+        {
+            return pawn.IsValidSidearmsCarrier() && pawn.equipment != null && pawn.inventory != null && !pawn.Dead;
+        }
+
+                         //IsValidSidearmsCarrierEver - kept name for compat with patches
         public static bool IsValidSidearmsCarrier(this Pawn pawn) 
         {
-            return pawn != null && pawn.equipment != null && pawn.inventory != null && !pawn.Dead;
+            return pawn != null && pawn.RaceProps.Humanlike;
         }
 
         public static PrimaryWeaponMode getSkillWeaponPreference(this Pawn pawn)
@@ -147,7 +153,13 @@ namespace PeteTimesSix.SimpleSidearms
                 return PrimaryWeaponMode.Ranged; //slight bias towards ranged but *shrug*
         }
 
-        public static List<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeTools = false)
+        [Obsolete] //remains as VFECore uses this
+        public static IEnumerable<ThingWithComps> getCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeTools = false)
+        {
+            return pawn.GetCarriedWeapons(includeEquipped, includeTools);
+        }
+
+        public static List<ThingWithComps> GetCarriedWeapons(this Pawn pawn, bool includeEquipped = true, bool includeTools = false)
         {
             List<ThingWithComps> weapons = new List<ThingWithComps>();
 
