@@ -54,10 +54,9 @@ namespace PeteTimesSix.SimpleSidearms.Compat
 
         public static void SetOffHander_Postfix(Pawn pawn, ThingWithComps thing, bool removing)
         {
-            Log.Message($"tacticowl postfix: {pawn} {thing} {removing}");
             if(!removing && thing != null)
             {
-                CompSidearmMemory.GetMemoryCompForPawn(pawn).InformOfAddedSidearm(thing);
+                CompSidearmMemory.GetMemoryCompForPawn(pawn)?.InformOfAddedSidearm(thing); //sometimes null during worldgen?
             }
         }
     }

@@ -682,26 +682,56 @@ namespace SimpleSidearms.rimworld
             GUI.DrawTexture(iconRect, resolvedIcon);
             GUI.color = Color.white;
 
-            if (GettersFilters.isManualUse(weapon))
+            //weapon type icons
             {
-                GUI.DrawTexture(iconRect, TextureResources.weaponTypeManual);
+                if (GettersFilters.isManualUse(weapon))
+                {
+                    GUI.DrawTexture(iconRect, TextureResources.weaponTypeManual);
+                }
+                if (GettersFilters.isEMPWeapon(weapon))
+                {
+                    GUI.DrawTexture(iconRect, TextureResources.weaponTypeEMP);
+                }
+                if (GettersFilters.isDangerousWeapon(weapon))
+                {
+                    GUI.DrawTexture(iconRect, TextureResources.weaponTypeDangerous);
+                }
             }
-            if (GettersFilters.isEMPWeapon(weapon))
+
+
+            //shield/offhand icons
+            if (VFECore.active || Tacticowl.active)
             {
-                GUI.DrawTexture(iconRect, TextureResources.weaponTypeEMP);
+                Rect offhandRect = iconRect.TopPartPixels(14f).RightPartPixels(14f);
+
+                if (pawn.equipment.Primary == weapon || (Tacticowl.active && Tacticowl.isOffHand(weapon)))
+                {
+                }
+                else
+                {
+                    if (Mouse.IsOver(offhandRect) && Tacticowl.active && Tacticowl.canBeOffHand(weaponType.thing))
+                    {
+                        GUI.color = Color.green;
+                        GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                    }
+                    else if (Mouse.IsOver(iconRect) && Tacticowl.active && Tacticowl.isTwoHanded(weaponType.thing))
+                    {
+                        GUI.color = Color.red;
+                        GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                    }
+                    else
+                    {
+                        //if (VFECore.active && false) //TODO: shields
+                        //    GUI.DrawTexture(offhandRect, TextureResources.weaponTypeShieldCompat);
+                        if (Tacticowl.active && Tacticowl.canBeOffHand(weaponType.thing))
+                            GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                    }
+                }
+
+
             }
-            if (GettersFilters.isDangerousWeapon(weapon))
-            {
-                GUI.DrawTexture(iconRect, TextureResources.weaponTypeDangerous);
-            }
-            if (VFECore.active && Tacticowl.active && Tacticowl.canBeOffHand(weaponType.thing))
-            {
-                GUI.DrawTexture(iconRect, TextureResources.weaponTypeShieldCompat);
-            }
-            if (Tacticowl.active && Tacticowl.canBeOffHand(weaponType.thing))
-            {
-                GUI.DrawTexture(iconRect, TextureResources.weaponTypeOffhandCompat);
-            }
+
+            GUI.color = Color.white;
 
             if (!allowInteraction) 
             {
@@ -737,10 +767,14 @@ namespace SimpleSidearms.rimworld
                 else
                     GUI.DrawTexture(iconRect, TextureResources.weaponHeldTwohand);
             }
-            else if (Tacticowl.active && Tacticowl.isOffHand(weapon))
+            else
             {
-                GUI.DrawTexture(iconRect, TextureResources.weaponHeldOffhand);
+                if (Tacticowl.active && Tacticowl.isOffHand(weapon))
+                {
+                    GUI.DrawTexture(iconRect, TextureResources.weaponHeldOffhand);
+                }
             }
+            
 
             if (allowInteraction)
             {
