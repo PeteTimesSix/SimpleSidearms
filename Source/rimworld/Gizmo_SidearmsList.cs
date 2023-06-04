@@ -65,6 +65,7 @@ namespace SimpleSidearms.rimworld
         public SidearmsListInteraction interactedWith = SidearmsListInteraction.None;
         public ThingWithComps interactionWeapon;
         public ThingDefStuffDefPair? interactionWeaponType;
+        public bool interactionAsOffhand;
         public bool interactionWeaponIsDuplicate;
 
         public static float lastFrameWidth = 0f;
@@ -596,15 +597,29 @@ namespace SimpleSidearms.rimworld
             {
                 if (pawn.Drafted)
                 {
-                    if (pawnMemory.ForcedWeaponWhileDrafted == weaponType)
+                    if (Tacticowl.active && Tacticowl.isOffHand(weapon))
+                    {
+                        hoverText = "DrawSidearm_gizmoTooltipOffhandWhileDrafted".Translate();
+                    }
+                    else if (pawnMemory.ForcedWeaponWhileDrafted == weaponType)
+                    {
                         hoverText = "DrawSidearm_gizmoTooltipForcedWhileDrafted".Translate();
+                    }
                     else
+                    {
                         hoverText = "DrawSidearm_gizmoTooltipWhileDrafted".Translate();
+                    }
                 }
                 else
                 {
-                    if (pawnMemory.ForcedWeapon == weaponType)
+                    if (Tacticowl.active && Tacticowl.isOffHand(weapon))
+                    {
+                        hoverText = "DrawSidearm_gizmoTooltipOffhand".Translate();
+                    }
+                    else if (pawnMemory.ForcedWeapon == weaponType)
+                    {
                         hoverText = "DrawSidearm_gizmoTooltipForced".Translate();
+                    }
                     else
                     {
                         if (weapon.def.IsRangedWeapon)
@@ -699,38 +714,6 @@ namespace SimpleSidearms.rimworld
             }
 
 
-            //shield/offhand icons
-            if (VFECore.active || Tacticowl.active)
-            {
-                Rect offhandRect = iconRect.TopPartPixels(14f).RightPartPixels(14f);
-
-                if (pawn.equipment.Primary == weapon || (Tacticowl.active && Tacticowl.isOffHand(weapon)))
-                {
-                }
-                else
-                {
-                    if (Mouse.IsOver(offhandRect) && Tacticowl.active && Tacticowl.canBeOffHand(weaponType.thing))
-                    {
-                        GUI.color = Color.green;
-                        GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
-                    }
-                    else if (Mouse.IsOver(iconRect) && Tacticowl.active && Tacticowl.isTwoHanded(weaponType.thing))
-                    {
-                        GUI.color = Color.red;
-                        GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
-                    }
-                    else
-                    {
-                        //if (VFECore.active && false) //TODO: shields
-                        //    GUI.DrawTexture(offhandRect, TextureResources.weaponTypeShieldCompat);
-                        if (Tacticowl.active && Tacticowl.canBeOffHand(weaponType.thing))
-                            GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
-                    }
-                }
-
-
-            }
-
             GUI.color = Color.white;
 
             if (!allowInteraction) 
@@ -760,6 +743,86 @@ namespace SimpleSidearms.rimworld
                     GUI.DrawTexture(iconRect, TextureResources.preferredMelee);
             }
 
+
+            Rect offhandRect = iconRect.TopPartPixels(14f).RightPartPixels(14f);
+
+            //shield/offhand icons
+            if (VFECore.active || Tacticowl.active)
+            {
+                if (pawn.equipment.Primary == weapon || (Tacticowl.active && Tacticowl.isOffHand(weapon)))
+                {
+                    //already equipped
+                }
+                else
+                {
+                    if (Tacticowl.active) 
+                    {
+                        bool iconsDrawn = false;
+                        if (Mouse.IsOver(iconRect))
+                        {
+                            if (Tacticowl.isTwoHanded(weaponType.thing))
+                            {
+                                if(Tacticowl.getOffHand(pawn, out _))
+                                {
+                                    //two-handed and would unequip current off-hand weapon
+                                    GUI.color = Color.red;
+                                    GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                                    TooltipHandler.TipRegion(iconRect, "SS_EquipWarning_WillUnequipOffhand".Translate());
+                                    iconsDrawn = true;
+                                }
+                                else
+                                {
+                                    //two handed, but no offhand weapon to worry about - draw no icon
+                                }
+                            }
+                            else if(Mouse.IsOver(offhandRect) && Tacticowl.canBeOffHand(weaponType.thing))
+                            {
+                                if(pawn.equipment.Primary == null)
+                                {
+                                    //cannot equip as offhand with no primary
+                                    GUI.color = Color.gray;
+                                    GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                                    TooltipHandler.TipRegion(offhandRect, "SS_EquipOffandFail_NoPrimary".Translate());
+                                    iconsDrawn = true;
+                                }
+                                else 
+                                { 
+                                    if(Tacticowl.isTwoHanded(pawn.equipment.Primary.def))
+                                    {
+                                        //cannot equip as offhand if primary is a two-hander
+                                        GUI.color = Color.gray;
+                                        GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                                        TooltipHandler.TipRegion(offhandRect, "SS_EquipOffandFail_PrimaryTwoHanded".Translate());
+                                        iconsDrawn = true;
+                                    }
+                                    else 
+                                    {
+                                        GUI.color = Color.green;
+                                        GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                                        TooltipHandler.TipRegion(offhandRect, "SS_EquipAsOffand".Translate());
+                                        iconsDrawn = true;
+                                    }
+                                }
+                            }
+                            else 
+                            {
+                                //nothing special
+                            }
+                        }
+                        if(!iconsDrawn)
+                        {
+                            if(Tacticowl.canBeOffHand(weaponType.thing))
+                            {
+                                GUI.color = Color.white;
+                                GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                                TooltipHandler.TipRegion(offhandRect, "SS_CanEquipAsOffand".Translate());
+                            }
+                        }
+                    }
+                }
+            }
+
+            //equip status icons
             if (pawn.equipment.Primary == weapon)
             {
                 if (Tacticowl.active && !Tacticowl.isTwoHanded(weaponType.thing))
@@ -784,12 +847,28 @@ namespace SimpleSidearms.rimworld
                 else
                     UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventoryMelee");
 
+                if(Tacticowl.active && pawn.equipment.Primary != weapon && !Tacticowl.isOffHand(weapon) && Tacticowl.canBeOffHand(weaponType.thing) && pawn.equipment.Primary != null && !Tacticowl.isTwoHanded(pawn.equipment.Primary.def))
+                {
+                    UIHighlighter.HighlightOpportunity(offhandRect, "SidearmOffhandable");
+
+                    if (Widgets.ButtonInvisible(offhandRect, true))
+                    {
+                        if (isMemorised)
+                            interactedWith = SidearmsListInteraction.Weapon;
+                        else
+                            interactedWith = SidearmsListInteraction.UnmemorisedWeapon;
+                        interactionAsOffhand = true;
+                        interactionWeapon = weapon;
+                        interactionWeaponIsDuplicate = isDuplicate;
+                    }
+                }
                 if (Widgets.ButtonInvisible(iconRect, true))
                 {
                     if (isMemorised)
                         interactedWith = SidearmsListInteraction.Weapon;
                     else
                         interactedWith = SidearmsListInteraction.UnmemorisedWeapon;
+                    interactionAsOffhand = false;
                     interactionWeapon = weapon;
                     interactionWeaponIsDuplicate = isDuplicate;
                 }
@@ -923,38 +1002,55 @@ namespace SimpleSidearms.rimworld
                                 PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
                                 PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
-                                pawnMemory.SetWeaponAsForced(weaponType, true);
-                                if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
+                                if (interactionAsOffhand)
                                 {
-                                    WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                    WeaponAssingment.EquipSpecificWeaponFromInventoryAsOffhand(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
                                 }
-                            }
-                            else if (pawnMemory.DefaultRangedWeapon == weaponType || pawnMemory.PreferredMeleeWeapon == weaponType || weaponType.isToolNotWeapon())
-                            {
-                                if (weaponType.thing.IsRangedWeapon)
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
                                 else
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
-                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-
-                                pawnMemory.SetWeaponAsForced(weaponType, false);
-                                if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
                                 {
-                                    WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                    pawnMemory.SetWeaponAsForced(weaponType, true);
+                                    if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
+                                    {
+                                        WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                    }
                                 }
                             }
                             else
                             {
-                                PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
-                                if (weaponType.thing.IsRangedWeapon)
+                                if (interactionAsOffhand)
                                 {
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
-                                    pawnMemory.SetRangedWeaponTypeAsDefault(weaponType);
+                                    WeaponAssingment.EquipSpecificWeaponFromInventoryAsOffhand(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
                                 }
-                                else
+                                else 
                                 {
-                                    PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
-                                    pawnMemory.SetMeleeWeaponTypeAsPreferred(weaponType);
+                                    if (pawnMemory.DefaultRangedWeapon == weaponType || pawnMemory.PreferredMeleeWeapon == weaponType || weaponType.isToolNotWeapon())
+                                    {
+                                        if (weaponType.thing.IsRangedWeapon)
+                                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
+                                        else
+                                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+
+                                        pawnMemory.SetWeaponAsForced(weaponType, false);
+                                        if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
+                                        {
+                                            WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
+                                        if (weaponType.thing.IsRangedWeapon)
+                                        {
+                                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
+                                            pawnMemory.SetRangedWeaponTypeAsDefault(weaponType);
+                                        }
+                                        else
+                                        {
+                                            PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedMelee, KnowledgeAmount.SpecificInteraction);
+                                            pawnMemory.SetMeleeWeaponTypeAsPreferred(weaponType);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -968,11 +1064,19 @@ namespace SimpleSidearms.rimworld
                                 PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
                                 PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
-                                pawnMemory.SetWeaponAsForced(weaponType, true);
-                                if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
+                                if(interactionAsOffhand)
                                 {
-                                    WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                    WeaponAssingment.EquipSpecificWeaponFromInventoryAsOffhand(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
                                 }
+                                else
+                                {
+                                    pawnMemory.SetWeaponAsForced(weaponType, true);
+                                    if (parent.equipment.Primary != weapon && weapon is ThingWithComps)
+                                    {
+                                        WeaponAssingment.equipSpecificWeaponFromInventory(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                    }
+                                }
+
                             }
                             else
                             {
@@ -1060,7 +1164,11 @@ namespace SimpleSidearms.rimworld
                             {
                                 if (parent.Drafted)
                                 {
-                                    if (pawnMemory.ForcedWeaponWhileDrafted == weaponType && parent.equipment.Primary == weapon)
+                                    if (Tacticowl.active && Tacticowl.isOffHand(weapon))
+                                    {
+                                        WeaponAssingment.UnequipOffhand(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                    }
+                                    else if (pawnMemory.ForcedWeaponWhileDrafted == weaponType && parent.equipment.Primary == weapon)
                                     {
                                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
                                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
@@ -1077,7 +1185,11 @@ namespace SimpleSidearms.rimworld
                                 }
                                 else
                                 {
-                                    if (pawnMemory.ForcedWeapon == weaponType && parent.equipment.Primary == weapon)
+                                    if (Tacticowl.active && Tacticowl.isOffHand(weapon))
+                                    {
+                                        WeaponAssingment.UnequipOffhand(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                    }
+                                    else if (pawnMemory.ForcedWeapon == weaponType && parent.equipment.Primary == weapon)
                                     {
                                         if (weaponType.thing.IsRangedWeapon)
                                             PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedRanged, KnowledgeAmount.SpecificInteraction);
@@ -1119,7 +1231,11 @@ namespace SimpleSidearms.rimworld
 
                             if (parent.Drafted)
                             {
-                                if(pawnMemory.ForcedWeaponWhileDrafted == weaponType && parent.equipment.Primary == weapon)
+                                if (Tacticowl.active && Tacticowl.isOffHand(weapon))
+                                {
+                                    WeaponAssingment.UnequipOffhand(parent, weapon, MiscUtils.shouldDrop(parent, dropMode, false), false);
+                                }
+                                else if (pawnMemory.ForcedWeaponWhileDrafted == weaponType && parent.equipment.Primary == weapon)
                                 {
                                     PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsAdvancedDrafted, KnowledgeAmount.SpecificInteraction);
                                     PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);

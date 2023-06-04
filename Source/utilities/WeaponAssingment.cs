@@ -16,6 +16,75 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
     public static class WeaponAssingment
     {
 
+
+        public static bool EquipSpecificWeaponFromInventoryAsOffhand(Pawn pawn, ThingWithComps weapon, bool dropCurrent, bool intentionalDrop)
+        {
+            if (!pawn.IsValidSidearmsCarrier())
+                return false;
+
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+            if (pawnMemory == null)
+                return false;
+
+            if(!Tacticowl.active)
+            {
+                Log.Error("SS: EquipSpecificWeaponFromInventoryAsOffhand called, but Tacticowl is not active!");
+                return false;
+            }
+
+            if (Tacticowl.getOffHand(pawn, out ThingWithComps currentOffhand))
+            {
+                UnequipOffhand(pawn, currentOffhand, dropCurrent, intentionalDrop);
+            }
+
+            pawn.inventory.innerContainer.Remove(weapon);
+            //pawn.equipment.MakeRoomFor(weapon);
+            Tacticowl.setOffHand(pawn, weapon, removing: false);
+
+            if (weapon.def.soundInteract != null && Settings.PlaySounds)
+            {
+                weapon.def.soundInteract.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map, false));
+            }
+
+            return true;
+        }
+
+        public static void UnequipOffhand(Pawn pawn, ThingWithComps offhand, bool dropCurrent, bool intentionalDrop)
+        {
+            if (!Tacticowl.active)
+            {
+                Log.Error("SS: UnequipOffhand called, but Tacticowl is not active!");
+                return;
+            }
+
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+
+            Tacticowl.setOffHand(pawn, offhand, removing: true);
+            //drop
+            if (dropCurrent)
+            {
+                if (!intentionalDrop)
+                    DoFumbleMote(pawn);
+                pawnMemory.InformOfDroppedSidearm(offhand, intentionalDrop);
+                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
+                pawn.equipment.TryDropEquipment(offhand, out ThingWithComps droppedItem, pawn.Position, false);
+                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
+            }
+            //or put it in inventory
+            else
+            {
+                bool addedToInventory = pawn.inventory.innerContainer.TryAddOrTransfer(offhand, true);
+                if (!addedToInventory)
+                    Log.Warning(String.Format("Failed to place offhand equipment {0} into inventory on pawn {1} (colonist: {2}) (dropping: {3}, current drop mode: {4}). Aborting swap. Please report this!",
+                       offhand != null ? offhand.LabelCap : "NULL",
+                       pawn?.LabelCap,
+                       pawn?.IsColonist,
+                       dropCurrent,
+                       Settings.FumbleMode
+                    ));
+            }
+        }
+
         public static bool equipSpecificWeaponTypeFromInventory(Pawn pawn, ThingDefStuffDefPair weapon, bool dropCurrent, bool intentionalDrop)
         {
             ThingWithComps match = pawn.inventory.innerContainer
@@ -53,6 +122,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (Tacticowl.active && Tacticowl.isOffHand(weapon)) //equipping weapon already wielded as offhand, need to stop offhanding first
             {
                 pawn.equipment.Remove(weapon);
+                Tacticowl.setWeaponAsOffHand(weapon, false);
                 Tacticowl.setOffHand(pawn, weapon, removing: true);
             }
 

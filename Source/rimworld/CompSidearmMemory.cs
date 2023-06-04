@@ -1,4 +1,5 @@
 ﻿using PeteTimesSix.SimpleSidearms;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -400,6 +401,7 @@ namespace SimpleSidearms.rimworld
                 //var rememberedOfType = rememberedWeapons.Where(w => w == weaponType);
 
                 //if (rememberedOfType.Count() < carriedOfType.Sum(c => c.stackCount))
+                Log.Message($"InformOfAddedSidearm on {parent} for weapon: {weapon}");
                 rememberedWeapons.Add(weapon.toThingDefStuffDefPair());
             }
         }

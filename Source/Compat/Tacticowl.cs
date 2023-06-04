@@ -1,11 +1,15 @@
 ﻿using HarmonyLib;
 using SimpleSidearms.rimworld;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
+using Verse.AI;
 
 namespace PeteTimesSix.SimpleSidearms.Compat
 {
@@ -18,12 +22,15 @@ namespace PeteTimesSix.SimpleSidearms.Compat
         public static GetOffHand getOffHand;
         public delegate void SetOffHand(Pawn pawn, ThingWithComps thing, bool removing);
         public static SetOffHand setOffHand;
+        private static SetOffHand _setOffHandTrue;
         public delegate bool IsOffHand(Thing thing);
         public static IsOffHand isOffHand;
         public delegate bool IsTwoHanded(Def def);
         public static IsTwoHanded isTwoHanded;
         public delegate bool CanBeOffHand(Def def);
         public static CanBeOffHand canBeOffHand;
+        public delegate void SetWeaponAsOffHand(ThingWithComps weapon, bool set);
+        public static SetWeaponAsOffHand setWeaponAsOffHand;
 
         static Tacticowl() 
         {
@@ -35,6 +42,7 @@ namespace PeteTimesSix.SimpleSidearms.Compat
                 isOffHand = AccessTools.MethodDelegate<IsOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("IsOffHandedWeapon"));
                 isTwoHanded = AccessTools.MethodDelegate<IsTwoHanded>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("IsTwoHanded"));
                 canBeOffHand = AccessTools.MethodDelegate<CanBeOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("CanBeOffHand"));
+                setWeaponAsOffHand = AccessTools.MethodDelegate<SetWeaponAsOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("SetWeaponAsOffHanded"));
             }
         }
 
@@ -42,22 +50,46 @@ namespace PeteTimesSix.SimpleSidearms.Compat
         public static void Patch_Delayed_Tacticowl(Harmony harmony)
         {
             Type dualWieldExtensions = AccessTools.TypeByName("Tacticowl.DualWieldExtensions");
-            harmony.Patch(AccessTools.Method(dualWieldExtensions, "SetOffHander"), postfix: new HarmonyMethod(typeof(Tacticowl), nameof(SetOffHander_Postfix)));
+            //harmony.Patch(AccessTools.Method(dualWieldExtensions, "SetOffHander"), postfix: new HarmonyMethod(typeof(Tacticowl), nameof(SetOffHander_Postfix)));
 
-
-            /*Type type = AccessTools.TypeByName("Tacticowl.DualWield.JobDriver_EquipOffHand");
-
-            DMM_Patch_BillStack_DoListing_Patches.GizmoListRect = AccessTools.StaticFieldRefAccess<Rect>(AccessTools.Field(type, "GizmoListRect"));
-            harmony.Patch(AccessTools.Method(type, "Doink"), transpiler: new HarmonyMethod(AccessTools.Method(typeof(DMM_Patch_BillStack_DoListing_Patches), nameof(DMM_Patch_BillStack_DoListing_Patches.Doink_Transpiler))));
-            harmony.Patch(AccessTools.Method(type, "DoRow"), transpiler: new HarmonyMethod(AccessTools.Method(typeof(DMM_Patch_BillStack_DoListing_Patches), nameof(DMM_Patch_BillStack_DoListing_Patches.DoRow_Transpiler))));*/
+            var jobDriver_EquipOffHand_initAction = AccessTools.FirstMethod(AccessTools.TypeByName("Tacticowl.DualWield.JobDriver_EquipOffHand"), (MethodInfo m) => m.Name == "<MakeNewToils>b__1_0");
+            SimpleSidearms.Harmony.Patch(jobDriver_EquipOffHand_initAction, transpiler: new HarmonyMethod(AccessTools.Method(typeof(Tacticowl), nameof(Tacticowl.JobDriver_EquipOffHand_initAction_Transpiler))));
         }
 
-        public static void SetOffHander_Postfix(Pawn pawn, ThingWithComps thing, bool removing)
+        public static void JobDriver_EquipOffHand_initAction_Infix(Pawn pawn, ThingWithComps thing) 
         {
-            if(!removing && thing != null)
+            CompSidearmMemory.GetMemoryCompForPawn(pawn)?.InformOfAddedSidearm(thing); //sometimes null during worldgen?
+        }
+
+        public static IEnumerable<CodeInstruction> JobDriver_EquipOffHand_initAction_Transpiler(IEnumerable<CodeInstruction> instructions) 
+        {
+            var codeMatcher = new CodeMatcher(instructions);
+
+            CodeMatch[] toMatch = new CodeMatch[]
             {
-                CompSidearmMemory.GetMemoryCompForPawn(pawn)?.InformOfAddedSidearm(thing); //sometimes null during worldgen?
+                new CodeMatch(OpCodes.Ldloc_1),
+                new CodeMatch(OpCodes.Ldc_I4_0),
+                new CodeMatch(OpCodes.Call, AccessTools.Method("Tacticowl.DualWieldExtensions:SetOffHander"))
+            };
+
+            CodeInstruction[] toInsert = new CodeInstruction[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
+                new CodeInstruction(OpCodes.Ldloc_1),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Tacticowl), nameof(Tacticowl.JobDriver_EquipOffHand_initAction_Infix)))
+            };
+
+            codeMatcher.MatchEndForward(toMatch).Advance(1);
+            codeMatcher.Insert(toInsert);
+            codeMatcher.End();
+
+            foreach(var instruction in codeMatcher.InstructionEnumeration()) 
+            {
+                Log.Warning(instruction.ToString() );
             }
+
+            return codeMatcher.InstructionEnumeration();
         }
     }
 }
