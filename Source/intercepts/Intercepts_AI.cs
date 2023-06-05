@@ -218,7 +218,6 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void StanceTick(Stance_Warmup __instance)
         {
-
             if (Settings.RangedCombatAutoSwitch == false)
                 return;
             Pawn pawn = __instance.stanceTracker.pawn;
@@ -228,10 +227,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 return;
             if (!(__instance.verb is Verb_Shoot))
                 return;
-            /*if (!SimpleSidearms.CEOverride && !(__instance.verb is Verb_Shoot))
-                return;
-            if (SimpleSidearms.CEOverride && !(CERangedVerb.IsAssignableFrom(__instance.verb.GetType())))
-                return;*/
+
             float statValue = pawn.GetStatValue(StatDefOf.AimingDelayFactor, true);
             int ticks = (__instance.verb.verbProps.warmupTime * statValue).SecondsToTicks();
             
@@ -313,7 +309,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
     {
         //EW EW EW GLOBAL FLAG EW EW
         public static bool dropEquipmentSourcedBySimpleSidearms = false;
-
+        
         [HarmonyPostfix]
         public static void TryDropEquipment_Postfix(Pawn_EquipmentTracker __instance, bool __result, ThingWithComps resultingEq)
         {

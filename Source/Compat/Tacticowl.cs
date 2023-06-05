@@ -84,11 +84,6 @@ namespace PeteTimesSix.SimpleSidearms.Compat
             codeMatcher.Insert(toInsert);
             codeMatcher.End();
 
-            foreach(var instruction in codeMatcher.InstructionEnumeration()) 
-            {
-                Log.Warning(instruction.ToString() );
-            }
-
             return codeMatcher.InstructionEnumeration();
         }
     }
