@@ -24,7 +24,7 @@ namespace SimpleSidearms.rimworld
             get
             {
                 if (rememberedWeapons == null)
-                    generateRememberedWeaponsFromEquipped();
+                    GenerateRememberedWeaponsFromEquipped();
                 if (!nullchecked)
                     NullChecks();
                 return rememberedWeapons;
@@ -157,7 +157,7 @@ namespace SimpleSidearms.rimworld
 
         public Pawn Owner { get { return this.parent as Pawn; } }
 
-        public CompSidearmMemory() : base()
+        public override void PostPostMake()
         {
             if (Owner != null)
             {
@@ -177,23 +177,13 @@ namespace SimpleSidearms.rimworld
                     else
                         primaryWeaponMode = PrimaryWeaponMode.BySkill;
                 }
+
+                GenerateRememberedWeaponsFromEquipped();
+                _cache[Owner.thingIDNumber] = this;
             }
         }
 
-        public CompSidearmMemory(bool fillExisting)
-        {
-            this.rememberedWeapons = new List<ThingDefStuffDefPair>();
-            if (fillExisting)
-            {
-                generateRememberedWeaponsFromEquipped();
-            }
-            if (Owner != null) //null owner should only come up when loading from savegames
-            {
-                
-            }
-        }
-
-        public void generateRememberedWeaponsFromEquipped()
+        public void GenerateRememberedWeaponsFromEquipped()
         {
             this.rememberedWeapons = new List<ThingDefStuffDefPair>();
             IEnumerable<ThingWithComps> carriedWeapons = Owner.getCarriedWeapons(includeTools: true);
@@ -401,7 +391,7 @@ namespace SimpleSidearms.rimworld
                 //var rememberedOfType = rememberedWeapons.Where(w => w == weaponType);
 
                 //if (rememberedOfType.Count() < carriedOfType.Sum(c => c.stackCount))
-                Log.Message($"InformOfAddedSidearm on {parent} for weapon: {weapon}");
+                //Log.Message($"InformOfAddedSidearm on {parent} for weapon: {weapon}");
                 rememberedWeapons.Add(weapon.toThingDefStuffDefPair());
             }
         }
@@ -483,7 +473,7 @@ namespace SimpleSidearms.rimworld
             if (rememberedWeapons == null)
             {
                 //Log.Warning("Remembered weapons list of " + this.Owner.LabelCap + " was missing, regenerating...");
-                generateRememberedWeaponsFromEquipped();
+                GenerateRememberedWeaponsFromEquipped();
             }
             for (int i = rememberedWeapons.Count - 1; i >= 0; i--)
             {
