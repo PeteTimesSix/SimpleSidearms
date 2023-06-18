@@ -128,12 +128,12 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 
 	
 <LimitModeSingle_option_None>No limit</LimitModeSingle_option_None>
-<LimitModeSingle_option_RelativeWeight>Mass fraction</LimitModeSingle_option_RelativeWeight>
+<LimitModeSingle_option_RelativeWeight>Mass relative</LimitModeSingle_option_RelativeWeight>
 <LimitModeSingle_option_AbsoluteWeight>Mass absolute</LimitModeSingle_option_AbsoluteWeight>
 <LimitModeSingle_option_Selection>Specific weapons</LimitModeSingle_option_Selection>
 
 <LimitModeAmount_option_None>No limit</LimitModeAmount_option_None>
-<LimitModeAmount_option_RelativeWeight>Mass fraction</LimitModeAmount_option_RelativeWeight>
+<LimitModeAmount_option_RelativeWeight>Mass relative</LimitModeAmount_option_RelativeWeight>
 <LimitModeAmount_option_AbsoluteWeight>Mass absolute</LimitModeAmount_option_AbsoluteWeight>
 <LimitModeAmount_option_Slots>Slots</LimitModeAmount_option_Slots>
 
