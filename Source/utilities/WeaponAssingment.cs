@@ -250,6 +250,10 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 _ = t.toThingDefStuffDefPair().getBestStatBoost(stats, out bool found); return found;
             });
 
+            if (VFECore.active && VFECore.offHandShield(pawn) != null)
+            {
+                candidates = candidates.Where(t => VFECore.usableWithShields(t.def));
+            }
             if (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.getOffHand(pawn, out _)) //currenlty has offhanded weapon, filter to only one-handed
             {
                 candidates = candidates.Where(t => Tacticowl.canBeOffHand(t.def));
