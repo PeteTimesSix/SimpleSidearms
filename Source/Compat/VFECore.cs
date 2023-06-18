@@ -15,6 +15,8 @@ namespace PeteTimesSix.SimpleSidearms.Compat
 
         public delegate ThingWithComps OffHandShield(Pawn pawn);
         public static OffHandShield offHandShield;
+        public delegate bool UsableWithShields(ThingDef def);
+        public static UsableWithShields usableWithShields;
 
         static VFECore() 
         {
@@ -23,6 +25,7 @@ namespace PeteTimesSix.SimpleSidearms.Compat
                 active = true;
 
                 offHandShield = AccessTools.MethodDelegate<OffHandShield>(AccessTools.TypeByName("VFECore.ShieldUtility").GetMethod("OffHandShield"));
+                usableWithShields = AccessTools.MethodDelegate<UsableWithShields>(AccessTools.TypeByName("VFECore.ShieldUtility").GetMethod("UsableWithShields"));
             }
         }
 

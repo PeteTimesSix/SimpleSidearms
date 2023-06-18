@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 using Verse.AI;
+using static HarmonyLib.AccessTools;
 
 namespace PeteTimesSix.SimpleSidearms.Compat
 {
@@ -18,6 +19,7 @@ namespace PeteTimesSix.SimpleSidearms.Compat
     {
         public static bool active = false;
 
+        public static FieldRef<bool> dualWieldActive;
         public delegate bool GetOffHand(Pawn pawn, out ThingWithComps thing);
         public static GetOffHand getOffHand;
         public delegate void SetOffHand(Pawn pawn, ThingWithComps thing, bool removing);
@@ -37,6 +39,9 @@ namespace PeteTimesSix.SimpleSidearms.Compat
             if (ModLister.GetActiveModWithIdentifier("Owlchemist.Tacticowl") != null)
             {
                 active = true;
+
+                dualWieldActive = AccessTools.StaticFieldRefAccess<bool>(AccessTools.TypeByName("Tacticowl.ModSettings_Tacticowl").GetField("dualWieldEnabled"));
+
                 getOffHand = AccessTools.MethodDelegate<GetOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("GetOffHander"));
                 setOffHand = AccessTools.MethodDelegate<SetOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("SetOffHander"));
                 isOffHand = AccessTools.MethodDelegate<IsOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("IsOffHandedWeapon"));

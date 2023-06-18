@@ -259,6 +259,14 @@ Right click to remove unarmed combat as preferred melee option.</DrawSidearm_giz
 <Alert_MissingSidearm_desc>These colonists are missing one or more of their sidearms:\n\n{0}</Alert_MissingSidearm_desc>
 <Alert_MissingPrimary_desc>These colonists are missing their primary weapon:\n\n{0}</Alert_MissingPrimary_desc>
 
+<SS_EquipWarning_CannotUseWithShield>Using {0} will prevent use of {1}.</SS_EquipWarning_CannotUseWithShield>
+<SS_EquipWarning_WillUnequipOffhand>Equipping {0} will unequip offhand {1}.</SS_EquipWarning_WillUnequipOffhand>
+<SS_EquipOffandFail_NoPrimary>Cannot equip {0} as offhand weapon - need a primary weapon to pair it with first.</SS_EquipOffandFail_NoPrimary>
+<SS_EquipOffandFail_PrimaryTwoHanded>Cannot equip {0} as offhand weapon - {1} is a two-handed weapon.</SS_EquipOffandFail_PrimaryTwoHanded>
+<SS_EquipOffandFail_AlreadyHoldingShield>Cannot equip {0} as offhand weapon - already holding {1}.</SS_EquipOffandFail_AlreadyHoldingShield>
+<SS_EquipAsOffand>Left click on the offhand icon to equip {0} as offhand weapon.</SS_EquipAsOffand>
+<SS_CanEquipAsOffand>Left click on the offhand icon to equip {0} as offhand weapon.</SS_CanEquipAsOffand>
+
 <!-- Legacy -->
 <DropMode_option_Panic>In distress</DropMode_option_Panic>
 <DropMode_option_PanicOrRange>In combat</DropMode_option_PanicOrRange>

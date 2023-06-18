@@ -26,7 +26,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (pawnMemory == null)
                 return false;
 
-            if(!Tacticowl.active)
+            if(!(Tacticowl.active && Tacticowl.dualWieldActive()))
             {
                 Log.Error("SS: EquipSpecificWeaponFromInventoryAsOffhand called, but Tacticowl is not active!");
                 return false;
@@ -51,7 +51,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
         public static void UnequipOffhand(Pawn pawn, ThingWithComps offhand, bool dropCurrent, bool intentionalDrop)
         {
-            if (!Tacticowl.active)
+            if (!(Tacticowl.active && Tacticowl.dualWieldActive()))
             {
                 Log.Error("SS: UnequipOffhand called, but Tacticowl is not active!");
                 return;
@@ -120,14 +120,14 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             }
 
             ThingWithComps storedOffhand = null;
-            if (Tacticowl.active)
+
+            if (Tacticowl.active && Tacticowl.dualWieldActive())
             {
                 if (weapon is null || Tacticowl.isTwoHanded(weapon.def)) //cannot keep an offhand weapon with no primary or a two-handed primary
                 {
                     if (Tacticowl.getOffHand(pawn, out ThingWithComps currentOffhand))
                     {
-                        pawn.equipment.Remove(currentOffhand);
-                        Tacticowl.setOffHand(pawn, currentOffhand, removing: true);
+                        UnequipOffhand(pawn, currentOffhand, dropCurrent, intentionalDrop);
                     }
                 }
                 else if(Tacticowl.isOffHand(weapon)) //equipping weapon already wielded as offhand, need to stop offhanding first
@@ -250,7 +250,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 _ = t.toThingDefStuffDefPair().getBestStatBoost(stats, out bool found); return found;
             });
 
-            if (Tacticowl.active && Tacticowl.getOffHand(pawn, out _)) //currenlty has offhanded weapon, filter to only one-handed
+            if (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.getOffHand(pawn, out _)) //currenlty has offhanded weapon, filter to only one-handed
             {
                 candidates = candidates.Where(t => Tacticowl.canBeOffHand(t.def));
             }
@@ -570,7 +570,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (!intentionalDrop)
                 DoFumbleMote(pawn);
 
-            if (pawn.equipment.Primary == weapon || (Tacticowl.active && Tacticowl.isOffHand(weapon)))
+            if (pawn.equipment.Primary == weapon || (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.isOffHand(weapon)))
             {
                 Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.TryDropEquipment(weapon, out _, pawn.Position, false);

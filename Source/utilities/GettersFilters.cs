@@ -140,7 +140,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (skipEMP)
                 options = options.Where(t => !isEMPWeapon(t));
 
-            if (Tacticowl.active && Tacticowl.getOffHand(pawn, out _)) //currently has offhanded weapon, filter to only one-handed
+            if (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.getOffHand(pawn, out _)) //currently has offhanded weapon, filter to only one-handed
             {
                 options = options.Where(t => !Tacticowl.isTwoHanded(t.def));
             }
@@ -228,7 +228,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (!Settings.AllowBlockedWeaponUse)
                 options = options.Where(t => StatCalculator.canUseSidearmInstance(t, pawn, out _));
 
-            if (Tacticowl.active && Tacticowl.getOffHand(pawn, out _)) //currently has offhanded weapon, filter to only one-handed
+            if (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.getOffHand(pawn, out _)) //currently has offhanded weapon, filter to only one-handed
             {
                 options = options.Where(t => !Tacticowl.isTwoHanded(t.def));
             }

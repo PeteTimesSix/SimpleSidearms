@@ -168,7 +168,7 @@ namespace SimpleSidearms.rimworld
             else
                 DrawGizmoLabel(defaultLabel + " (godmode)", gizmoRect);
 
-            lastFrameWidth = Math.Max(widthRanged, widthMelee) + selectorPanel.width + ContentPadding * 2;
+            lastFrameWidth = Math.Max(widthRanged, widthMelee) + selectorPanel.width + ContentPadding * 4;
             if (!Settings.SettingsEverOpened)
                 lastFrameWidth += (FirstTimeSettingsWarningWidth + 2);
 
@@ -759,6 +759,28 @@ namespace SimpleSidearms.rimworld
                 }
                 else
                 {
+                    if (VFECore.active)
+                    {
+                        if (Mouse.IsOver(iconRect))
+                        {
+                            if (!VFECore.usableWithShields(weaponType.thing))
+                            {
+                                var shield = VFECore.offHandShield(pawn);
+                                if (shield != null)
+                                {
+                                    //two-handed and would unequip current off-hand weapon
+                                    GUI.color = Color.red;
+                                    GUI.DrawTexture(offhandRect, TextureResources.weaponTypeShieldCompat);
+                                    TooltipHandler.TipRegion(iconRect, "SS_EquipWarning_CannotUseWithShield".Translate(weapon.Label, shield.Label));
+                                }
+                            }
+                            /*else
+                            {
+                                GUI.color = Color.white;
+                                GUI.DrawTexture(offhandRect, TextureResources.weaponTypeShieldCompat);
+                            }*/
+                        }
+                    }
                     if (Tacticowl.active) 
                     {
                         bool iconsDrawn = false;
@@ -766,12 +788,12 @@ namespace SimpleSidearms.rimworld
                         {
                             if (Tacticowl.isTwoHanded(weaponType.thing))
                             {
-                                if(Tacticowl.getOffHand(pawn, out _))
+                                if(Tacticowl.getOffHand(pawn, out ThingWithComps offhandWeapon))
                                 {
                                     //two-handed and would unequip current off-hand weapon
                                     GUI.color = Color.red;
                                     GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
-                                    TooltipHandler.TipRegion(iconRect, "SS_EquipWarning_WillUnequipOffhand".Translate());
+                                    TooltipHandler.TipRegion(iconRect, "SS_EquipWarning_WillUnequipOffhand".Translate(weapon.Label, offhandWeapon.Label));
                                     iconsDrawn = true;
                                 }
                                 else
@@ -786,7 +808,7 @@ namespace SimpleSidearms.rimworld
                                     //cannot equip as offhand with no primary
                                     GUI.color = Color.gray;
                                     GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
-                                    TooltipHandler.TipRegion(offhandRect, "SS_EquipOffandFail_NoPrimary".Translate());
+                                    TooltipHandler.TipRegion(offhandRect, "SS_EquipOffandFail_NoPrimary".Translate(weapon.Label));
                                     iconsDrawn = true;
                                 }
                                 else 
@@ -796,14 +818,21 @@ namespace SimpleSidearms.rimworld
                                         //cannot equip as offhand if primary is a two-hander
                                         GUI.color = Color.gray;
                                         GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
-                                        TooltipHandler.TipRegion(offhandRect, "SS_EquipOffandFail_PrimaryTwoHanded".Translate());
+                                        TooltipHandler.TipRegion(offhandRect, "SS_EquipOffandFail_PrimaryTwoHanded".Translate(weapon.Label, pawn.equipment.Primary.Label));
                                         iconsDrawn = true;
                                     }
-                                    else 
+                                    else if(VFECore.active && VFECore.offHandShield(pawn) != null)
                                     {
+                                        var shield = VFECore.offHandShield(pawn);
+                                        GUI.color = Color.gray;
+                                        GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
+                                        TooltipHandler.TipRegion(offhandRect, "SS_EquipOffandFail_AlreadyHoldingShield".Translate(weapon.Label, shield.Label));
+                                        iconsDrawn = true;
+                                    }
+                                    else{
                                         GUI.color = Color.green;
                                         GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
-                                        TooltipHandler.TipRegion(offhandRect, "SS_EquipAsOffand".Translate());
+                                        TooltipHandler.TipRegion(offhandRect, "SS_EquipAsOffand".Translate(weapon.Label));
                                         iconsDrawn = true;
                                     }
                                 }
@@ -819,7 +848,7 @@ namespace SimpleSidearms.rimworld
                             {
                                 GUI.color = Color.white;
                                 GUI.DrawTexture(offhandRect, TextureResources.weaponTypeOffhandCompat);
-                                TooltipHandler.TipRegion(offhandRect, "SS_CanEquipAsOffand".Translate());
+                                TooltipHandler.TipRegion(offhandRect, "SS_CanEquipAsOffand".Translate(weapon.Label));
                             }
                         }
                     }
@@ -851,19 +880,23 @@ namespace SimpleSidearms.rimworld
                 else
                     UIHighlighter.HighlightOpportunity(iconRect, "SidearmInInventoryMelee");
 
-                if(Tacticowl.active && pawn.equipment.Primary != weapon && !Tacticowl.isOffHand(weapon) && Tacticowl.canBeOffHand(weaponType.thing) && pawn.equipment.Primary != null && !Tacticowl.isTwoHanded(pawn.equipment.Primary.def))
+                if(Tacticowl.active && Tacticowl.dualWieldActive() && pawn.equipment.Primary != weapon && !Tacticowl.isOffHand(weapon) && Tacticowl.canBeOffHand(weaponType.thing) && pawn.equipment.Primary != null && !Tacticowl.isTwoHanded(pawn.equipment.Primary.def))
                 {
-                    UIHighlighter.HighlightOpportunity(offhandRect, "SidearmOffhandable");
-
-                    if (Widgets.ButtonInvisible(offhandRect, true))
+                    if(!VFECore.active || VFECore.offHandShield(pawn) == null)
                     {
-                        if (isMemorised)
-                            interactedWith = SidearmsListInteraction.Weapon;
-                        else
-                            interactedWith = SidearmsListInteraction.UnmemorisedWeapon;
-                        interactionAsOffhand = true;
-                        interactionWeapon = weapon;
-                        interactionWeaponIsDuplicate = isDuplicate;
+                        UIHighlighter.HighlightOpportunity(offhandRect, "SidearmOffhandable");
+
+                        if (Widgets.ButtonInvisible(offhandRect, true))
+                        {
+                            if (isMemorised)
+                                interactedWith = SidearmsListInteraction.Weapon;
+                            else
+                                interactedWith = SidearmsListInteraction.UnmemorisedWeapon;
+                            interactionAsOffhand = true;
+                            interactionWeapon = weapon;
+                            interactionWeaponIsDuplicate = isDuplicate;
+                            return;
+                        }
                     }
                 }
                 if (Widgets.ButtonInvisible(iconRect, true))
@@ -875,6 +908,7 @@ namespace SimpleSidearms.rimworld
                     interactionAsOffhand = false;
                     interactionWeapon = weapon;
                     interactionWeaponIsDuplicate = isDuplicate;
+                    return;
                 }
             }
         }
@@ -1179,13 +1213,13 @@ namespace SimpleSidearms.rimworld
 
                                         pawnMemory.UnsetForcedWeapon(true);
                                     }
-                                    else
+                                    /*else
                                     {
                                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SidearmsDropping, KnowledgeAmount.SpecificInteraction);
                                         PlayerKnowledgeDatabase.KnowledgeDemonstrated(SidearmsDefOf.Concept_SimpleSidearmsBasic, KnowledgeAmount.SmallInteraction);
 
                                         WeaponAssingment.DropSidearm(parent, weapon, true, false);
-                                    }
+                                    }*/
                                 }
                                 else
                                 {
