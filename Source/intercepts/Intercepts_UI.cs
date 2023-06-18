@@ -72,7 +72,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     List<ThingWithComps> carriedWeapons = __instance.GetCarriedWeapons(includeTools: true);
                     yield return new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons, pawnMemory);
 
-                    if (DebugSettings.godMode)
+                    if (SimpleSidearms.Settings.ShowBrainscope)
                     {
                         yield return new Gizmo_Brainscope(__instance);
                     }

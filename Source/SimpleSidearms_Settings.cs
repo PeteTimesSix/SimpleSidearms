@@ -134,6 +134,8 @@ namespace PeteTimesSix.SimpleSidearms
         public bool ShowAlertsMissingSidearm;
         public bool PlaySounds;
 
+        public bool ShowBrainscope;
+
         public void StartupChecks()
         {
             if (LimitModeSingle_Selection == null)
@@ -322,6 +324,8 @@ namespace PeteTimesSix.SimpleSidearms
 
             Scribe_Values.Look(ref ShowAlertsMissingSidearm, "ShowAlertsMissingSidearm", defaultValue: true);
             Scribe_Values.Look(ref PlaySounds, "PlaySounds", defaultValue: true);
+
+            Scribe_Values.Look(ref ShowBrainscope, "ShowBrainscope", defaultValue: false);
         }
 
         Vector2 scrollPosition = new Vector2(0, 0);
@@ -546,6 +550,10 @@ namespace PeteTimesSix.SimpleSidearms
 
                         subsection.CheckboxLabeled("SidearmsPlaySounds_title".Translate(), ref PlaySounds, "SidearmsPlaySounds_desc".Translate(), onChange: onChange);
 
+                        subsection.GapLine();
+
+                        subsection.CheckboxLabeled("ShowBrainscope_title".Translate(), ref ShowBrainscope, "ShowBrainscope_desc".Translate(), onChange: onChange);
+
                         listingStandard.EndHiddenSection(subsection, subsectionHeight);
                     }
                     break;
@@ -646,6 +654,8 @@ namespace PeteTimesSix.SimpleSidearms
 
             PreserveInventoryInCaravans = true;
             HideSidearmsInCaravanDialogs = true;
+
+            ShowBrainscope = false;
         }
 
         public void ApplyPreset(SettingsPreset preset)
@@ -687,8 +697,8 @@ namespace PeteTimesSix.SimpleSidearms
                     OptimalMelee = false;
                     CQCAutoSwitch = false;
                     RangedCombatAutoSwitch = false;
-                    LimitModeSingle = LimitModeSingleSidearm.AbsoluteWeight;
-                    LimitModeSingle_AbsoluteMass = 4.75f;
+                    LimitModeSingle = LimitModeSingleSidearm.RelativeWeight;
+                    LimitModeSingle_RelativeMass = 4.75f / InferredValues.maxCapacity;
                     LimitModeAmount = LimitModeAmountOfSidearms.Slots;
                     LimitModeAmount_Slots = 3;
 
@@ -701,10 +711,10 @@ namespace PeteTimesSix.SimpleSidearms
                     break;
                 case SettingsPreset.Lite:
                     SeparateModes = true;
-                    LimitModeSingleMelee = LimitModeSingleSidearm.AbsoluteWeight;
-                    LimitModeSingleMelee_AbsoluteMass = 0.6f;
-                    LimitModeSingleRanged = LimitModeSingleSidearm.AbsoluteWeight;
-                    LimitModeSingleRanged_AbsoluteMass = 1.6f;
+                    LimitModeSingleMelee = LimitModeSingleSidearm.RelativeWeight;
+                    LimitModeSingleMelee_RelativeMass = 0.6f / InferredValues.maxCapacity;
+                    LimitModeSingleRanged = LimitModeSingleSidearm.RelativeWeight;
+                    LimitModeSingleRanged_RelativeMass = 1.6f / InferredValues.maxCapacity;
                     LimitModeAmountMelee = LimitModeAmountOfSidearms.Slots;
                     LimitModeAmountMelee_Slots = 2;
                     LimitModeAmountRanged = LimitModeAmountOfSidearms.Slots;
@@ -716,10 +726,10 @@ namespace PeteTimesSix.SimpleSidearms
                     break;
                 case SettingsPreset.Basic:
                     SeparateModes = true;
-                    LimitModeSingleMelee = LimitModeSingleSidearm.AbsoluteWeight;
-                    LimitModeSingleMelee_AbsoluteMass = 1.9f;
-                    LimitModeSingleRanged = LimitModeSingleSidearm.AbsoluteWeight;
-                    LimitModeSingleRanged_AbsoluteMass = 2.7f;
+                    LimitModeSingleMelee = LimitModeSingleSidearm.RelativeWeight;
+                    LimitModeSingleMelee_RelativeMass = 1.9f / InferredValues.maxCapacity;
+                    LimitModeSingleRanged = LimitModeSingleSidearm.RelativeWeight;
+                    LimitModeSingleRanged_RelativeMass = 2.7f / InferredValues.maxCapacity;
                     LimitModeAmountMelee = LimitModeAmountOfSidearms.Slots;
                     LimitModeAmountMelee_Slots = 2;
                     LimitModeAmountRanged = LimitModeAmountOfSidearms.Slots;
@@ -729,12 +739,12 @@ namespace PeteTimesSix.SimpleSidearms
                     break;
                 case SettingsPreset.Advanced:
                     SeparateModes = true;
-                    LimitModeSingleMelee = LimitModeSingleSidearm.AbsoluteWeight;
-                    LimitModeSingleMelee_AbsoluteMass = 2.25f;
-                    LimitModeSingleRanged = LimitModeSingleSidearm.AbsoluteWeight;
-                    LimitModeSingleRanged_AbsoluteMass = 5.0f;
-                    LimitModeAmountTotal = LimitModeAmountOfSidearms.AbsoluteWeight;
-                    LimitModeAmountTotal_AbsoluteMass = 10;
+                    LimitModeSingleMelee = LimitModeSingleSidearm.RelativeWeight;
+                    LimitModeSingleMelee_RelativeMass = 2.25f / InferredValues.maxCapacity;
+                    LimitModeSingleRanged = LimitModeSingleSidearm.RelativeWeight;
+                    LimitModeSingleRanged_RelativeMass = 5.0f / InferredValues.maxCapacity;
+                    LimitModeAmountTotal = LimitModeAmountOfSidearms.RelativeWeight;
+                    LimitModeAmountTotal_RelativeMass = 10 / InferredValues.maxCapacity;
                     break;
                 case SettingsPreset.Excessive:
                     SidearmSpawnChance = 0.75f;
@@ -744,10 +754,10 @@ namespace PeteTimesSix.SimpleSidearms
                     break;
                 case SettingsPreset.Brawler:
                     SeparateModes = true;
-                    LimitModeSingleMelee = LimitModeSingleSidearm.AbsoluteWeight;
-                    LimitModeSingleMelee_AbsoluteMass = 4f;
-                    LimitModeAmountMelee = LimitModeAmountOfSidearms.AbsoluteWeight;
-                    LimitModeAmountMelee_AbsoluteMass = 10f;
+                    LimitModeSingleMelee = LimitModeSingleSidearm.RelativeWeight;
+                    LimitModeSingleMelee_RelativeMass = 4f / InferredValues.maxCapacity;
+                    LimitModeAmountMelee = LimitModeAmountOfSidearms.RelativeWeight;
+                    LimitModeAmountMelee_RelativeMass = 10f / InferredValues.maxCapacity;
                     LimitModeAmountRanged = LimitModeAmountOfSidearms.Slots;
                     LimitModeAmountRanged_Slots = 0;
                     break;
@@ -838,7 +848,7 @@ namespace PeteTimesSix.SimpleSidearms
                 case LimitModeSingleSidearm.RelativeWeight:
                     {
                         var valBefore = limitModeSingle_RelativeMass;
-                        listing.SliderLabeled("MaximumMassSingleRelative_title".Translate(), ref limitModeSingle_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%", onChange: onChange);
+                        listing.SliderLabeled("MaximumMassSingleRelative_title".Translate(), ref limitModeSingle_RelativeMass, 0, 1, displayMult: InferredValues.maxCapacity, decimalPlaces: 1, valueSuffix: " kg", onChange: onChange);
                         if (valBefore != limitModeSingle_RelativeMass || limitModeSingle_Match_Cache == null)
                             RebuildCache(ref limitModeSingle_Match_Cache, listType);
                         Color save = GUI.color;

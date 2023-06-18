@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="Intercepts\Intecepts_World.cs" />
     <Compile Include="Intercepts\Intercepts_Caravan.cs" />
+    <Compile Include="Rimworld\DebugMenuEntries.cs" />
     <Compile Include="UI\CurveEditorPublic.cs" />
     <Compile Include="UI\ListingExtensions.cs" />
     <Compile Include="UI\SidearmsSpecificExtensions.cs" />

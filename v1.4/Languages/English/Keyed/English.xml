@@ -52,6 +52,9 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 <SidearmsPlaySounds_desc>Play sounds when swapping weapons.</SidearmsPlaySounds_desc>
 <SidearmsPlaySounds_title>Play sounds</SidearmsPlaySounds_title>
 
+<ShowBrainscope_desc>Show a dev tool gizmo that reveals the selected pawns internal state.</ShowBrainscope_desc>
+<ShowBrainscope_title>Show Brainscope</ShowBrainscope_title>
+
 <AllowBlockedWeaponUse_desc>Allow usage of weapons that are normally blocked (such as persona weapons, biocoded weapons, and Ideology role-restricted weapons) - see XKCD #1172</AllowBlockedWeaponUse_desc>
 <AllowBlockedWeaponUse_title>Allow use of blocked weapons</AllowBlockedWeaponUse_title>
 
@@ -79,12 +82,12 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 
 <MaximumMassAmountAbsolute_desc>Maximum total mass of sidearms a pawn can carry.</MaximumMassAmountAbsolute_desc>
 <MaximumMassAmountAbsolute_title>Max. mass of sidearms</MaximumMassAmountAbsolute_title>
-<MaximumMassAmountRelative_desc>Maximum total mass percentage of sidearms a pawn can carry relative to their carry capacity.</MaximumMassAmountRelative_desc>
-<MaximumMassAmountRelative_title>Max. mass percentage of sidearms</MaximumMassAmountRelative_title>
+<MaximumMassAmountRelative_desc>Maximum total mass of sidearms a pawn can carry relative to their carry capacity.</MaximumMassAmountRelative_desc>
+<MaximumMassAmountRelative_title>Max. mass of sidearms</MaximumMassAmountRelative_title>
 <MaximumMassSingleAbsolute_desc>Maximum mass of a single sidearm a pawn can carry.</MaximumMassSingleAbsolute_desc>
 <MaximumMassSingleAbsolute_title>Max. mass per sidearm</MaximumMassSingleAbsolute_title>
-<MaximumMassSingleRelative_desc>Maximum mass percentage of a single sidearm a pawn can carry relative to their carry capacity.</MaximumMassSingleRelative_desc>
-<MaximumMassSingleRelative_title>Max. mass percentage per sidearm</MaximumMassSingleRelative_title>
+<MaximumMassSingleRelative_desc>Maximum mass of a single sidearm a pawn can carry relative to their carry capacity.</MaximumMassSingleRelative_desc>
+<MaximumMassSingleRelative_title>Max. mass per sidearm</MaximumMassSingleRelative_title>
 <MaximumSlots_desc>How many sidearms can a pawn carry.</MaximumSlots_desc>
 <MaximumSlots_title>Slots</MaximumSlots_title>
 <RangedCombatAutoSwitchMaxWarmup_desc>What is the threshold after which a pawn will refuse to interrupt their attack to switch to a sidearm?</RangedCombatAutoSwitchMaxWarmup_desc>
