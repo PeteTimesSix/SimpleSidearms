@@ -22,7 +22,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             {
                 Pawn pawn = __result[i];
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-                if (pawnMemory != null && pawn.IsValidSidearmsCarrier() && pawnMemory.IsUsingAutotool(true, true))
+                if (pawnMemory != null && pawn.IsValidSidearmsCarrierRightNow() && pawnMemory.IsUsingAutotool(true, true))
                 {
                     __result.Remove(pawn);
                 }

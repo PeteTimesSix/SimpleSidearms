@@ -186,7 +186,7 @@ namespace SimpleSidearms.rimworld
         public void GenerateRememberedWeaponsFromEquipped()
         {
             this.rememberedWeapons = new List<ThingDefStuffDefPair>();
-            IEnumerable<ThingWithComps> carriedWeapons = Owner.getCarriedWeapons(includeTools: true);
+            IEnumerable<ThingWithComps> carriedWeapons = Owner.GetCarriedWeapons(includeTools: true);
             foreach (ThingWithComps weapon in carriedWeapons)
             {
                 ThingDefStuffDefPair pair = new ThingDefStuffDefPair(weapon.def, weapon.Stuff);
@@ -197,7 +197,8 @@ namespace SimpleSidearms.rimworld
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             //Self-destruct: animals don't need this comp
-            if (!Owner.RaceProps.Humanlike)
+
+            if( !Owner.IsValidSidearmsCarrier())
             {
                 Owner.AllComps.Remove(this);
                 return;

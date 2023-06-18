@@ -25,7 +25,7 @@ namespace SimpleSidearms.rimworld
         public static bool TryGenerateSidearmFor(Pawn pawn, float chance, float budgetMultiplier, PawnGenerationRequest request)
         {
             if (
-                !(Current.ProgramState == ProgramState.Playing) || !pawn.IsValidSidearmsCarrier() ||
+                !(Current.ProgramState == ProgramState.Playing) || !pawn.IsValidSidearmsCarrierRightNow() ||
                 chance < 0.01f ||
                 pawn.kindDef.weaponTags == null || pawn.kindDef.weaponTags.Count == 0 ||
                 pawn.equipment.Primary == null ||

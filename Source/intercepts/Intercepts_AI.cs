@@ -57,7 +57,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 toil.AddPreInitAction(delegate
                 {
                     Pawn pawn = toil.GetActor();
-                    if (pawn == null || !pawn.IsValidSidearmsCarrier())
+                    if (pawn == null || !pawn.IsValidSidearmsCarrierRightNow())
                         return;
 
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
@@ -94,7 +94,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 toil.AddFinishAction(delegate
                 {
                     Pawn pawn = toil.GetActor();
-                    if (pawn == null || !pawn.IsValidSidearmsCarrier())
+                    if (pawn == null || !pawn.IsValidSidearmsCarrierRightNow())
                         return;
 
                     CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
@@ -117,7 +117,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static bool CarryWeaponOpenly(bool __result, Pawn ___pawn)
         {
-            if (__result == true || !___pawn.IsValidSidearmsCarrier())
+            if (__result == true || !___pawn.IsValidSidearmsCarrierRightNow())
                 return __result;
             
             return CompSidearmMemory.GetMemoryCompForPawn(___pawn) is CompSidearmMemory pawnMemory && pawnMemory.autotoolToil != null;
@@ -168,7 +168,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             if (!__instance.Drafted)
             {
                 Pawn pawn = __instance.pawn;
-                if (!pawn.IsValidSidearmsCarrier())
+                if (!pawn.IsValidSidearmsCarrierRightNow())
                     return;
                 if (pawn.IsColonist)
                 {
@@ -223,7 +223,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             Pawn pawn = __instance.stanceTracker.pawn;
             if (IsHunting(pawn))
                 return;
-            if (!pawn.IsValidSidearmsCarrier())
+            if (!pawn.IsValidSidearmsCarrierRightNow())
                 return;
             if (!(__instance.verb is Verb_Shoot))
                 return;
@@ -316,7 +316,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             if(__result == true && resultingEq != null) 
             {
                 Pawn pawn = __instance.pawn;
-                if (!pawn.IsValidSidearmsCarrier())
+                if (!pawn.IsValidSidearmsCarrierRightNow())
                     return;
 
                 if (!(Pawn_HealthTracker_MakeDowned.beingDowned || dropEquipmentSourcedBySimpleSidearms))
@@ -341,7 +341,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             if (!addEquipmentSourcedBySimpleSidearms)
             {
                 Pawn pawn = __instance.pawn;
-                if (!pawn.IsValidSidearmsCarrier())
+                if (!pawn.IsValidSidearmsCarrierRightNow())
                     return;
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                 if (pawnMemory == null)
@@ -373,7 +373,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPrefix]
         public static bool Prefix(Pawn pawn, Thing thing)
         {
-            if (!(thing is ThingWithComps thingWithComps) || !pawn.IsValidSidearmsCarrier())
+            if (!(thing is ThingWithComps thingWithComps) || !pawn.IsValidSidearmsCarrierRightNow())
                 return true;
             else
             {
@@ -383,7 +383,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 if (rememberedOfType.Any())
                 {
 
-                    var carriedOfType = pawn.getCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
+                    var carriedOfType = pawn.GetCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
 
                     if (rememberedOfType.Count() > carriedOfType.Sum(c => c.stackCount) - thingWithComps.stackCount)
                     {
@@ -412,7 +412,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             else
             {
                 Pawn pawn = __instance.pawn;
-                if (!pawn.IsValidSidearmsCarrier())
+                if (!pawn.IsValidSidearmsCarrierRightNow())
                     return;
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
                 if (

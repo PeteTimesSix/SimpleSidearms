@@ -49,7 +49,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         public static IEnumerable<Gizmo> Postfix(IEnumerable<Gizmo> __result, Pawn __instance)
         {
             //This postfix inserts the SimpleSidearms gizmo before all other gizmos
-            if (__instance.IsValidSidearmsCarrier() && (__instance.IsColonistPlayerControlled
+            if (__instance.IsValidSidearmsCarrierRightNow() && (__instance.IsColonistPlayerControlled
                 || DebugSettings.godMode) && __instance.equipment != null && __instance.inventory != null
                 )
             {
@@ -69,10 +69,10 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                             rangedWeaponMemories.Add(weapon);
                     }
 
-                    List<ThingWithComps> carriedWeapons = __instance.getCarriedWeapons(includeTools: true);
+                    List<ThingWithComps> carriedWeapons = __instance.GetCarriedWeapons(includeTools: true);
                     yield return new Gizmo_SidearmsList(__instance, carriedWeapons, pawnMemory.RememberedWeapons, pawnMemory);
 
-                    if (DebugSettings.godMode)
+                    if (SimpleSidearms.Settings.ShowBrainscope)
                     {
                         yield return new Gizmo_Brainscope(__instance);
                     }

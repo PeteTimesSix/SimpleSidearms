@@ -106,7 +106,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
         public static bool equipSpecificWeapon(Pawn pawn, ThingWithComps weapon, bool dropCurrent, bool intentionalDrop)
         {
-            if (!pawn.IsValidSidearmsCarrier())
+            if (!pawn.IsValidSidearmsCarrierRightNow())
                 return false;
 
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
@@ -238,7 +238,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         {
             //Log.Message("looking for a stat booster for stats " + String.Join(",", stats.Select(s => s.label))); ;
 
-            if (!pawn.IsValidSidearmsCarrier() || stats.Count == 0 || pawn.Drafted)
+            if (!pawn.IsValidSidearmsCarrierRightNow() || stats.Count == 0 || pawn.Drafted)
                 return false;
 
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
@@ -272,7 +272,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
         public static void equipBestWeaponFromInventoryByPreference(Pawn pawn, DroppingModeEnum dropMode, PrimaryWeaponMode? modeOverride = null, Pawn target = null)
         {
-            if (!pawn.IsValidSidearmsCarrier())
+            if (!pawn.IsValidSidearmsCarrierRightNow())
                 return;
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
             if (pawnMemory == null)
@@ -511,7 +511,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
         public static bool tryCQCWeaponSwapToMelee(Pawn pawn, Pawn target, DroppingModeEnum dropMode)
         {
-            if (!pawn.IsValidSidearmsCarrier())
+            if (!pawn.IsValidSidearmsCarrierRightNow())
                 return false;
 
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);

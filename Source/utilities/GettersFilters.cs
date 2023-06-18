@@ -126,7 +126,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (pawn == null || pawn.Dead || pawn.equipment == null || pawn.inventory == null)
                 return (null,-1, 0);
 
-            IEnumerable<ThingWithComps> options = pawn.getCarriedWeapons(includeEquipped).Where(t => t.def.IsRangedWeapon);
+            IEnumerable<ThingWithComps> options = pawn.GetCarriedWeapons(includeEquipped).Where(t => t.def.IsRangedWeapon);
 
             if (!Settings.AllowBlockedWeaponUse)
                 options = options.Where(t => StatCalculator.canUseSidearmInstance(t, pawn, out _));
@@ -218,7 +218,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (pawn == null || pawn.Dead || pawn.equipment == null || pawn.inventory == null)
                 return false;
 
-            IEnumerable<ThingWithComps> options = pawn.getCarriedWeapons(includeEquipped).Where(t =>
+            IEnumerable<ThingWithComps> options = pawn.GetCarriedWeapons(includeEquipped).Where(t =>
             {
             return 
                 t.def.IsMeleeWeapon ||

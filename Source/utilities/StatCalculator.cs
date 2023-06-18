@@ -15,13 +15,13 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
     {
         public static int countForLimitType(Pawn pawn, WeaponSearchType type)
         {
-            return GettersFilters.filterForWeaponKind(pawn.getCarriedWeapons(), type).Count();
+            return GettersFilters.filterForWeaponKind(pawn.GetCarriedWeapons(), type).Count();
         }
 
         public static float weightForLimitType(Pawn pawn, WeaponSearchType type)
         {
             float total = 0;
-            IEnumerable<ThingWithComps> weapons = GettersFilters.filterForWeaponKind(pawn.getCarriedWeapons(), type);
+            IEnumerable<ThingWithComps> weapons = GettersFilters.filterForWeaponKind(pawn.GetCarriedWeapons(), type);
             foreach (ThingWithComps thing in weapons)
             {
                 switch (type)
