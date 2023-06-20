@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using PeteTimesSix.SimpleSidearms.Compat;
 using System.Reflection;
 using UnityEngine;
 using Verse;
@@ -9,12 +10,14 @@ namespace PeteTimesSix.SimpleSidearms
     {
         public static SimpleSidearms_Settings Settings { get; internal set; }
         public static SimpleSidearms ModSingleton { get; private set; }
+        public static Harmony Harmony { get; private set; } 
 
         public SimpleSidearms(ModContentPack content) : base(content)
         {
             ModSingleton = this;
-            var harmony = new Harmony("PeteTimesSix.SimpleSidearms");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Harmony = new Harmony("PeteTimesSix.SimpleSidearms");
+            Harmony.PatchAll(Assembly.GetExecutingAssembly());
+            OptionalPatches.Patch(Harmony);
         }
 
         public override string SettingsCategory()
@@ -34,6 +37,8 @@ namespace PeteTimesSix.SimpleSidearms
     {
         static SimpleSidearms_PostInit()
         {
+            OptionalPatches.PatchDelayed(SimpleSidearms.Harmony);
+
             SimpleSidearms.Settings = SimpleSidearms.ModSingleton.GetSettings<SimpleSidearms_Settings>();
             InferredValues.Init();
             SimpleSidearms.Settings.StartupChecks();

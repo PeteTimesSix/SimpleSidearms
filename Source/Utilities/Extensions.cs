@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using PeteTimesSix.SimpleSidearms.Compat;
 using RimWorld;
 using SimpleSidearms.rimworld;
 using System;
@@ -170,6 +171,11 @@ namespace PeteTimesSix.SimpleSidearms
             {
                 if (pawn.equipment.Primary is ThingWithComps primary && (includeTools || !primary.toThingDefStuffDefPair().isToolNotWeapon()))
                     weapons.Add(pawn.equipment.Primary);
+                if (Tacticowl.active)
+                {
+                    if (Tacticowl.getOffHand(pawn, out ThingWithComps offhander))
+                        weapons.Add(offhander);
+                }
             }
 
             var innerContainer = pawn.inventory.innerContainer;

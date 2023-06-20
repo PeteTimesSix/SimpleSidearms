@@ -469,7 +469,7 @@ namespace PeteTimesSix.SimpleSidearms
                                 listingStandard.SliderLabeled("MaximumMassAmountAbsolute_title".Translate(), ref LimitModeAmountTotal_AbsoluteMass, 0, InferredValues.maxCapacity, decimalPlaces: 1, valueSuffix: " kg", onChange: onChange);
                                 break;
                             case LimitModeAmountOfSidearms.RelativeWeight:
-                                listingStandard.SliderLabeled("MaximumMassAmountRelative_title".Translate(), ref LimitModeAmountTotal_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%", onChange: onChange);
+                                listingStandard.SliderLabeled("MaximumMassAmountRelative_title".Translate(), ref LimitModeAmountTotal_RelativeMass, 0, 1, InferredValues.maxCapacity, decimalPlaces: 1, valueSuffix: " kg", onChange: onChange);
                                 break;
                             case LimitModeAmountOfSidearms.Slots:
                                 listingStandard.Spinner("MaximumSlots_title".Translate(), ref LimitModeAmountTotal_Slots, min: 1, tooltip: "MaximumSlots_desc".Translate(), onChange: onChange);
@@ -601,40 +601,40 @@ namespace PeteTimesSix.SimpleSidearms
 
             #region LimitModeSingle
             LimitModeSingle_AbsoluteMass = 1.9f;
-            LimitModeSingle_RelativeMass = 0.25f;
+            LimitModeSingle_RelativeMass = 1.9f / InferredValues.maxCapacity;
             LimitModeSingle_Selection = GettersFilters.getValidWeaponsThingDefsOnly().Where(w => w.GetStatValueAbstract(StatDefOf.Mass) <= LimitModeSingle_AbsoluteMass).ToHashSet();
             #endregion
             #region LimitModeAmount
             LimitModeAmount_AbsoluteMass = 10f;
-            LimitModeAmount_RelativeMass = 0.5f;
+            LimitModeAmount_RelativeMass = 10f / InferredValues.maxCapacity;
             LimitModeAmount_Slots = 2;
             #endregion
 
             #region LimitModeSingleMelee
             LimitModeSingleMelee_AbsoluteMass = 1.9f;
-            LimitModeSingleMelee_RelativeMass = 0.25f;
+            LimitModeSingleMelee_RelativeMass = 1.9f / InferredValues.maxCapacity;
             LimitModeSingleMelee_Selection = GettersFilters.filterForWeaponKind(GettersFilters.getValidWeaponsThingDefsOnly(), WeaponSearchType.Melee).Where(w => w.GetStatValueAbstract(StatDefOf.Mass) <= LimitModeSingleMelee_AbsoluteMass).ToHashSet();
             #endregion
             #region LimitModeAmountMelee
             LimitModeAmountMelee_AbsoluteMass = 10f;
-            LimitModeAmountMelee_RelativeMass = 0.5f;
+            LimitModeAmountMelee_RelativeMass = 10f / InferredValues.maxCapacity;
             LimitModeAmountMelee_Slots = 2;
             #endregion
 
             #region LimitModeSingleRanged
             LimitModeSingleRanged_AbsoluteMass = 2.55f;
-            LimitModeSingleRanged_RelativeMass = 0.25f;
+            LimitModeSingleRanged_RelativeMass = 2.55f / InferredValues.maxCapacity;
             LimitModeSingleRanged_Selection = GettersFilters.filterForWeaponKind(GettersFilters.getValidWeaponsThingDefsOnly(), WeaponSearchType.Ranged).Where(w => w.GetStatValueAbstract(StatDefOf.Mass) <= LimitModeSingleRanged_AbsoluteMass).ToHashSet();
             #endregion
             #region LimitModeAmountRanged
             LimitModeAmountRanged_AbsoluteMass = 10f;
-            LimitModeAmountRanged_RelativeMass = 0.5f;
+            LimitModeAmountRanged_RelativeMass = 10f / InferredValues.maxCapacity;
             LimitModeAmountRanged_Slots = 2;
             #endregion
 
             #region LimitModeAmountTotal
             LimitModeAmountTotal_AbsoluteMass = 10f;
-            LimitModeAmountTotal_RelativeMass = 0.5f;
+            LimitModeAmountTotal_RelativeMass = 10f / InferredValues.maxCapacity;
             LimitModeAmountTotal_Slots = 4;
             #endregion
 
@@ -878,7 +878,7 @@ namespace PeteTimesSix.SimpleSidearms
                     listing.SliderLabeled("MaximumMassAmountAbsolute_title".Translate(), ref limitModeAmount_AbsoluteMass, 0, InferredValues.maxCapacity, decimalPlaces: 1, valueSuffix: " kg", onChange: onChange);
                     break;
                 case LimitModeAmountOfSidearms.RelativeWeight:
-                    listing.SliderLabeled("MaximumMassAmountRelative_title".Translate(), ref limitModeAmount_RelativeMass, 0, 1, displayMult: 100, valueSuffix: "%", onChange: onChange);
+                    listing.SliderLabeled("MaximumMassAmountRelative_title".Translate(), ref limitModeAmount_RelativeMass, 0, 1, InferredValues.maxCapacity, decimalPlaces: 1, valueSuffix: " kg", onChange: onChange);
                     break;
                 case LimitModeAmountOfSidearms.Slots:
                     listing.Spinner("MaximumSlots_title".Translate(), ref limitModeAmount_Slots, min: 1, tooltip: "MaximumSlots_desc".Translate(), onChange: onChange);

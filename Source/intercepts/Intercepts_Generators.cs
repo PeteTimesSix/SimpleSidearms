@@ -13,7 +13,13 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         [HarmonyPostfix]
         public static void GenerateGearFor(Pawn pawn, PawnGenerationRequest request)
         {
-            try { 
+            try {
+                if(pawn?.equipment?.Primary == null)
+                {
+                    //pawn has no primary weapon, so it makes no sense to generate sidearms
+                    return;
+                }
+
                 //Log.Message("generating sidearms for " + pawn.Label);
                 float modifiedChance = Settings.SidearmSpawnChance;
                 float modifiedBudgetMultiplier = Settings.SidearmBudgetMultiplier;

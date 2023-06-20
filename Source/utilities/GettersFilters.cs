@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PeteTimesSix.SimpleSidearms.Compat;
 using RimWorld;
 using SimpleSidearms.rimworld;
 using Verse;
@@ -139,6 +140,15 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             if (skipEMP)
                 options = options.Where(t => !isEMPWeapon(t));
 
+            if (VFECore.active && VFECore.offHandShield(pawn) != null)
+            {
+                options = options.Where(t => VFECore.usableWithShields(t.def));
+            }
+            if (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.getOffHand(pawn, out _)) //currently has offhanded weapon, filter to only one-handed
+            {
+                options = options.Where(t => !Tacticowl.isTwoHanded(t.def));
+            }
+
             if (options.Count() == 0)
                 return (null, -1, 0);
 
@@ -221,8 +231,17 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
             if (!Settings.AllowBlockedWeaponUse)
                 options = options.Where(t => StatCalculator.canUseSidearmInstance(t, pawn, out _));
+            
+            if (VFECore.active && VFECore.offHandShield(pawn) != null)
+            {
+                options = options.Where(t => VFECore.usableWithShields(t.def));
+            }
+            if (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.getOffHand(pawn, out _)) //currently has offhanded weapon, filter to only one-handed
+            {
+                options = options.Where(t => !Tacticowl.isTwoHanded(t.def));
+            }
 
-            if (options.Count() < 1)
+            if (options.Count() == 0)
                 return false;
 
             float averageSpeed = AverageSpeedMelee(options, pawn);
