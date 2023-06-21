@@ -565,9 +565,11 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
         }
 
         [Obsolete("use DropSidearm(Pawn pawn, ThingWithComps weapon, bool intentionalDrop, bool unmemorise) instead")]
-        public static void dropSidearm(Pawn pawn, ThingWithComps weapon, bool intentionalDrop)
+        public static void dropSidearm(Pawn pawn, Thing weapon, bool intentionalDrop)
         {
-            DropSidearm(pawn, weapon, intentionalDrop, false);
+            if (!(weapon is ThingWithComps weaponTyped))
+                return;
+            DropSidearm(pawn, weaponTyped, intentionalDrop, false);
         }
 
         public static void DropSidearm(Pawn pawn, ThingWithComps weapon, bool intentionalDrop, bool unmemorise)
