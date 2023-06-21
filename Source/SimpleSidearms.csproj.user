@@ -11,4 +11,7 @@
     <StartWorkingDirectory>C:\Program Files %28x86%29\Steam\steamapps\common\RimWorld\</StartWorkingDirectory>
     <StartAction>Program</StartAction>
   </PropertyGroup>
+  <PropertyGroup>
+    <ProjectView>ShowAllFiles</ProjectView>
+  </PropertyGroup>
 </Project>

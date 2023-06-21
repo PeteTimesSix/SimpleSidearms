@@ -66,9 +66,9 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 if (!intentionalDrop)
                     DoFumbleMote(pawn);
                 pawnMemory.InformOfDroppedSidearm(offhand, intentionalDrop);
-                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
+                //Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.TryDropEquipment(offhand, out ThingWithComps droppedItem, pawn.Position, false);
-                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
+                //Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
             }
             //or put it in inventory
             else
@@ -162,9 +162,9 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                         DoFumbleMote(pawn);
                     }
                     pawnMemory.InformOfDroppedSidearm(weapon, intentionalDrop);
-                    Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
+                    //Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
                     pawn.equipment.TryDropEquipment(pawn.equipment.Primary, out ThingWithComps droppedItem, pawn.Position, false);
-                    Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
+                    //Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
                 }
                 //or put it in inventory
                 else
@@ -195,9 +195,9 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
                 if (weapon.holdingOwner != null)
                     weapon.holdingOwner.Remove(weapon);
-                Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = true;
+                //Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.AddEquipment(weapon as ThingWithComps);
-                Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = false;
+                //Pawn_EquipmentTracker_AddEquipment.addEquipmentSourcedBySimpleSidearms = false;
 
                 if (weapon.def.soundInteract != null && Settings.PlaySounds)
                 {
@@ -576,9 +576,9 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
             if (pawn.equipment.Primary == weapon || (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.isOffHand(weapon)))
             {
-                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
+                //Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = true;
                 pawn.equipment.TryDropEquipment(weapon, out _, pawn.Position, false);
-                Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
+                //Pawn_EquipmentTracker_TryDropEquipment.dropEquipmentSourcedBySimpleSidearms = false;
             }
             else
             {

@@ -283,7 +283,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
     }
 
 
-    [HarmonyPatch(typeof(Pawn_HealthTracker), "MakeDowned")]
+    /*[HarmonyPatch(typeof(Pawn_HealthTracker), "MakeDowned")]
     public static class Pawn_HealthTracker_MakeDowned
     {
         //EW EW EW GLOBAL FLAG EW EW
@@ -302,9 +302,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             //Log.Message("makeDowned finalizer");
             Pawn_HealthTracker_MakeDowned.beingDowned = false;
         }
-    }
+    }*/
 
-    [HarmonyPatch(typeof(Pawn_EquipmentTracker), "TryDropEquipment")]
+    /*[HarmonyPatch(typeof(Pawn_EquipmentTracker), "TryDropEquipment")]
     public static class Pawn_EquipmentTracker_TryDropEquipment
     {
         //EW EW EW GLOBAL FLAG EW EW
@@ -327,9 +327,9 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 }
             }
         }
-    }
+    }*/
 
-    [HarmonyPatch(typeof(Pawn_EquipmentTracker), "AddEquipment")]
+    /*[HarmonyPatch(typeof(Pawn_EquipmentTracker), "AddEquipment")]
     public static class Pawn_EquipmentTracker_AddEquipment
     {
         //EW EW EW GLOBAL FLAG EW EW
@@ -349,7 +349,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 pawnMemory.InformOfAddedPrimary(newEq);
             }
         }
-    }
+    }*/
 
     [HarmonyPatch(typeof(JobDriver_AttackMelee), "TryMakePreToilReservations")]
     public static class JobDriver_AttackMelee_TryMakePreToilReservations

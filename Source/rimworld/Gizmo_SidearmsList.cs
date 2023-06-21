@@ -93,10 +93,6 @@ namespace SimpleSidearms.rimworld
         public Gizmo_SidearmsList(Pawn parent, IEnumerable<ThingWithComps> carriedWeapons, IEnumerable<ThingDefStuffDefPair> weaponMemories)
             : this(parent, carriedWeapons.ToList(), weaponMemories.ToList(), CompSidearmMemory.GetMemoryCompForPawn(parent)) { }
 
-        [Obsolete] //remains as VFECore uses this
-        public Gizmo_SidearmsList(Pawn parent, IEnumerable<ThingWithComps> carriedWeapons, IEnumerable<ThingDefStuffDefPair> weaponMemories)
-            : this(parent, carriedWeapons.ToList(), weaponMemories.ToList(), CompSidearmMemory.GetMemoryCompForPawn(parent)) { }
-
         public Gizmo_SidearmsList(Pawn parent, List<ThingWithComps> carriedWeapons, List<ThingDefStuffDefPair> weaponMemories, CompSidearmMemory pawnMemory)
         {
             this.parent = parent;
