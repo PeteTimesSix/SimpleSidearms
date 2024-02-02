@@ -194,15 +194,20 @@ namespace SimpleSidearms.rimworld
             }
         }
 
-        public override void PostSpawnSetup(bool respawningAfterLoad)
+        public override void Initialize(CompProperties props)
         {
-            //Self-destruct: animals don't need this comp
+            base.Initialize(props);
 
-            if( !Owner.IsValidSidearmsCarrier())
+            //Self-destruct: animals don't need this comp
+            if (!Owner.IsValidSidearmsCarrier())
             {
                 Owner.AllComps.Remove(this);
                 return;
             }
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
             if (_cache == null) _cache = new Dictionary<int, CompSidearmMemory>();
             if (_cache.ContainsKey(Owner.thingIDNumber) && _cache[Owner.thingIDNumber] != this)
                 Log.Warning($"SS: Pawn {Owner} had snuck in their memory comp from the previous game!");
