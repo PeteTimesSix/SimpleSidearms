@@ -44,6 +44,7 @@
     <Compile Include="Intercepts\Intercepts_Caravan.cs" />
     <Compile Include="Intercepts\JobDriver_Equip_MakeNewToils_Patches.cs" />
     <Compile Include="Intercepts\JobDriver_DropEquipment_MakeNewToils_Patches.cs" />
+    <Compile Include="Intercepts\Verb_Notify_EquipmentLost_Patches.cs" />
     <Compile Include="Rimworld\DebugMenuEntries.cs" />
     <Compile Include="UI\CurveEditorPublic.cs" />
     <Compile Include="UI\ListingExtensions.cs" />

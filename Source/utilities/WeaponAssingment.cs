@@ -104,6 +104,7 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             return equipSpecificWeapon(pawn, weapon, dropCurrent, intentionalDrop);
         }
 
+        public static ThingWithComps currentlyEquippingWeapon = null;
         public static bool equipSpecificWeapon(Pawn pawn, ThingWithComps weapon, bool dropCurrent, bool intentionalDrop)
         {
             if (!pawn.IsValidSidearmsCarrierRightNow())
@@ -118,6 +119,8 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
                 Log.Warning("SS: Attepmpted to equip already-equipped weapon!");
                 return false;
             }
+
+            currentlyEquippingWeapon = weapon;
 
             ThingWithComps storedOffhand = null;
 
@@ -214,6 +217,8 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             //avoid hunting stackoverflowexception
             if (pawn.CurJobDef == JobDefOf.Hunt)
                 pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, true);
+
+            currentlyEquippingWeapon = null;
 
             return true;
         }
