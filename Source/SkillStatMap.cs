@@ -34,16 +34,20 @@ namespace PeteTimesSix.SimpleSidearms
                 {
                     foreach (SkillNeed neededSkill in stat.skillNeedFactors)
                     {
-                        if (!map[neededSkill.skill].Contains(stat))
-                            map[neededSkill.skill].Add(stat);
+                        var l = map[neededSkill.skill];
+                        foreach (var s in stat.StatAndItsFactors())
+                            if (!l.Contains(s))
+                                l.Add(s);
                     }
                 }
                 if (stat.skillNeedOffsets != null)
                 {
                     foreach (SkillNeed neededSkill in stat.skillNeedOffsets)
                     {
-                        if (!map[neededSkill.skill].Contains(stat))
-                            map[neededSkill.skill].Add(stat);
+                        var l = map[neededSkill.skill];
+                        foreach (var s in stat.StatAndItsFactors())
+                            if (!l.Contains(s))
+                                l.Add(s);
                     }
                 }
             }

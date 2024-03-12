@@ -65,23 +65,19 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                         return;
                     pawnMemory.CheckIfStillOnAutotoolJob();
 
+                    var possiblyActiveStats = new HashSet<StatDef>();
+                    
                     StatDef activeStat = pawn.CurJob?.RecipeDef?.workSpeedStat;
-
-                    SkillDef activeSkill = null;
-                    if (toil.activeSkill != null && toil.activeSkill() != null)
-                        activeSkill = toil.activeSkill();
-                    else
-                        activeSkill = pawn.CurJob?.RecipeDef?.workSkill;
-
-                    List<StatDef> possiblyActiveStats = new List<StatDef>();
                     if (activeStat != null)
-                        possiblyActiveStats.Add(activeStat);
-                    else if (activeSkill != null && SkillStatMap.Map.ContainsKey(activeSkill))
+                        possiblyActiveStats.AddRange(activeStat.StatAndItsFactors());
+                    
+                    SkillDef activeSkill = toil.activeSkill?.Invoke() ?? pawn.CurJob?.RecipeDef?.workSkill;
+                    if (activeSkill != null && SkillStatMap.Map.ContainsKey(activeSkill))
                         possiblyActiveStats.AddRange(SkillStatMap.Map[activeSkill]);
 
                     //Log.Message($"{toil} has active stats: {string.Join(",", possiblyActiveStats.Select(s => s.LabelCap))}");
 
-                    bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(pawn, possiblyActiveStats);
+                    bool usingAppropriateTool = WeaponAssingment.equipBestWeaponFromInventoryByStatModifiers(pawn, possiblyActiveStats.ToList());
                     if (usingAppropriateTool)
                     {
                         if (pawnMemory != null)
