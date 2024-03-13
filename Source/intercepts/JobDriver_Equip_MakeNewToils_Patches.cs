@@ -57,7 +57,6 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             codeMatcher.MatchEndForward(toMatch);
             codeMatcher.Advance(1);
             codeMatcher.Insert(toInsert);
-            codeMatcher.End();
 
             if (codeMatcher.IsInvalid)
             {

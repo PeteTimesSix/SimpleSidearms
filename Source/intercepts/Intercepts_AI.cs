@@ -111,16 +111,16 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         }
     }
 
-    [HarmonyPatch(typeof(PawnRenderer), "CarryWeaponOpenly")]
-    public static class PawnRenderer_CarryWeaponOpenly_Postfix
+    [HarmonyPatch(typeof(PawnRenderUtility), nameof(PawnRenderUtility.CarryWeaponOpenly))]
+    public static class PawnRenderUtility_CarryWeaponOpenly
     {
         [HarmonyPostfix]
-        public static bool CarryWeaponOpenly(bool __result, Pawn ___pawn)
+        public static bool PawnRenderUtility_CarryWeaponOpenly_Postfix(bool __result, Pawn pawn)
         {
-            if (__result == true || !___pawn.IsValidSidearmsCarrierRightNow())
+            if (__result == true || !pawn.IsValidSidearmsCarrierRightNow())
                 return __result;
             
-            return CompSidearmMemory.GetMemoryCompForPawn(___pawn) is CompSidearmMemory pawnMemory && pawnMemory.autotoolToil != null;
+            return CompSidearmMemory.GetMemoryCompForPawn(pawn) is CompSidearmMemory pawnMemory && pawnMemory.autotoolToil != null;
         }
     }
 

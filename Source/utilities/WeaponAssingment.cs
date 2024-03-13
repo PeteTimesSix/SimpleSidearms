@@ -225,8 +225,6 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
 
         public static void DoFumbleMote(Pawn pawn)
         {
-            var bestSkillc = Math.Max(pawn.skills.GetSkill(SkillDefOf.Shooting).Level, pawn.skills.GetSkill(SkillDefOf.Melee).Level);
-            var chancec = Settings.FumbleRecoveryChance.Evaluate(bestSkillc);
             if (!Prefs.DevMode)
             {
                 MoteMaker.ThrowText(pawn.DrawPos, pawn.Map, Prefs.DevMode ? "Fumbled".Translate() : "Fumbled".Translate());
