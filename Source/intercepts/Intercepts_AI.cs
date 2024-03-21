@@ -107,16 +107,16 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         }
     }
 
-    [HarmonyPatch(typeof(PawnRenderer), "CarryWeaponOpenly")]
-    public static class PawnRenderer_CarryWeaponOpenly_Postfix
+    [HarmonyPatch(typeof(PawnRenderUtility), nameof(PawnRenderUtility.CarryWeaponOpenly))]
+    public static class PawnRenderUtility_CarryWeaponOpenly
     {
         [HarmonyPostfix]
-        public static bool CarryWeaponOpenly(bool __result, Pawn ___pawn)
+        public static bool PawnRenderUtility_CarryWeaponOpenly_Postfix(bool __result, Pawn pawn)
         {
-            if (__result == true || !___pawn.IsValidSidearmsCarrierRightNow())
+            if (__result == true || !pawn.IsValidSidearmsCarrierRightNow())
                 return __result;
             
-            return CompSidearmMemory.GetMemoryCompForPawn(___pawn) is CompSidearmMemory pawnMemory && pawnMemory.autotoolToil != null;
+            return CompSidearmMemory.GetMemoryCompForPawn(pawn) is CompSidearmMemory pawnMemory && pawnMemory.autotoolToil != null;
         }
     }
 
@@ -375,16 +375,19 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             {
                 var weaponType = thingWithComps.toThingDefStuffDefPair();
                 CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-                var rememberedOfType = pawnMemory.rememberedWeapons.Where(w => w == weaponType);
-                if (rememberedOfType.Any())
+                if(pawnMemory != null)
                 {
-
-                    var carriedOfType = pawn.GetCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
-
-                    if (rememberedOfType.Count() > carriedOfType.Sum(c => c.stackCount) - thingWithComps.stackCount)
+                    var rememberedOfType = pawnMemory.rememberedWeapons.Where(w => w == weaponType);
+                    if (rememberedOfType.Any())
                     {
-                        //Log.Message($"was about to dump a weapon we need (need {rememberedOfType.Count()}, dropping {thingWithComps.stackCount} of {carriedOfType.Sum(c => c.stackCount)})");
-                        return false;
+
+                        var carriedOfType = pawn.GetCarriedWeapons(includeTools: true).Where(w => w.toThingDefStuffDefPair() == weaponType);
+
+                        if (rememberedOfType.Count() > carriedOfType.Sum(c => c.stackCount) - thingWithComps.stackCount)
+                        {
+                            //Log.Message($"was about to dump a weapon we need (need {rememberedOfType.Count()}, dropping {thingWithComps.stackCount} of {carriedOfType.Sum(c => c.stackCount)})");
+                            return false;
+                        }
                     }
                 }
             }
