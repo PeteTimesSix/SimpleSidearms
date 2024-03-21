@@ -255,6 +255,16 @@ namespace PeteTimesSix.SimpleSidearms
         public static bool ButtonText(Rect rect, string label, Color color, bool drawBackground = true, bool doMouseoverSound = false, bool active = true)
         {
             return Widgets.ButtonText(rect, label, drawBackground, doMouseoverSound, color, active);
-        } 
+        }
+
+        public static IEnumerable<StatDef> StatAndItsFactors(this StatDef stat)
+        {
+            yield return stat;
+            if (stat.statFactors != null)
+            {
+                foreach (var factor in stat.statFactors)
+                    yield return factor;
+            }
+        }
     }
 }
