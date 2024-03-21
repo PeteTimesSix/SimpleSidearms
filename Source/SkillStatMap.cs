@@ -34,20 +34,20 @@ namespace PeteTimesSix.SimpleSidearms
                 {
                     foreach (SkillNeed neededSkill in stat.skillNeedFactors)
                     {
-                        var l = map[neededSkill.skill];
+                        var statsForSkill = map[neededSkill.skill];
                         foreach (var s in stat.StatAndItsFactors())
-                            if (!l.Contains(s))
-                                l.Add(s);
+                            if (!statsForSkill.Contains(s))
+                                statsForSkill.Add(s);
                     }
                 }
                 if (stat.skillNeedOffsets != null)
                 {
                     foreach (SkillNeed neededSkill in stat.skillNeedOffsets)
                     {
-                        var l = map[neededSkill.skill];
+                        var statsForSkill = map[neededSkill.skill];
                         foreach (var s in stat.StatAndItsFactors())
-                            if (!l.Contains(s))
-                                l.Add(s);
+                            if (!statsForSkill.Contains(s))
+                                statsForSkill.Add(s);
                     }
                 }
             }
@@ -55,7 +55,7 @@ namespace PeteTimesSix.SimpleSidearms
             //ListMapping();
         }
 
-        public static void ListMapping() 
+        private static void ListMapping() 
         {
             foreach(var (skill, stats) in map) 
             {

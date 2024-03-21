@@ -257,15 +257,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             {
                 candidates = candidates.Where(t => VFECore.usableWithShields(t.def));
             }
-            if (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.getOffHand(pawn, out _)) //currenlty has offhanded weapon, filter to only one-handed
+            if (Tacticowl.active && Tacticowl.dualWieldActive() && Tacticowl.getOffHand(pawn, out _)) //currently has offhanded weapon, filter to only one-handed
             {
                 candidates = candidates.Where(t => Tacticowl.canBeOffHand(t.def));
             }
 
-            ThingWithComps bestBooster = candidates.OrderBy(t =>
-            {
-                return t.toThingDefStuffDefPair().getBestStatBoost(stats, out _);
-            }).FirstOrDefault();
+            ThingWithComps bestBooster = candidates.OrderByDescending(t => t.toThingDefStuffDefPair().getBestStatBoost(stats, out _)).FirstOrDefault();
 
             if (bestBooster == default(ThingWithComps))
                 return false;
