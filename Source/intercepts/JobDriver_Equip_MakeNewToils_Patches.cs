@@ -51,20 +51,14 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         {
             var codeMatcher = new CodeMatcher(instructions);
 
-            CodeInstruction[] toInsertBefore = new CodeInstruction[]
+            CodeInstruction[] toInsert = new CodeInstruction[]
             {
                 //new CodeInstruction(OpCodes.Ldarg_0),
                 //new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
                     //the Ldarg_0 is a destination for a jump, so to keep things simple lets insert after it
                 new CodeInstruction(OpCodes.Dup),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(JobDriver_Equip_MakeNewToils_Patches), nameof(UnmemoriseCurrentWeapon)))
-            };
-            CodeInstruction[] toInsertAfter = new CodeInstruction[]
-            {
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
                 new CodeInstruction(OpCodes.Ldloc_1),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(JobDriver_Equip_MakeNewToils_Patches), nameof(MemoriseJustEquippedWeapon)))
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(JobDriver_Equip_MakeNewToils_Patches), nameof(JustBeforeEquip)))
             };
 
             codeMatcher.MatchStartForward(toMatch);
@@ -77,34 +71,38 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             else
             {
                 codeMatcher.Advance(2);
-                codeMatcher.Insert(toInsertBefore);
-                codeMatcher.Advance(toMatch.Length);
-                codeMatcher.Insert(toInsertAfter);
+                codeMatcher.Insert(toInsert);
 
                 return codeMatcher.InstructionEnumeration();
             }
         }
 
-        public static void UnmemoriseCurrentWeapon(Pawn pawn)
+        public static void JustBeforeEquip(Pawn pawn, ThingWithComps weapon)
         {
             if (!pawn.IsValidSidearmsCarrierRightNow())
                 return;
             CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
             if (pawnMemory == null)
                 return;
+            UnmemoriseCurrentWeapon(pawnMemory, pawn);
+            MemoriseWeaponAboutToBeEquipped(pawnMemory, pawn, weapon);
+        }
+
+        private static void UnmemoriseCurrentWeapon(CompSidearmMemory pawnMemory, Pawn pawn)
+        {
             var currentWeapon = pawn.equipment?.Primary;
-            if(currentWeapon == null) 
+            if (currentWeapon == null)
                 return;
             pawnMemory.InformOfDroppedSidearm(currentWeapon, true);
         }
 
-        public static void MemoriseJustEquippedWeapon(Pawn pawn, ThingWithComps weapon)
+        public static void MemoriseWeaponAboutToBeEquipped(CompSidearmMemory pawnMemory, Pawn pawn, ThingWithComps weapon)
         {
-            if (!pawn.IsValidSidearmsCarrierRightNow())
+            //dont double up
+            if (pawnMemory.RememberedWeapons.Any(rw => rw == weapon.toThingDefStuffDefPair()))
+            {
                 return;
-            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
-            if (pawnMemory == null)
-                return;
+            }
             pawnMemory.InformOfAddedPrimary(weapon);
         }
     }
