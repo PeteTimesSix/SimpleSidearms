@@ -22,6 +22,11 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
             new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn), nameof(Pawn.equipment))),
             new CodeMatch(OpCodes.Ldloc_1),
+            new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.MakeRoomFor))),
+            new CodeMatch(OpCodes.Ldarg_0),
+            new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
+            new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn), nameof(Pawn.equipment))),
+            new CodeMatch(OpCodes.Ldloc_1),
             new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.AddEquipment)))
         };
 
@@ -46,7 +51,15 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         {
             var codeMatcher = new CodeMatcher(instructions);
 
-            CodeInstruction[] toInsert = new CodeInstruction[]
+            CodeInstruction[] toInsertBefore = new CodeInstruction[]
+            {
+                //new CodeInstruction(OpCodes.Ldarg_0),
+                //new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
+                    //the Ldarg_0 is a destination for a jump, so to keep things simple lets insert after it
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(JobDriver_Equip_MakeNewToils_Patches), nameof(UnmemoriseCurrentWeapon)))
+            };
+            CodeInstruction[] toInsertAfter = new CodeInstruction[]
             {
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
@@ -54,9 +67,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(JobDriver_Equip_MakeNewToils_Patches), nameof(MemoriseJustEquippedWeapon)))
             };
 
-            codeMatcher.MatchEndForward(toMatch);
-            codeMatcher.Advance(1);
-            codeMatcher.Insert(toInsert);
+            codeMatcher.MatchStartForward(toMatch);
 
             if (codeMatcher.IsInvalid)
             {
@@ -64,7 +75,27 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 return instructions;
             }
             else
+            {
+                codeMatcher.Advance(2);
+                codeMatcher.Insert(toInsertBefore);
+                codeMatcher.Advance(toMatch.Length);
+                codeMatcher.Insert(toInsertAfter);
+
                 return codeMatcher.InstructionEnumeration();
+            }
+        }
+
+        public static void UnmemoriseCurrentWeapon(Pawn pawn)
+        {
+            if (!pawn.IsValidSidearmsCarrierRightNow())
+                return;
+            CompSidearmMemory pawnMemory = CompSidearmMemory.GetMemoryCompForPawn(pawn);
+            if (pawnMemory == null)
+                return;
+            var currentWeapon = pawn.equipment?.Primary;
+            if(currentWeapon == null) 
+                return;
+            pawnMemory.InformOfDroppedSidearm(currentWeapon, true);
         }
 
         public static void MemoriseJustEquippedWeapon(Pawn pawn, ThingWithComps weapon)
