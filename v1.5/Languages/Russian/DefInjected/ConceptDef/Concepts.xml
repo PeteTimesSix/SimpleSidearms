@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <Concept_SimpleSidearmsBasic.label>SS: Оружие</Concept_SimpleSidearmsBasic.label>
+  <Concept_SimpleSidearmsBasic.helpText>Простое оружие\n\nЧтобы экипировать оружие в качестве дополнительного, щёлкните по нему правой кнопкой мыши и выберите опцию «Взять как оружие».\n\nПо умолчанию, колонисты будут использовать тот тип оружия, которым они лучше всего владеют или интересуются. Владельцы оружия дальнего боя, также, переходят на оружие ближнего боя, когда вступают в ближний бой. Это поведение можно изменить в настройках мода.</Concept_SimpleSidearmsBasic.helpText>
+
+  <Concept_SidearmsDropping.label>SS: Выкидывание оружия</Concept_SidearmsDropping.label>
+  <Concept_SidearmsDropping.helpText>Оружие с серым фоном находится в инвентаре колониста и может быть использовано. Нажмите ПКМ, чтобы выкинуть.</Concept_SidearmsDropping.helpText>
+
+  <Concept_SidearmsMissing.label>SS: Пропавшее оружие</Concept_SidearmsMissing.label>
+  <Concept_SidearmsMissing.helpText>Оружие с тёмно-фиолетовым фоном в настоящее время отсутствует в инвентаре колонистов. Они постараются заменить его при первой возможности, если, конечно, удастся его найти. Нажмите ПКМ, чтобы забыть об оружии.</Concept_SidearmsMissing.helpText>
+
+  <Concept_SimpleSidearmsPreference.label>SS: Предпочтения в оружии</Concept_SimpleSidearmsPreference.label>
+  <Concept_SimpleSidearmsPreference.helpText>Использование оружия колонистами можно индивидуально настроить. Возможные варианты: \nИспользовать оружие дальнего боя\nИспользуйте оружие, которым колонист интересуется или владеет в совершенстве. \nИспользуйте оружие ближнего боя</Concept_SimpleSidearmsPreference.helpText>
+
+  <Concept_SimpleSidearmsAdvancedRanged.label>SS: Продвинутый контроль (дальний бой)</Concept_SimpleSidearmsAdvancedRanged.label>
+  <Concept_SimpleSidearmsAdvancedRanged.helpText>Нажмите ЛКМ на оружии дальнего боя, чтобы сделать его оружием по умолчанию. Если интерес колониста в оружии установлен на дальний бой (или колонист более опытен в стрельбе), это оружие будет тем, что колонист экипирует, когда не участвует в активном бою. Также, оно будет использоваться во время охоты. \n\nПовторный щелчок на оружии дальнего боя по умолчанию, заставляет использовать его независимо от дальности/DPS. \n\nНажмите ПКМ, чтобы удалить принудительное использование/по умолчанию.</Concept_SimpleSidearmsAdvancedRanged.helpText>
+
+  <Concept_SimpleSidearmsAdvancedMelee.label>SS: Продвинутый контроль (ближний бой)</Concept_SimpleSidearmsAdvancedMelee.label>
+  <Concept_SimpleSidearmsAdvancedMelee.helpText>Нажмите ЛКМ на оружии ближнего боя, чтобы сделать его в предпочитаемым оружием. Колонист всегда будет использовать это оружие, когда предпочитаемое оружие установлено на ближний бой (или колонист, более опытен в ближнем бою) и когда ему приходится вступать в ближний бой. \n\nНажмите на предпочитаемое оружие ближнего боя ещё раз, чтобы использовать его всегда. \n\nНажмите ПКМ, чтобы убрать принудительное использование/предпочтение.</Concept_SimpleSidearmsAdvancedMelee.helpText>
+
+  <Concept_SimpleSidearmsAdvancedDrafted.label>SS: Продвинутый контроль (в бою)</Concept_SimpleSidearmsAdvancedDrafted.label>
+  <Concept_SimpleSidearmsAdvancedDrafted.helpText>Нажмите ЛКМ на носимом оружии во время боя, чтобы использовать его до конца боя. \n\nОбратите внимание, что большинство изменений в снаряжении требуют, чтобы пешка не была в бою.</Concept_SimpleSidearmsAdvancedDrafted.helpText>
+
+  <Concept_SimpleSidearmsLosingWeapons.label>SS: Потеря оружия</Concept_SimpleSidearmsLosingWeapons.label>
+  <Concept_SimpleSidearmsLosingWeapons.helpText>В зависимости от настроек, Simple Sidearms может заставить колонистов бросить оружие в различных ситуациях (по умолчанию это атаки в ближнем бою). Не волнуйтесь — ваши колонисты вернут своё оружие после боя. \n\nЭто настраиваемая функция — загляните в настройки мода, чтобы узнать больше.</Concept_SimpleSidearmsLosingWeapons.helpText>
+
+  <Concept_CEOverride.label>SS: CE патч</Concept_CEOverride.label>
+  <Concept_CEOverride.helpText>Combat Extended загружен. Функции управления инвентарём SimpleSidearms отключены.</Concept_CEOverride.helpText>
+
+
+</LanguageData>

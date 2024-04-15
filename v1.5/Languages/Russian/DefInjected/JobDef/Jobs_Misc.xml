@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <EquipSecondary.reportString>берёт дополнительное оружие: TargetA</EquipSecondary.reportString>
+  <ReequipSecondary.reportString>берёт дополнительное оружие: TargetA</ReequipSecondary.reportString>
+  <ReequipSecondaryCombat.reportString>берёт дополнительное оружие: TargetA</ReequipSecondaryCombat.reportString>
+
+
+</LanguageData>
