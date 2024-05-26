@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
-<SimpleSidearms_ModTitle>Simple Sidearms</SimpleSidearms_ModTitle>
-
-<FirstTimeSettingsWarning>First time running Simple Sidearms?
-
-This icon indicates the mod's settings have not been configured yet. It will go away when the settings menu is first accessed.
-
-Click to go to settings now.</FirstTimeSettingsWarning>
-
 <ActiveTab_desc></ActiveTab_desc>
 <ActiveTab_title>Configuration tabs</ActiveTab_title>
 <ToolAutoSwitch_desc>Should pawns switch tools/weapons with statboosts for their current job?</ToolAutoSwitch_desc>
@@ -22,72 +14,41 @@ Click to go to settings now.</FirstTimeSettingsWarning>
 <CQCTargetOnly_desc>Should pawns only react to attacks from their current target?</CQCTargetOnly_desc>
 <CQCTargetOnly_title>Switch only on attacks from target</CQCTargetOnly_title>
 
-<DropMode_desc>In which situations might pawns fumble and drop their weapon instead of moving it to their inventory?</DropMode_desc>
-<DropMode_title>Weapon fumble criteria</DropMode_title>
-<FumbleRecoveryChance_title>Chance to avoid weapon fumble</FumbleRecoveryChance_title>
-<FumbleRecoveryChance_hint>Vertical axis is chance to avoid fumbling
-Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryChance_hint>
-
-<ReEquipOutOfCombat_desc>After having dropped a weapon, auto-re-equip it after combat once out of immediate danger.</ReEquipOutOfCombat_desc>
-<ReEquipOutOfCombat_title>Re-equip dropped weapons</ReEquipOutOfCombat_title>
-<ReEquipBest_desc>Auto-re-equip will find the best weapon available (instead of the closest)</ReEquipBest_desc>
+<DropMode_desc>In which situations are pawns forced to drop their weapon instead of moving it to their inventory?</DropMode_desc>
+<DropMode_title>Weapon dropping criteria</DropMode_title>
+<ReEquipBest_desc>After having dropped a weapon, auto-re-equip will find the best weapon available (instead of the closest)</ReEquipBest_desc>
 <ReEquipBest_title>Re-equip best available</ReEquipBest_title>
-<ReEquipInCombat_desc>Auto-re-equip weapons even in combat, when not actively fighting.</ReEquipInCombat_desc>
-<ReEquipInCombat_title>Re-equip during combat</ReEquipInCombat_title>
-
-<SkipDangerousWeapons_desc>Disallow auto-equip of dangerous weapons (molotov cocktails, frag grenades, rocket launchers, etc.)</SkipDangerousWeapons_desc>
-<SkipDangerousWeapons_title>Skip dangerous weapons</SkipDangerousWeapons_title>
-<SkipEMPWeapons_desc>Disallow auto-equip of EMP weapons (note that pawns will only consider auto-equipping these when fighting mechanoids anyway).</SkipEMPWeapons_desc>
-<SkipEMPWeapons_title>Skip EMP weapons</SkipEMPWeapons_title>
-
-<PreserveInventoryInCaravans_desc>Keep sidearms in the right inventory when returning from caravans. (Experimental, implemented by XT-0xFF @Github)</PreserveInventoryInCaravans_desc>
-<PreserveInventoryInCaravans_title>Preserve sideams through caravans</PreserveInventoryInCaravans_title>
-
-<HideSidearmsInCaravanDialogs_desc>Hide sideams in caravan dialogs, to prevent accidentaly selling them. (Experimental, implemented by XT-0xFF @Github)</HideSidearmsInCaravanDialogs_desc>
-<HideSidearmsInCaravanDialogs_title>Hide sidearms in caravan dialogs</HideSidearmsInCaravanDialogs_title>
-
-<ShowAlertsMissingSidearm_desc>Show alerts for colonists that remember having sidearms that they no longer have and can't find a replacement for.</ShowAlertsMissingSidearm_desc>
-<ShowAlertsMissingSidearm_title>Show missing sidearm alerts</ShowAlertsMissingSidearm_title>
-
-<SidearmsPlaySounds_desc>Play sounds when swapping weapons.</SidearmsPlaySounds_desc>
-<SidearmsPlaySounds_title>Play sounds</SidearmsPlaySounds_title>
-
-<ShowBrainscope_desc>Show a dev tool gizmo that reveals the selected pawns internal state.</ShowBrainscope_desc>
-<ShowBrainscope_title>Show Brainscope</ShowBrainscope_title>
-
-<AllowBlockedWeaponUse_desc>Allow usage of weapons that are normally blocked (such as persona weapons, biocoded weapons, and Ideology role-restricted weapons) - see XKCD #1172</AllowBlockedWeaponUse_desc>
-<AllowBlockedWeaponUse_title>Allow use of blocked weapons</AllowBlockedWeaponUse_title>
 
 <LimitCarryInfo_desc></LimitCarryInfo_desc>
-<LimitCarryInfo_title>Always limited by pawn's carry capacity</LimitCarryInfo_title>
+<LimitCarryInfo_title>*Always limited by pawn's carry capacity</LimitCarryInfo_title>
 
 <CEOverrideInfo_desc></CEOverrideInfo_desc>
 <CEOverrideInfo_title>Disabled in favor of CE's system.</CEOverrideInfo_title>
 
-<LimitModeAmount_title>Total sidearms limit mode</LimitModeAmount_title>
+<LimitModeAmountMelee_desc>What restrictions are there on all melee sidearms.</LimitModeAmountMelee_desc>
 <LimitModeAmountMelee_title>Total melee sidearms limit mode</LimitModeAmountMelee_title>
+<LimitModeAmountRanged_desc>What restrictions are there on all ranged sidearms.</LimitModeAmountRanged_desc>
 <LimitModeAmountRanged_title>Total ranged sidearms limit mode</LimitModeAmountRanged_title>
 <LimitModeAmount_desc>What restrictions are there on all sidearms.</LimitModeAmount_desc>
-<LimitModeAmountMelee_desc>What restrictions are there on all melee sidearms.</LimitModeAmountMelee_desc>
-<LimitModeAmountRanged_desc>What restrictions are there on all ranged sidearms.</LimitModeAmountRanged_desc>
-<LimitModeSingle_title>Single sidearm limit mode</LimitModeSingle_title>
+<LimitModeAmount_title>Total sidearms limit mode</LimitModeAmount_title>
+<LimitModeSingleMelee_desc>What restrictions are there on individual melee sidearms.</LimitModeSingleMelee_desc>
 <LimitModeSingleMelee_title>Single melee sidearm limit mode</LimitModeSingleMelee_title>
+<LimitModeSingleRanged_desc>What restrictions are there on individual ranged sidearms.</LimitModeSingleRanged_desc>
 <LimitModeSingleRanged_title>Single ranged sidearm limit mode</LimitModeSingleRanged_title>
 <LimitModeSingle_desc>What restrictions are there on individual sidearms.</LimitModeSingle_desc>
-<LimitModeSingleMelee_desc>What restrictions are there on individual melee sidearms.</LimitModeSingleMelee_desc>
-<LimitModeSingleRanged_desc>What restrictions are there on individual ranged sidearms.</LimitModeSingleRanged_desc>
+<LimitModeSingle_title>Single sidearm limit mode</LimitModeSingle_title>
 
-<LimitModeAmountTotal_title>Total sidearms limit mode</LimitModeAmountTotal_title>
+<LimitModeAmountTotal_title>Total</LimitModeAmountTotal_title>
 <LimitModeAmountTotal_desc>What restrictions are there on all sidearms.</LimitModeAmountTotal_desc>
 
 <MaximumMassAmountAbsolute_desc>Maximum total mass of sidearms a pawn can carry.</MaximumMassAmountAbsolute_desc>
 <MaximumMassAmountAbsolute_title>Max. mass of sidearms</MaximumMassAmountAbsolute_title>
-<MaximumMassAmountRelative_desc>Maximum total mass of sidearms a pawn can carry relative to their carry capacity.</MaximumMassAmountRelative_desc>
-<MaximumMassAmountRelative_title>Max. mass of sidearms</MaximumMassAmountRelative_title>
+<MaximumMassAmountRelative_desc>Maximum total mass percentage of sidearms a pawn can carry relative to their carry capacity.</MaximumMassAmountRelative_desc>
+<MaximumMassAmountRelative_title>Max. mass percentage of sidearms</MaximumMassAmountRelative_title>
 <MaximumMassSingleAbsolute_desc>Maximum mass of a single sidearm a pawn can carry.</MaximumMassSingleAbsolute_desc>
 <MaximumMassSingleAbsolute_title>Max. mass per sidearm</MaximumMassSingleAbsolute_title>
-<MaximumMassSingleRelative_desc>Maximum mass of a single sidearm a pawn can carry relative to their carry capacity.</MaximumMassSingleRelative_desc>
-<MaximumMassSingleRelative_title>Max. mass per sidearm</MaximumMassSingleRelative_title>
+<MaximumMassSingleRelative_desc>Maximum mass percentage of a single sidearm a pawn can carry relative to their carry capacity.</MaximumMassSingleRelative_desc>
+<MaximumMassSingleRelative_title>Max. mass percentage per sidearm</MaximumMassSingleRelative_title>
 <MaximumSlots_desc>How many sidearms can a pawn carry.</MaximumSlots_desc>
 <MaximumSlots_title>Slots</MaximumSlots_title>
 <RangedCombatAutoSwitchMaxWarmup_desc>What is the threshold after which a pawn will refuse to interrupt their attack to switch to a sidearm?</RangedCombatAutoSwitchMaxWarmup_desc>
@@ -106,7 +67,6 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 <SpeedSelectionBiasRanged_title>Speed bias (ranged)</SpeedSelectionBiasRanged_title>
 <WeaponMatch_desc>These are the weapons that match the given criteria.</WeaponMatch_desc>
 <WeaponMatch_title></WeaponMatch_title>
-<MaximumMassAmountRelative_hint>Listing assumes standard carry capacity of 35 kg</MaximumMassAmountRelative_hint>
 
 <SidearmSpawnChance_desc>The chance for any pawn that spawns with a weapon to also have a sidearm.</SidearmSpawnChance_desc>
 <SidearmSpawnChance_title>Sidearm spawn chance</SidearmSpawnChance_title>
@@ -128,13 +88,18 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 
 	
 <LimitModeSingle_option_None>No limit</LimitModeSingle_option_None>
-<LimitModeSingle_option_RelativeWeight>Mass relative</LimitModeSingle_option_RelativeWeight>
-<LimitModeSingle_option_AbsoluteWeight>Mass absolute</LimitModeSingle_option_AbsoluteWeight>
-<LimitModeSingle_option_Selection>Specific weapons</LimitModeSingle_option_Selection>
+<LimitModeSingle_option_RelativeWeight>Mass
+fraction</LimitModeSingle_option_RelativeWeight>
+<LimitModeSingle_option_AbsoluteWeight>Mass
+absolute</LimitModeSingle_option_AbsoluteWeight>
+<LimitModeSingle_option_Selection>Specific
+weapons</LimitModeSingle_option_Selection>
 
-<LimitModeAmount_option_None>No limit</LimitModeAmount_option_None>
-<LimitModeAmount_option_RelativeWeight>Mass relative</LimitModeAmount_option_RelativeWeight>
-<LimitModeAmount_option_AbsoluteWeight>Mass absolute</LimitModeAmount_option_AbsoluteWeight>
+<LimitModeAmount_option_MaximumCarryWeightOnly>No limit</LimitModeAmount_option_MaximumCarryWeightOnly>
+<LimitModeAmount_option_RelativeWeight>Mass
+fraction</LimitModeAmount_option_RelativeWeight>
+<LimitModeAmount_option_AbsoluteWeight>Mass
+absolute</LimitModeAmount_option_AbsoluteWeight>
 <LimitModeAmount_option_Slots>Slots</LimitModeAmount_option_Slots>
 
 <ActiveTab_option_Folded>&lt;</ActiveTab_option_Folded>
@@ -149,8 +114,6 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 <DropMode_option_InCombat>In combat</DropMode_option_InCombat>
 <DropMode_option_Always>Always</DropMode_option_Always>
 
-<Fumbled>Fumble!</Fumbled>
-<Fumbled_dev>Fumble! ({0})</Fumbled_dev>
 
 <PresetExport_title></PresetExport_title>
 <PresetExport_desc></PresetExport_desc>
@@ -184,12 +147,13 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 
 
 <SidearmPickupFail_NoFreeSpace>No free space</SidearmPickupFail_NoFreeSpace>
-<SidearmPickupFail_TooHeavyForSidearmMelee>Too heavy for a melee sidearm</SidearmPickupFail_TooHeavyForSidearmMelee>
-<SidearmPickupFail_TooHeavyForSidearmRanged>Too heavy for a ranged sidearm</SidearmPickupFail_TooHeavyForSidearmRanged>
-<SidearmPickupFail_TooHeavyForSidearm>Too heavy for a sidearm</SidearmPickupFail_TooHeavyForSidearm>
-<SidearmPickupFail_SidearmsTooHeavyMelee>Melee loadout too heavy</SidearmPickupFail_SidearmsTooHeavyMelee>
-<SidearmPickupFail_SidearmsTooHeavyRanged>Ranged loadout too heavy</SidearmPickupFail_SidearmsTooHeavyRanged>
-<SidearmPickupFail_SidearmsTooHeavyInTotal>Loadout too heavy</SidearmPickupFail_SidearmsTooHeavyInTotal>
+<SidearmPickupFail_TooHeavyForSidearm>Loadout too heavy</SidearmPickupFail_TooHeavyForSidearm>
+<SidearmPickupFail_TooHeavyForSidearmMelee>Melee loadout too heavy</SidearmPickupFail_TooHeavyForSidearmMelee>
+<SidearmPickupFail_TooHeavyForSidearmRanged>Ranged loadout too heavy</SidearmPickupFail_TooHeavyForSidearmRanged>
+<SidearmPickupFail_SidearmsTooHeavy>Too heavy for a sidearm</SidearmPickupFail_SidearmsTooHeavy>
+<SidearmPickupFail_SidearmsTooHeavyMelee>Too heavy for a melee sidearm</SidearmPickupFail_SidearmsTooHeavyMelee>
+<SidearmPickupFail_SidearmsTooHeavyRanged>Too heavy for a ranged sidearm</SidearmPickupFail_SidearmsTooHeavyRanged>
+<SidearmPickupFail_SidearmsTooHeavyInTotal>Too heavy for a sidearm</SidearmPickupFail_SidearmsTooHeavyInTotal>
 <SidearmPickupFail_NotASidearm>Not a sidearm</SidearmPickupFail_NotASidearm>
 <SidearmPickupFail_NotASidearmMelee>Not a sidearm</SidearmPickupFail_NotASidearmMelee>
 <SidearmPickupFail_NotASidearmRanged>Not a sidearm</SidearmPickupFail_NotASidearmRanged>
@@ -197,7 +161,6 @@ Horizontal axis is melee or ranged skill (whichever is better)</FumbleRecoveryCh
 <SidearmPickupFail_MeleeSlotsFull>Melee slots full</SidearmPickupFail_MeleeSlotsFull>
 <SidearmPickupFail_RangedSlotsFull>Ranged slots full</SidearmPickupFail_RangedSlotsFull>
 <SidearmPickupFail_NotAToolForPacifist>Not a tool. {0} is incapable of violence.</SidearmPickupFail_NotAToolForPacifist>
-<SidearmPickupFail_NotYetBladelinkBonded>Not yet bonded</SidearmPickupFail_NotYetBladelinkBonded>
 <SidearmPickupPass>No issue</SidearmPickupPass>
 <AsSidearm> as sidearm</AsSidearm>
 <AsTool> as tool</AsTool>
@@ -251,21 +214,12 @@ Right click to remove unarmed combat as preferred melee option.</DrawSidearm_giz
 <DrawSidearm_gizmoTooltipUnarmedForced>Right click to remove forced use of unarmed combat.</DrawSidearm_gizmoTooltipUnarmedForced>
 <DrawSidearm_gizmoTooltipUnarmedWhileDrafted>Left click to force use of unarmed combat until end of combat.</DrawSidearm_gizmoTooltipUnarmedWhileDrafted>
 <DrawSidearm_gizmoTooltipUnarmedForcedWhileDrafted>Right click to remove forced use of unarmed combat.</DrawSidearm_gizmoTooltipUnarmedForcedWhileDrafted>
-<DrawSidearm_blocked>Weapon unusable</DrawSidearm_blocked>
 
 <Alert_MissingSidearm_label>Colonist missing sidearm</Alert_MissingSidearm_label>
 <Alert_MissingPrimary_label>Colonist missing primary weapon</Alert_MissingPrimary_label>
 
 <Alert_MissingSidearm_desc>These colonists are missing one or more of their sidearms:\n\n{0}</Alert_MissingSidearm_desc>
 <Alert_MissingPrimary_desc>These colonists are missing their primary weapon:\n\n{0}</Alert_MissingPrimary_desc>
-
-<SS_EquipWarning_CannotUseWithShield>Using {0} will prevent use of {1}.</SS_EquipWarning_CannotUseWithShield>
-<SS_EquipWarning_WillUnequipOffhand>Equipping {0} will unequip offhand {1}.</SS_EquipWarning_WillUnequipOffhand>
-<SS_EquipOffandFail_NoPrimary>Cannot equip {0} as offhand weapon - need a primary weapon to pair it with first.</SS_EquipOffandFail_NoPrimary>
-<SS_EquipOffandFail_PrimaryTwoHanded>Cannot equip {0} as offhand weapon - {1} is a two-handed weapon.</SS_EquipOffandFail_PrimaryTwoHanded>
-<SS_EquipOffandFail_AlreadyHoldingShield>Cannot equip {0} as offhand weapon - already holding {1}.</SS_EquipOffandFail_AlreadyHoldingShield>
-<SS_EquipAsOffand>Left click on the offhand icon to equip {0} as offhand weapon.</SS_EquipAsOffand>
-<SS_CanEquipAsOffand>Left click on the offhand icon to equip {0} as offhand weapon.</SS_CanEquipAsOffand>
 
 <!-- Legacy -->
 <DropMode_option_Panic>In distress</DropMode_option_Panic>
@@ -275,5 +229,8 @@ Right click to remove unarmed combat as preferred melee option.</DrawSidearm_giz
 <SidearmsEnableNeolithicExtension_title>Extend neolithic sidearms</SidearmsEnableNeolithicExtension_title>
 <SidearmsNeolithicExtension_desc></SidearmsNeolithicExtension_desc>
 <SidearmsNeolithicExtension_title>Sidearms considered neolithic</SidearmsNeolithicExtension_title>
+
+<!-- Humanoid alien races restriction -->
+<SideArmsWrongRaceEquipment>Unable to equip (race mismatch)</SideArmsWrongRaceEquipment>
 
 </LanguageData>
