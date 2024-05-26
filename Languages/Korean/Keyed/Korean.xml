@@ -230,4 +230,7 @@
   <SidearmsNeolithicExtension_desc></SidearmsNeolithicExtension_desc>
   <SidearmsNeolithicExtension_title>석기 시대로 취급할 보조 무기</SidearmsNeolithicExtension_title>
 
+  <!-- Humanoid alien races restriction -->
+  <SideArmsWrongRaceEquipment>장비 불가 (종족 불일치)</SideArmsWrongRaceEquipment>
+  
 </LanguageData>
