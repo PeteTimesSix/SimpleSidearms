@@ -141,6 +141,12 @@ namespace PeteTimesSix.SimpleSidearms.Utilities
             //nicked from EquipmentUtility.CanEquip
             if (sidearmThing != null)
             {
+                if (!AlienRaceUtil.RaceCanEquip(sidearmThing.def, pawn.def))
+                {
+                    errString = "SideArmsWrongRaceEquipment".Translate();
+                    return false;
+                }
+                
                 if (sidearmThing.GetComp<CompBladelinkWeapon>() is CompBladelinkWeapon compBladelinkWeapon)
                 {
                     if (compBladelinkWeapon.Biocodable && compBladelinkWeapon.CodedPawn != pawn)
