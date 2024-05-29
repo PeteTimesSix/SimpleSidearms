@@ -1,0 +1,408 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+
+<ActiveTab_desc></ActiveTab_desc>
+<!-- EN: Configuration tabs -->
+  <ActiveTab_title>설정 탭</ActiveTab_title>
+<!-- EN: Should pawns switch tools/weapons with statboosts for their current job? -->
+  <ToolAutoSwitch_desc>현재 작업에 도움이 되는 도구/무기로 바꿉니까?</ToolAutoSwitch_desc>
+<!-- EN: Tool use autoswitch -->
+  <ToolAutoSwitch_title>도구 자동 전환</ToolAutoSwitch_title>
+<!-- EN: Should pawns automatically switch to a higher DPS melee weapon? -->
+  <OptimalMelee_desc>DPS가 높은 근접 무기로 바꿉니까?</OptimalMelee_desc>
+<!-- EN: Use best melee weapon -->
+  <OptimalMelee_title>최적의 근접 무기 사용</OptimalMelee_title>
+<!-- EN: Should pawns switch to their melee sidearms when attacked in melee? -->
+  <CQCAutoSwitch_desc>근접 공격을 받았을 때 근접 보조 무기로 바꿉니까?</CQCAutoSwitch_desc>
+<!-- EN: Melee combat autoswitch -->
+  <CQCAutoSwitch_title>근접전 자동 전환</CQCAutoSwitch_title>
+<!-- EN: Should pawns switch even when they are not using a weapon? -->
+  <CQCFistSwitch_desc>무기가 없을 때도 바꿉니까?</CQCFistSwitch_desc>
+<!-- EN: Unarmed combat autoswitch -->
+  <CQCFistSwitch_title>맨손 전투 자동 전환</CQCFistSwitch_title>
+<!-- EN: Should pawns only react to attacks from their current target? -->
+  <CQCTargetOnly_desc>현재 공격 대상이 공격할 때만 반응합니까?</CQCTargetOnly_desc>
+<!-- EN: Switch only on attacks from target -->
+  <CQCTargetOnly_title>대상이 공격할 때만 전환</CQCTargetOnly_title>
+
+<!-- EN: In which situations are pawns forced to drop their weapon instead of moving it to their inventory? -->
+  <DropMode_desc>어떤 상황에서 무기를 줍는 대신 떨어뜨리도록 강제합니까?</DropMode_desc>
+<!-- EN: Weapon dropping criteria -->
+  <DropMode_title>무기를 떨어뜨리는 기준</DropMode_title>
+<!-- EN: After having dropped a weapon, auto-re-equip will find the best weapon available (instead of the closest) -->
+  <ReEquipBest_desc>자동 재장착 시 가장 가까운 무기가 아닌 가장 좋은 무기를 찾습니다.</ReEquipBest_desc>
+<!-- EN: Re-equip best available -->
+  <ReEquipBest_title>가능한 최상의 장비 다시 장착</ReEquipBest_title>
+
+<LimitCarryInfo_desc></LimitCarryInfo_desc>
+<!-- EN: *Always limited by pawn's carry capacity -->
+  <LimitCarryInfo_title>*언제나 짊어질 수 있는 무게에 따라 제한됩니다</LimitCarryInfo_title>
+
+<CEOverrideInfo_desc></CEOverrideInfo_desc>
+<!-- EN: Disabled in favor of CE's system. -->
+  <CEOverrideInfo_title>CE 시스템 사용을 위해 비활성화됨.</CEOverrideInfo_title>
+
+<!-- EN: What restrictions are there on all melee sidearms. -->
+  <LimitModeAmountMelee_desc>모든 근접 보조 무기에 가할 제한입니다.</LimitModeAmountMelee_desc>
+<!-- EN: Total melee sidearms limit mode -->
+  <LimitModeAmountMelee_title>전체 근접 보조 무기 제한 모드</LimitModeAmountMelee_title>
+<!-- EN: What restrictions are there on all ranged sidearms. -->
+  <LimitModeAmountRanged_desc>모든 원거리 보조 무기에 가할 제한입니다.</LimitModeAmountRanged_desc>
+<!-- EN: Total ranged sidearms limit mode -->
+  <LimitModeAmountRanged_title>전체 원거리 보조 무기 제한 모드</LimitModeAmountRanged_title>
+<!-- EN: What restrictions are there on all sidearms. -->
+  <LimitModeAmount_desc>모든 보조 무기에 가할 제한입니다.</LimitModeAmount_desc>
+<!-- EN: Total sidearms limit mode -->
+  <LimitModeAmount_title>전체 보조 무기 제한 모드</LimitModeAmount_title>
+<!-- EN: What restrictions are there on individual melee sidearms. -->
+  <LimitModeSingleMelee_desc>개별 근접 보조 무기에 가할 제한입니다.</LimitModeSingleMelee_desc>
+<!-- EN: Single melee sidearm limit mode -->
+  <LimitModeSingleMelee_title>개별 근접 보조 무기 제한 모드</LimitModeSingleMelee_title>
+<!-- EN: What restrictions are there on individual ranged sidearms. -->
+  <LimitModeSingleRanged_desc>개별 원거리 보조 무기에 가할 제한입니다.</LimitModeSingleRanged_desc>
+<!-- EN: Single ranged sidearm limit mode -->
+  <LimitModeSingleRanged_title>개별 원거리 보조 무기 제한 모드</LimitModeSingleRanged_title>
+<!-- EN: What restrictions are there on individual sidearms. -->
+  <LimitModeSingle_desc>개별 보조 무기에 가할 제한입니다.</LimitModeSingle_desc>
+<!-- EN: Single sidearm limit mode -->
+  <LimitModeSingle_title>개별 보조 무기 제한 모드</LimitModeSingle_title>
+
+<!-- EN: Total -->
+  <LimitModeAmountTotal_title>전체</LimitModeAmountTotal_title>
+<!-- EN: What restrictions are there on all sidearms. -->
+  <LimitModeAmountTotal_desc>모든 보조 무기에 가할 제한입니다.</LimitModeAmountTotal_desc>
+
+<!-- EN: Maximum total mass of sidearms a pawn can carry. -->
+  <MaximumMassAmountAbsolute_desc>가지고 다닐 수 있는 보조 무기 전체의 최대 무게입니다.</MaximumMassAmountAbsolute_desc>
+<!-- EN: Max. mass of sidearms -->
+  <MaximumMassAmountAbsolute_title>보조 무기 최대 무게</MaximumMassAmountAbsolute_title>
+<!-- EN: Maximum total mass percentage of sidearms a pawn can carry relative to their carry capacity. -->
+  <MaximumMassAmountRelative_desc>나를 수 있는 총 무게와 비교한 보조 무기 전체의 최대 무게 비율입니다.</MaximumMassAmountRelative_desc>
+<!-- EN: Max. mass percentage of sidearms -->
+  <MaximumMassAmountRelative_title>보조 무기 최대 무게 비율</MaximumMassAmountRelative_title>
+<!-- EN: Maximum mass of a single sidearm a pawn can carry. -->
+  <MaximumMassSingleAbsolute_desc>가지고 다닐 수 있는 보조 무기 하나의 최대 무게입니다.</MaximumMassSingleAbsolute_desc>
+<!-- EN: Max. mass per sidearm -->
+  <MaximumMassSingleAbsolute_title>보조 무기당 최대 무게</MaximumMassSingleAbsolute_title>
+<!-- EN: Maximum mass percentage of a single sidearm a pawn can carry relative to their carry capacity. -->
+  <MaximumMassSingleRelative_desc>나를 수 있는 총 무게와 비교한 보조 무기 하나의 최대 무게 비율입니다.</MaximumMassSingleRelative_desc>
+<!-- EN: Max. mass percentage per sidearm -->
+  <MaximumMassSingleRelative_title>보조 무기당 최대 무게 비율</MaximumMassSingleRelative_title>
+<!-- EN: How many sidearms can a pawn carry. -->
+  <MaximumSlots_desc>가지고 다닐 수 있는 보조 무기의 숫자입니다.</MaximumSlots_desc>
+<!-- EN: Slots -->
+  <MaximumSlots_title>슬롯</MaximumSlots_title>
+<!-- EN: What is the threshold after which a pawn will refuse to interrupt their attack to switch to a sidearm? -->
+  <RangedCombatAutoSwitchMaxWarmup_desc>보조 무기로 바꾸기 위해 공격을 멈추지 않을 임계치입니다.</RangedCombatAutoSwitchMaxWarmup_desc>
+<!-- EN: Maximum warmup percentage -->
+  <RangedCombatAutoSwitchMaxWarmup_title>최대 조준 지연 비율</RangedCombatAutoSwitchMaxWarmup_title>
+<!-- EN: Should pawns switch to range-appropriate ranged sidearms when attacking at range? -->
+  <RangedCombatAutoSwitch_desc>원거리 공격을 할 때 사거리에 적합한 원거리 보조 무기로 바꿉니까?</RangedCombatAutoSwitch_desc>
+<!-- EN: Use best ranged weapon -->
+  <RangedCombatAutoSwitch_title>최적 원거리 무기 사용</RangedCombatAutoSwitch_title>
+<!-- EN: Should melee and ranged weapons have shared or separate restrictions? -->
+  <SeparateModes_desc>근접 무기와 원거리 무기 제한을 공유해야 합니까, 분리해야 합니까?</SeparateModes_desc>
+<!-- EN: Split melee/ranged -->
+  <SeparateModes_title>근접/원거리 분리</SeparateModes_title>
+<SidearmSelection_desc></SidearmSelection_desc>
+<!-- EN: Sidearm selection -->
+  <SidearmSelection_title>보조 무기 선택</SidearmSelection_title>
+<!-- EN: Should pawns switch to sidearms after expending single-use weapons? -->
+  <SingleshotAutoSwitch_desc>일회용 무기를 소비한 후 보조 무기로 바꾸도록 합니까?</SingleshotAutoSwitch_desc>
+<!-- EN: Singleshot autoswitch -->
+  <SingleshotAutoSwitch_title>일회용 무기 자동 전환</SingleshotAutoSwitch_title>
+<!-- EN: Pawn bias towards selecting weapons with faster attack speed. -->
+  <SpeedSelectionBiasMelee_desc>공격 속도가 높은 무기를 선택하도록 편향시키는 정도입니다.</SpeedSelectionBiasMelee_desc>
+<!-- EN: Speed bias (melee) -->
+  <SpeedSelectionBiasMelee_title>속도 편향(근접)</SpeedSelectionBiasMelee_title>
+<!-- EN: Pawn bias towards selecting weapons with faster warmup. -->
+  <SpeedSelectionBiasRanged_desc>조준이 빠른 무기를 선택하도록 편향시키는 정도입니다.</SpeedSelectionBiasRanged_desc>
+<!-- EN: Speed bias (ranged) -->
+  <SpeedSelectionBiasRanged_title>속도 편향(원거리)</SpeedSelectionBiasRanged_title>
+<!-- EN: These are the weapons that match the given criteria. -->
+  <WeaponMatch_desc>현재 기준에 일치하는 무기들입니다.</WeaponMatch_desc>
+<WeaponMatch_title></WeaponMatch_title>
+
+<!-- EN: The chance for any pawn that spawns with a weapon to also have a sidearm. -->
+  <SidearmSpawnChance_desc>무기를 가지고 생성되는 폰이 보조 무기도 가질 확률입니다.</SidearmSpawnChance_desc>
+<!-- EN: Sidearm spawn chance -->
+  <SidearmSpawnChance_title>보조 무기 생성 확률</SidearmSpawnChance_title>
+<!-- EN: The amount by which the chance to spawn a sidearm is reduced by per additional sidearm. -->
+  <SidearmSpawnChanceDropoff_desc>보조 무기를 생성할 때 추가적인 보조 무기마다 감소시킬 확률입니다.</SidearmSpawnChanceDropoff_desc>
+<!-- EN: Additional spawn chance reduction -->
+  <SidearmSpawnChanceDropoff_title>추가 생성 확률 감소</SidearmSpawnChanceDropoff_title>
+<!-- EN: The amount of money a sidearm can be worth, based on the default primary weapon. -->
+  <SidearmBudgetMultiplier_desc>주 무기의 가치에 비해 보조 무기가 가지는 가치입니다.</SidearmBudgetMultiplier_desc>
+<!-- EN: Sidearm budget multiplier -->
+  <SidearmBudgetMultiplier_title>보조 무기 가치 배수</SidearmBudgetMultiplier_title>
+<!-- EN: The amount by which the budget is reduced by per additional sidearm. -->
+  <SidearmBudgetDropoff_desc>추가적인 보조 무기마다 감소시킬 가치입니다.</SidearmBudgetDropoff_desc>
+<!-- EN: Additional sidearm budget reduction -->
+  <SidearmBudgetDropoff_title>추가 보조 무기 가치 감소</SidearmBudgetDropoff_title>
+<!-- EN: The default weapon preference mode for player-controlled pawns. -->
+  <ColonistDefaultWeaponMode_desc>플레이어가 제어하는 정착민의 선호 무기의 기본값입니다.</ColonistDefaultWeaponMode_desc>
+<!-- EN: Colonist default weapon mode -->
+  <ColonistDefaultWeaponMode_title>정착민 기본 무기 모드</ColonistDefaultWeaponMode_title>
+<!-- EN: The default weapon preference mode for NPC pawns. -->
+  <NPCDefaultWeaponMode_desc>NPC들의 선호 무기 기본값입니다.</NPCDefaultWeaponMode_desc>
+<!-- EN: NPC default weapon mode -->
+  <NPCDefaultWeaponMode_title>NPC 무기 모드 기본값</NPCDefaultWeaponMode_title>
+
+<!-- EN: Ranged -->
+  <PrimaryWeaponMode_option_Ranged>원거리</PrimaryWeaponMode_option_Ranged>
+<!-- EN: Melee -->
+  <PrimaryWeaponMode_option_Melee>근접</PrimaryWeaponMode_option_Melee>
+<!-- EN: By skill -->
+  <PrimaryWeaponMode_option_BySkill>기술에 따라</PrimaryWeaponMode_option_BySkill>
+<!-- EN: By primary -->
+  <PrimaryWeaponMode_option_ByGenerated>주 무기</PrimaryWeaponMode_option_ByGenerated>
+
+	
+<!-- EN: No limit -->
+  <LimitModeSingle_option_None>제한 없음</LimitModeSingle_option_None>
+<!-- EN: Mass
+fraction -->
+  <LimitModeSingle_option_RelativeWeight>무게 비율</LimitModeSingle_option_RelativeWeight>
+<!-- EN: Mass
+absolute -->
+  <LimitModeSingle_option_AbsoluteWeight>무게 절대값</LimitModeSingle_option_AbsoluteWeight>
+<!-- EN: Specific
+weapons -->
+  <LimitModeSingle_option_Selection>특정 무기</LimitModeSingle_option_Selection>
+
+<!-- EN: No limit -->
+  <LimitModeAmount_option_MaximumCarryWeightOnly>제한 없음</LimitModeAmount_option_MaximumCarryWeightOnly>
+<!-- EN: Mass
+fraction -->
+  <LimitModeAmount_option_RelativeWeight>무게 비율</LimitModeAmount_option_RelativeWeight>
+<!-- EN: Mass
+absolute -->
+  <LimitModeAmount_option_AbsoluteWeight>무게 절대값</LimitModeAmount_option_AbsoluteWeight>
+<!-- EN: Slots -->
+  <LimitModeAmount_option_Slots>슬롯</LimitModeAmount_option_Slots>
+
+<!-- EN: < -->
+  <ActiveTab_option_Folded>&lt;</ActiveTab_option_Folded>
+<!-- EN: Presets -->
+  <ActiveTab_option_Presets>사전 설정</ActiveTab_option_Presets>
+<!-- EN: Triggers -->
+  <ActiveTab_option_Automation>전환</ActiveTab_option_Automation>
+<!-- EN: Limits -->
+  <ActiveTab_option_Allowances>제한</ActiveTab_option_Allowances>
+<!-- EN: Spawns -->
+  <ActiveTab_option_Spawning>생성</ActiveTab_option_Spawning>
+<!-- EN: Misc. -->
+  <ActiveTab_option_Misc>기타</ActiveTab_option_Misc>
+
+<!-- EN: Never -->
+  <DropMode_option_Never>사용하지 않음</DropMode_option_Never>
+<!-- EN: In distress -->
+  <DropMode_option_InDistress>위협받을 때</DropMode_option_InDistress>
+<!-- EN: In combat -->
+  <DropMode_option_InCombat>전투 중</DropMode_option_InCombat>
+<!-- EN: Always -->
+  <DropMode_option_Always>언제나</DropMode_option_Always>
+
+
+<PresetExport_title></PresetExport_title>
+<PresetExport_desc></PresetExport_desc>
+<!-- EN: Copy active config to clipboard -->
+  <PresetExport_label>현재 설정을 클립보드로 복사</PresetExport_label>
+
+
+<!-- EN: Custom -->
+  <PresetCustom_title>맞춤</PresetCustom_title>
+<!-- EN: Custom settings. Automatically selected upon making a change. -->
+  <PresetCustom_desc>맞춤 설정입니다. 설정을 변경할 때마다 자동으로 선택됩니다.</PresetCustom_desc>
+<PresetCustom_label></PresetCustom_label>
+<!-- EN: Disabled -->
+  <Preset0_title>비활성화</Preset0_title>
+<!-- EN: All options disabled. Good base for configurations that use only a small portion of the mod's features. -->
+  <Preset0_desc>모든 설정을 비활성화합니다. 모드 기능을 조금만 사용한다면 설정을 만들 좋은 기반입니다.</Preset0_desc>
+<Preset0_label></Preset0_label>
+<!-- EN: Lite -->
+  <Preset1half_title>경화기</Preset1half_title>
+<!-- EN: Allows a single light weapon as a sidearm. -->
+  <Preset1half_desc>경화기 하나를 보조 무기로 사용하도록 합니다.</Preset1half_desc>
+<Preset1half_label></Preset1half_label>
+<!-- EN: Loadout only -->
+  <Preset1_title>장비만</Preset1_title>
+<!-- EN: Allows equipping sidearms, but nothing else. Essentially a convenient inventory extension. -->
+  <Preset1_desc>보조 무기를 장비할 수 있지만, 그것뿐입니다. 쉽게 말해 편리한 인벤토리 확장입니다.</Preset1_desc>
+<Preset1_label></Preset1_label>
+<!-- EN: Basic -->
+  <Preset2_title>기본</Preset2_title>
+<!-- EN: A simple setup. Pawns can use a few light weapons and will attempt to use them in appropriate situations. -->
+  <Preset2_desc>간단한 구성입니다. 몇 가지 경화기를 사용할 수 있고 알맞은 상황에서 사용하려 할 것입니다.</Preset2_desc>
+<Preset2_label></Preset2_label>
+<!-- EN: Advanced -->
+  <Preset3_title>고급</Preset3_title>
+<!-- EN: Pawns get more creative with their weapon selection, but still remain within what one would expect possible from regular people trying to survive on a dangerous rimworld. -->
+  <Preset3_desc>좀더 창의적으로 무기를 선택하지만, 위험한 변방계에서 살아남으려는 보통 사람이 고를 만한 범위에서입니다.</Preset3_desc>
+<Preset3_label></Preset3_label>
+<!-- EN: Excessive -->
+  <Preset4_title>지나침</Preset4_title>
+<!-- EN: Bring all of it! Minigun? Bring two! Spears? I've got a whole collection in my backpack! -->
+  <Preset4_desc>다 가져와! 미니건? 둘 가져와! 창? 배낭에 한 더미 있지!</Preset4_desc>
+<Preset4_label></Preset4_label>
+<!-- EN: Brawler mode -->
+  <Preset5_title>싸움꾼</Preset5_title>
+<!-- EN: Melee sidearms for everyone. -->
+  <Preset5_desc>모두에게 근접 보조 무기를.</Preset5_desc>
+<Preset5_label></Preset5_label>
+
+
+<!-- EN: No free space -->
+  <SidearmPickupFail_NoFreeSpace>남은 공간 없음</SidearmPickupFail_NoFreeSpace>
+<!-- EN: Loadout too heavy -->
+  <SidearmPickupFail_TooHeavyForSidearm>부무장으로는 너무 무겁습니다</SidearmPickupFail_TooHeavyForSidearm>
+<!-- EN: Melee loadout too heavy -->
+  <SidearmPickupFail_TooHeavyForSidearmMelee>근접 부무장으로는 너무 무겁습니다</SidearmPickupFail_TooHeavyForSidearmMelee>
+<!-- EN: Ranged loadout too heavy -->
+  <SidearmPickupFail_TooHeavyForSidearmRanged>원거리 부무장으로는 너무 무겁습니다</SidearmPickupFail_TooHeavyForSidearmRanged>
+<!-- EN: Too heavy for a sidearm -->
+  <SidearmPickupFail_SidearmsTooHeavy>TODO</SidearmPickupFail_SidearmsTooHeavy>
+<!-- EN: Too heavy for a melee sidearm -->
+  <SidearmPickupFail_SidearmsTooHeavyMelee>근접 로드아웃이 너무 무겁습니다</SidearmPickupFail_SidearmsTooHeavyMelee>
+<!-- EN: Too heavy for a ranged sidearm -->
+  <SidearmPickupFail_SidearmsTooHeavyRanged>원거리 로드아웃이 너무 무겁습니다</SidearmPickupFail_SidearmsTooHeavyRanged>
+<!-- EN: Too heavy for a sidearm -->
+  <SidearmPickupFail_SidearmsTooHeavyInTotal>로드아웃이 너무 무겁습니다</SidearmPickupFail_SidearmsTooHeavyInTotal>
+<!-- EN: Not a sidearm -->
+  <SidearmPickupFail_NotASidearm>보조 무기 아님</SidearmPickupFail_NotASidearm>
+<!-- EN: Not a sidearm -->
+  <SidearmPickupFail_NotASidearmMelee>보조 무기 아님</SidearmPickupFail_NotASidearmMelee>
+<!-- EN: Not a sidearm -->
+  <SidearmPickupFail_NotASidearmRanged>보조 무기 아님</SidearmPickupFail_NotASidearmRanged>
+<!-- EN: Slots full -->
+  <SidearmPickupFail_AllSlotsFull>슬롯 가득참</SidearmPickupFail_AllSlotsFull>
+<!-- EN: Melee slots full -->
+  <SidearmPickupFail_MeleeSlotsFull>근거리 슬롯 가득참</SidearmPickupFail_MeleeSlotsFull>
+<!-- EN: Ranged slots full -->
+  <SidearmPickupFail_RangedSlotsFull>원거리 슬롯 가득참</SidearmPickupFail_RangedSlotsFull>
+<!-- EN: Not a tool. {0} is incapable of violence. -->
+  <SidearmPickupFail_NotAToolForPacifist>도구가 아닙니다. {0}(은)는 전투할 수 없습니다.</SidearmPickupFail_NotAToolForPacifist>
+<!-- EN: No issue -->
+  <SidearmPickupPass>문제 없음</SidearmPickupPass>
+<!-- EN:  as sidearm -->
+  <AsSidearm> 보조 무기로</AsSidearm>
+<!-- EN:  as tool -->
+  <AsTool> 도구로</AsTool>
+
+<!-- EN: None -->
+  <Preset_option_NoneApplied>없음</Preset_option_NoneApplied>
+<!-- EN: Custom -->
+  <Preset_option_Custom>맞춤</Preset_option_Custom>
+<!-- EN: Lite -->
+  <Preset_option_Lite>경화기</Preset_option_Lite>
+<!-- EN: Disabled -->
+  <Preset_option_Disabled>비활성화</Preset_option_Disabled>
+<!-- EN: Loadout only -->
+  <Preset_option_LoadoutOnly>장비만</Preset_option_LoadoutOnly>
+<!-- EN: Basic -->
+  <Preset_option_Basic>기본</Preset_option_Basic>
+<!-- EN: Advanced -->
+  <Preset_option_Advanced>고급</Preset_option_Advanced>
+<!-- EN: Excessive -->
+  <Preset_option_Excessive>지나침</Preset_option_Excessive>
+<!-- EN: Brawler -->
+  <Preset_option_Brawler>싸움꾼</Preset_option_Brawler>
+
+<!-- EN: Both -->
+  <WeaponListKind_option_Both>모두</WeaponListKind_option_Both>
+<!-- EN: Melee -->
+  <WeaponListKind_option_Melee>근접</WeaponListKind_option_Melee>
+<!-- EN: Ranged -->
+  <WeaponListKind_option_Ranged>원거리</WeaponListKind_option_Ranged>
+
+<!-- EN: Tribal -->
+  <TribalWeapons>부족</TribalWeapons>
+<!-- EN: Not tribal -->
+  <NonTribalWeapons>부족 아님</NonTribalWeapons>
+
+<!-- EN: Sidearms -->
+  <ConsideredSidearms>보조 무기</ConsideredSidearms>
+<!-- EN: Not sidearms -->
+  <NotConsideredSidearms>보조 무기 아님</NotConsideredSidearms>
+
+<!-- EN: Cannot autoswitch (ranged) -->
+  <LockedWeaponSwitch>자동 전환 불가(원거리)</LockedWeaponSwitch>
+<!-- EN: Can autoswitch (ranged) -->
+  <UnlockedWeaponSwitch>자동 전환 가능(원거리)</UnlockedWeaponSwitch>
+
+<!-- EN: Lock autoswitch on draw -->
+  <WeaponSwitchAutolockOn>무기 꺼낼 때 자동 전환 잠금</WeaponSwitchAutolockOn>
+<!-- EN: Off -->
+  <WeaponSwitchAutolockOff>끔</WeaponSwitchAutolockOff>
+
+<!-- EN: Sidearms -->
+  <DrawSidearm_gizmoTitle>보조 무기</DrawSidearm_gizmoTitle>
+<!-- EN: Use ranged weapons. -->
+  <SidearmPreference_Ranged>원거리 무기 사용</SidearmPreference_Ranged>
+<!-- EN: Use weapons according to own skill or passion. -->
+  <SidearmPreference_Skill>기술이나 열정에 따라 사용</SidearmPreference_Skill>
+<!-- EN: Use melee weapons. -->
+  <SidearmPreference_Melee>근접 무기 사용</SidearmPreference_Melee>
+<!-- EN: Left click to set {0} as default ranged weapon.
+Right click to drop {0}. -->
+  <DrawSidearm_gizmoTooltipRanged>왼쪽 클릭으로 {0}(을)를 기본 원거리 무기로 설정합니다.\n오른쪽 클릭으로 {0}(을)를 떨어뜨립니다.</DrawSidearm_gizmoTooltipRanged>
+<!-- EN: Left click to set {0} as preferred melee weapon.
+Right click to drop {0}. -->
+  <DrawSidearm_gizmoTooltipMelee>왼쪽 클릭으로 {0}(을)를 선호하는 근접 무기로 설정합니다.\n오른쪽 클릭으로 {0}(을)를 떨어뜨립니다.</DrawSidearm_gizmoTooltipMelee>
+<!-- EN: Left click to force use of {0}.
+Right click to unset {0} as default ranged weapon. -->
+  <DrawSidearm_gizmoTooltipRangedDefault>왼쪽 클릭으로 {0}(을)를 강제로 사용합니다.\n오른쪽 클릭으로 {0}을 기본 원거리 무기에서 해제합니다.</DrawSidearm_gizmoTooltipRangedDefault>
+<!-- EN: Left click to force use of {0}.
+Right click to remove melee weapon preference of {0}. -->
+  <DrawSidearm_gizmoTooltipMeleePreferred>왼쪽 클릭으로 {0}(을)를 강제로 사용합니다.\n오른쪽 클릭으로 {0}을 선호하는 근접 무기에서 해제합니다.</DrawSidearm_gizmoTooltipMeleePreferred>
+<!-- EN: Right click to remove forced use of {0}. -->
+  <DrawSidearm_gizmoTooltipForced>오른쪽 클릭으로 {0} 강제 사용을 해제합니다.</DrawSidearm_gizmoTooltipForced>
+<!-- EN: Left click to force use of {0} until end of combat. -->
+  <DrawSidearm_gizmoTooltipWhileDrafted>왼쪽 클릭으로 {0}(을)를 전투가 끝날 때까지 강제로 사용합니다.</DrawSidearm_gizmoTooltipWhileDrafted>
+<!-- EN: Right click to remove forced use of {0}. -->
+  <DrawSidearm_gizmoTooltipForcedWhileDrafted>오른쪽 클릭으로 {0} 강제 사용을 해제합니다.</DrawSidearm_gizmoTooltipForcedWhileDrafted>
+<!-- EN: Right click to forget about {0}. -->
+  <DrawSidearm_gizmoTooltipMemory>오른쪽 클릭으로 {0}에 대해 잊습니다.</DrawSidearm_gizmoTooltipMemory>
+<!-- EN: No interaction while drafted. -->
+  <DrawSidearm_gizmoTooltipMemoryWhileDrafted>소집 중 상호작용 없음.</DrawSidearm_gizmoTooltipMemoryWhileDrafted>
+<!-- EN: Left click to set unarmed combat as preferred melee option. -->
+  <DrawSidearm_gizmoTooltipUnarmed>왼쪽 클릭으로 맨손을 선호하는 근접 무기로 설정합니다.</DrawSidearm_gizmoTooltipUnarmed>
+<!-- EN: Left click to force use of unarmed combat. 
+Right click to remove unarmed combat as preferred melee option. -->
+  <DrawSidearm_gizmoTooltipUnarmedPreferred>왼쪽 클릭으로 맨손 전투를 강제합니다.\n오른쪽 클릭으로 맨손을 선호하는 근접 무기에서 해제합니다.</DrawSidearm_gizmoTooltipUnarmedPreferred>
+<!-- EN: Right click to remove forced use of unarmed combat. -->
+  <DrawSidearm_gizmoTooltipUnarmedForced>오른쪽 클릭으로 맨손 전투 강체를 해제합니다.</DrawSidearm_gizmoTooltipUnarmedForced>
+<!-- EN: Left click to force use of unarmed combat until end of combat. -->
+  <DrawSidearm_gizmoTooltipUnarmedWhileDrafted>왼쪽 클릭으로 전투가 끝날 때까지 맨손으로 전투하도록 강제합니다.</DrawSidearm_gizmoTooltipUnarmedWhileDrafted>
+<!-- EN: Right click to remove forced use of unarmed combat. -->
+  <DrawSidearm_gizmoTooltipUnarmedForcedWhileDrafted>오른쪽 클릭으로 맨손 전투 강제를 해제합니다.</DrawSidearm_gizmoTooltipUnarmedForcedWhileDrafted>
+
+<!-- EN: Colonist missing sidearm -->
+  <Alert_MissingSidearm_label>보조 무기 잃어버림</Alert_MissingSidearm_label>
+<!-- EN: Colonist missing primary weapon -->
+  <Alert_MissingPrimary_label>주 무기 잃어버림</Alert_MissingPrimary_label>
+
+<!-- EN: These colonists are missing one or more of their sidearms:\n\n{0} -->
+  <Alert_MissingSidearm_desc>이 정착민들은 하나 이상의 보조 무기를 잃었습니다:\n\n{0}</Alert_MissingSidearm_desc>
+<!-- EN: These colonists are missing their primary weapon:\n\n{0} -->
+  <Alert_MissingPrimary_desc>이 정착민들은 주 무기를 잃었습니다:\n\n{0}</Alert_MissingPrimary_desc>
+
+<!-- Legacy -->
+<!-- EN: In distress -->
+  <DropMode_option_Panic>위협받을 때</DropMode_option_Panic>
+<!-- EN: In combat -->
+  <DropMode_option_PanicOrRange>전투 중</DropMode_option_PanicOrRange>
+
+<!-- EN: Allow more weapons to be used as sidearms by tribals. -->
+  <SidearmsEnableNeolithicExtension_desc>부족민이 더 많은 무기를 보조 무기로 사용하게 합니다.</SidearmsEnableNeolithicExtension_desc>
+<!-- EN: Extend neolithic sidearms -->
+  <SidearmsEnableNeolithicExtension_title>석기 시대 보조 무기 확장</SidearmsEnableNeolithicExtension_title>
+<SidearmsNeolithicExtension_desc></SidearmsNeolithicExtension_desc>
+<!-- EN: Sidearms considered neolithic -->
+  <SidearmsNeolithicExtension_title>석기 시대로 취급할 보조 무기</SidearmsNeolithicExtension_title>
+
+<!-- Humanoid alien races restriction -->
+<!-- EN: Unable to equip (race mismatch) -->
+  <SideArmsWrongRaceEquipment>장비 불가 (종족 불일치)</SideArmsWrongRaceEquipment>
+
+</LanguageData>
