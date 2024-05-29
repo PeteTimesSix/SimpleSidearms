@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+  
+  <!-- EN: equipping TargetA as sidearm. -->
+  <EquipSecondary.reportString>TargetA(을)를 보조 무기로 장착하는 중.</EquipSecondary.reportString>
+  
+  <!-- EN: re-equipping TargetA as sidearm. -->
+  <ReequipSecondary.reportString>TargetA(을)를 보조 무기로 재장착하는 중.</ReequipSecondary.reportString>
+  
+  <!-- EN: re-equipping TargetA as sidearm. -->
+  <ReequipSecondaryCombat.reportString>TargetA(을)를 보조 무기로 재장착하는 중.</ReequipSecondaryCombat.reportString>
+  
+</LanguageData>
