@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PeteTimesSix.SimpleSidearms</RootNamespace>
     <AssemblyName>SimpleSidearms</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <DebugSymbols>false</DebugSymbols>
@@ -18,6 +18,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+	<NoStdLib>true</NoStdLib>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputPath>..\v1.5\Assemblies\</OutputPath>
@@ -28,7 +29,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <OutputPath>..\v1.5\Assemblies\</OutputPath>
+    <OutputPath>..\v1.6\Assemblies\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -40,6 +41,7 @@
     <Compile Include="Compat\OptionalPatches.cs" />
     <Compile Include="Compat\Tacticowl.cs" />
     <Compile Include="Compat\VFECore.cs" />
+    <Compile Include="Rimworld\FloatMenuOptionProvider_EquipSidearm.cs" />
     <Compile Include="Intercepts\Intecepts_World.cs" />
     <Compile Include="Intercepts\Intercepts_Caravan.cs" />
     <Compile Include="Intercepts\JobDriver_Equip_MakeNewToils_Patches.cs" />
@@ -91,6 +93,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="mscorlib">
+      <HintPath>..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\mscorlib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -108,10 +114,6 @@
       <HintPath>..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.TextCoreModule">
-      <HintPath>..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
       <Private>False</Private>
@@ -119,7 +121,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)Install.bat" $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Assemblies Defs Languages Textures v1.1 v1.2 v1.3 v1.4 v1.5" "LoadFolders.xml"</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)Install.bat" $(ConfigurationName) "$(ProjectDir)" "$(ProjectName)" "About Assemblies Defs Languages Textures v1.1 v1.2 v1.3 v1.4 v1.5 v1.6" "LoadFolders.xml"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

@@ -11,7 +11,7 @@ using Verse;
 namespace PeteTimesSix.SimpleSidearms.Intercepts
 {
 
-    [HarmonyPatch(typeof(Alert_HunterLacksRangedWeapon), "HuntersWithoutRangedWeapon")]
+    /*[HarmonyPatch(typeof(Alert_HunterHasShieldAndRangedWeapon), "HuntersWithoutRangedWeapon")]
     [HarmonyPatch(MethodType.Getter)]
     public static class Alert_HunterLacksRangedWeapon_HuntersWithoutRangedWeapon_Postfix
     {
@@ -28,5 +28,5 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                 }
             }
         }
-    }
+    }*/
 }

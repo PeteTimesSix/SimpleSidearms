@@ -120,19 +120,13 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
         }
     }
 
-    [HarmonyPatch(typeof(AutoUndrafter), "AutoUndraftTick")]
+    [HarmonyPatch(typeof(AutoUndrafter), nameof(AutoUndrafter.AutoUndraftTickInterval))]
     public static class AutoUndrafter_AutoUndraftTick_Postfix
     {
         public const int autoRetrieveDelay = 300;
-        private static AccessTools.FieldRef<AutoUndrafter, int> lastNonWaitingTick;
-
-        static AutoUndrafter_AutoUndraftTick_Postfix() 
-        {
-            lastNonWaitingTick = AccessTools.FieldRefAccess<AutoUndrafter, int>(AccessTools.Field(typeof(AutoUndrafter), "lastNonWaitingTick"));
-        }
 
         [HarmonyPostfix]
-        public static void AutoUndraftTick(AutoUndrafter __instance, Pawn ___pawn)
+        public static void AutoUndraftTickInterval(AutoUndrafter __instance, int delta, Pawn ___pawn, int ___lastNonWaitingTick)
         {
             //Pawn pawn = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
             Pawn pawn = ___pawn;
@@ -144,7 +138,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
                     //pawn.jobs.EndCurrentJob(JobCondition.Succeeded);
                     
                     WeaponAssingment.equipBestWeaponFromInventoryByPreference(pawn, DroppingModeEnum.Combat);
-                    if (tick - lastNonWaitingTick(__instance) > autoRetrieveDelay)
+                    if (tick - ___lastNonWaitingTick > autoRetrieveDelay)
                     {
                         Job retrieval = JobGiver_RetrieveWeapon.TryGiveJobStatic(pawn, true);
                         if (retrieval != null)

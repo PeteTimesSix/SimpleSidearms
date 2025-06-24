@@ -24,8 +24,8 @@ namespace PeteTimesSix.SimpleSidearms.Compat
             {
                 active = true;
 
-                offHandShield = AccessTools.MethodDelegate<OffHandShield>(AccessTools.TypeByName("VFECore.ShieldUtility").GetMethod("OffHandShield"));
-                usableWithShields = AccessTools.MethodDelegate<UsableWithShields>(AccessTools.TypeByName("VFECore.ShieldUtility").GetMethod("UsableWithShields"));
+                offHandShield = AccessTools.MethodDelegate<OffHandShield>(AccessTools.TypeByName("VEF.Apparels.ShieldUtility").GetMethod("OffHandShield"));
+                usableWithShields = AccessTools.MethodDelegate<UsableWithShields>(AccessTools.TypeByName("VEF.Apparels.ShieldUtility").GetMethod("UsableWithShields"));
             }
         }
 

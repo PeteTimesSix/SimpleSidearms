@@ -22,7 +22,7 @@ namespace PeteTimesSix.SimpleSidearms.Intercepts
             new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
             new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn), nameof(Pawn.equipment))),
             new CodeMatch(OpCodes.Ldloc_1),
-            new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.MakeRoomFor))),
+            new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn_EquipmentTracker), nameof(Pawn_EquipmentTracker.MakeRoomFor), new Type[] {typeof(ThingWithComps)})), 
             new CodeMatch(OpCodes.Ldarg_0),
             new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), nameof(JobDriver.pawn))),
             new CodeMatch(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn), nameof(Pawn.equipment))),
