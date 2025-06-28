@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+  
+  <!-- EN: SS: CE patch -->
+  <Concept_CEOverride.label>SS: CE 패치</Concept_CEOverride.label>
+  <!-- EN: Combat Extended is loaded. SimpleSidearms inventory management functionality is disabled. -->
+  <Concept_CEOverride.helpText>Combat Extended를 불러온 상태입니다. Simple Sidearms의 인벤토리 관리 기능은 비활성화되었습니다.</Concept_CEOverride.helpText>
+  
+  <!-- EN: SS: Dropping sidearms -->
+  <Concept_SidearmsDropping.label>SS: 무기 떨어뜨리기</Concept_SidearmsDropping.label>
+  <!-- EN: Sidearms with a gray background are currently in a colonists inventory and eligible for use. Right click to drop. -->
+  <Concept_SidearmsDropping.helpText>회색 배경의 보조 무기는 현재 정착민 인벤토리에 있으며 사용할 수 있는 무기입니다. 마우스 오른쪽 버튼을 클릭하여 드롭합니다.</Concept_SidearmsDropping.helpText>
+  
+  <!-- EN: SS: Missing sidearms -->
+  <Concept_SidearmsMissing.label>SS: 잃어버린 보조 무기</Concept_SidearmsMissing.label>
+  <!-- EN: Sidearms with a dark purple background are currently missing from a colonists loadout. They will attempt to replace them at earliest opportunity, assuming any can be found. Right click to forget about the sidearm. -->
+  <Concept_SidearmsMissing.helpText>배경이 어두운 보라색 보조 무기는 정착민의 인벤토리에서 없어진 무기입니다. 찾을 수만 있다면 가능한 한 빨리 장비하려고 할 것입니다. 오른쪽 클릭으로 그 보조 무기를 잊어버리게 하세요.</Concept_SidearmsMissing.helpText>
+  
+  <!-- EN: SS: Advanced controls (drafted) -->
+  <Concept_SimpleSidearmsAdvancedDrafted.label>SS: 고급 컨트롤 (소집됨)</Concept_SimpleSidearmsAdvancedDrafted.label>
+  <!-- EN: Left click a carried weapon while drafted to force its use until end of combat. \n\nNote that most changes to sidearm loadout require the pawn to not be drafted. -->
+  <Concept_SimpleSidearmsAdvancedDrafted.helpText>소집된 상태에서 휴대 중인 무기를 왼쪽 클릭하면 전투가 끝날 때까지 강제로 사용할 수 있습니다. \n\n대부분의 보조 무기 장비 변경은 정착민이 소집되지 않아야 한다는 점에 유의하세요.</Concept_SimpleSidearmsAdvancedDrafted.helpText>
+  
+  <!-- EN: SS: Advanced controls (melee) -->
+  <Concept_SimpleSidearmsAdvancedMelee.label>SS: 고급 컨트롤(근접)</Concept_SimpleSidearmsAdvancedMelee.label>
+  <!-- EN: Left click a carried melee weapon to set it as the preferred ranged weapon. The colonist will always use this weapon when weapon preference is set to melee (or skill on a colonist more skilled with melee weapons) and when forced into close combat. \n\nClick a preferred melee weapon again to force its use at all times. \n\nRight click to remove forced use/preference. -->
+  <Concept_SimpleSidearmsAdvancedMelee.helpText>휴대한 근접 무기를 마우스 왼쪽 버튼으로 클릭하여 선호 무기로 설정합니다. 선호 무기가 근접 무기로 설정되어 있을 때(또는 근접 무기에 더 숙련된 정칙민의 스킬이 있을 때), 근접 전투에 돌입하면 정착민은 항상 이 무기를 사용합니다. \선호 근접 무기를 다시 클릭하면 항상 강제로 사용합니다. \강제 사용/선호 무기를 제거하려면 마우스 오른쪽 버튼을 클릭합니다.</Concept_SimpleSidearmsAdvancedMelee.helpText>
+  
+  <!-- EN: SS: Advanced controls (ranged) -->
+  <Concept_SimpleSidearmsAdvancedRanged.label>SS: 고급 컨트롤(원거리)</Concept_SimpleSidearmsAdvancedRanged.label>
+  <!-- EN: Left click a carried ranged weapon to set it as the default ranged weapon. If the colonist weapon preference is set to ranged (or skill on a colonist more skilled with ranged weapons), this weapon will be what the colonist equips when not in active combat. It will also be used while hunting. \n\nClick a default ranged weapon again to force its use regardless of range/DPS. \n\nRight click to remove forced use/default status. -->
+  <Concept_SimpleSidearmsAdvancedRanged.helpText>휴대한 원거리 무기를 마우스 왼쪽 버튼으로 클릭하면 기본 원거리 무기로 설정할 수 있습니다. 정착민의 선호 무기가 원거리 무기로 설정되어 있거나 원거리 무기에 정착민의 스킬이 더 숙련되어 있으면, 이 무기는 전투 중이 아닐 때 정착민이 장착하는 무기가 됩니다. 이 무기는 사냥 중에도 사용됩니다. \n\n기본 원거리 무기를 다시 클릭하면 사거리/DPS에 관계없이 강제로 사용합니다. \n\n강제 사용/기본 상태를 해제하려면 마우스 오른쪽 버튼을 클릭합니다.</Concept_SimpleSidearmsAdvancedRanged.helpText>
+  
+  <!-- EN: SS: Sidearms -->
+  <Concept_SimpleSidearmsBasic.label>SS: 보조 무기</Concept_SimpleSidearmsBasic.label>
+  <!-- EN: Simple Sidearms\n\nIn order to equip weapons as sidearms, rightclick them and select the Equip as sidearm option.\n\nBy default, colonists will use whichever weapon type they are best skilled with or passionate about. Ranged weapon users will also switch to a melee weapon when engaged in close combat. This behaviour can be altered in the mod settings. -->
+  <Concept_SimpleSidearmsBasic.helpText>Simple Sidearms\n\n무기를 보조 무기로 장비하려면, 오른쪽 클릭하고 "보조 무기로 착용" 옵션을 선택하세요.\n\n무기를 들고 있는 정착민을 선택하면 화면 아래에 표시되는 작은 인터페이스에 보조 무기 목록이 있습니다. 기본 설정으로는, 정착민들은 자동으로 거리에 맞는 무기로 바꿀 것이며, 근접전을 시작하면 근접 무기로 바꿀 것입니다. 모드 설정에서 이 행동을 바꿀 수 있습니다.</Concept_SimpleSidearmsBasic.helpText>
+  
+  <!-- EN: SS: Losing weapons -->
+  <Concept_SimpleSidearmsLosingWeapons.label>SS: 무기 잃어버림</Concept_SimpleSidearmsLosingWeapons.label>
+  <!-- EN: Depending on the settings, Simple Sidearms can cause colonists to drop their weapons in a variety of situations (default is attacks in melee). Don't worry - your colonists will retrieve their weapons after the fight. \n\nThis is a customizable feature - take a look in the mod settings dialog to learn more. -->
+  <Concept_SimpleSidearmsLosingWeapons.helpText>설정에 따라, Simple Sidearms는 다양한 상황에서 정착민이 무기를 떨어뜨리게 만들 수 있습니다. (기본값은 근접 공격)\n전투가 끝난 후 정착민이 무기를 회수할 테니 걱정하지 마세요.\n\n이 기능은 사용자 지정이 가능합니다. 자세한 내용은 모드 설정 대화 상자에서 확인하세요.</Concept_SimpleSidearmsLosingWeapons.helpText>
+  
+  <!-- EN: SS: Weapon preference -->
+  <Concept_SimpleSidearmsPreference.label>SS: 선호 무기</Concept_SimpleSidearmsPreference.label>
+  <!-- EN: Colonists can have sidearm use configured on an individual basis. The options are: \nUse ranged weapons\nUse weapons colonist is passionate about or skilled with \nUse melee weapons -->
+  <Concept_SimpleSidearmsPreference.helpText>정착민은 개인별로 보조 무기 사용을 설정할 수 있습니다. 옵션은 다음과 같습니다: \n원거리 무기 사용\n정착민이 좋아하거나 숙련된 무기 사용\n근접 무기 사용</Concept_SimpleSidearmsPreference.helpText>
+  
+</LanguageData>
