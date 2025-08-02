@@ -19,19 +19,6 @@ namespace PeteTimesSix.SimpleSidearms.Compat
 
         public static void PatchDelayed(Harmony harmony)
         {
-            //if (ModLister.GetActiveModWithIdentifier("Owlchemist.Tacticowl") != null)
-            {
-                try
-                {
-
-                }
-                catch (Exception e) 
-                {
-                    Log.Error("SS: Error during patching VFE: " + e);
-                }
-                //Log.Warning("Doing VFECore patches...");
-                //Patch_Delayed_VFECore(harmony);
-            }
             if (Tacticowl.active)
             {
                 //Log.Warning("Doing Tacticowl patches...");

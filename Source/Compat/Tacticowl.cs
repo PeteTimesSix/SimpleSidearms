@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Verse;
 using Verse.AI;
 using static HarmonyLib.AccessTools;
+using static PeteTimesSix.SimpleSidearms.Compat.VFECore;
 
 namespace PeteTimesSix.SimpleSidearms.Compat
 {
@@ -40,14 +41,30 @@ namespace PeteTimesSix.SimpleSidearms.Compat
             {
                 active = true;
 
-                dualWieldActive = AccessTools.StaticFieldRefAccess<bool>(AccessTools.TypeByName("Tacticowl.ModSettings_Tacticowl").GetField("dualWieldEnabled"));
+                try
+                {
+                    dualWieldActive = AccessTools.StaticFieldRefAccess<bool>(AccessTools.TypeByName("Tacticowl.ModSettings_Tacticowl").GetField("dualWieldEnabled"));
 
-                getOffHand = AccessTools.MethodDelegate<GetOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("GetOffHander"));
-                setOffHand = AccessTools.MethodDelegate<SetOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("SetOffHander"));
-                isOffHand = AccessTools.MethodDelegate<IsOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("IsOffHandedWeapon"));
-                isTwoHanded = AccessTools.MethodDelegate<IsTwoHanded>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("IsTwoHanded"));
-                canBeOffHand = AccessTools.MethodDelegate<CanBeOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("CanBeOffHand"));
-                setWeaponAsOffHand = AccessTools.MethodDelegate<SetWeaponAsOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("SetWeaponAsOffHanded"));
+                    getOffHand = AccessTools.MethodDelegate<GetOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("GetOffHander"));
+                    setOffHand = AccessTools.MethodDelegate<SetOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("SetOffHander"));
+                    isOffHand = AccessTools.MethodDelegate<IsOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("IsOffHandedWeapon"));
+                    isTwoHanded = AccessTools.MethodDelegate<IsTwoHanded>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("IsTwoHanded"));
+                    canBeOffHand = AccessTools.MethodDelegate<CanBeOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("CanBeOffHand"));
+                    setWeaponAsOffHand = AccessTools.MethodDelegate<SetWeaponAsOffHand>(AccessTools.TypeByName("Tacticowl.DualWieldExtensions").GetMethod("SetWeaponAsOffHanded"));
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning("SS: Failed to initialize compat. with Tacticowl. Compat will be disabled. Exception: " + ex.ToString());
+
+                    active = false;
+
+                    getOffHand = null;
+                    setOffHand = null;
+                    isOffHand = null;
+                    isTwoHanded = null;
+                    canBeOffHand = null;
+                    setWeaponAsOffHand = null;
+                }
             }
         }
 

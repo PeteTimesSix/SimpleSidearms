@@ -87,6 +87,8 @@ namespace SimpleSidearms.rimworld
                 validSidearms = validSidearms.Where(w => w.stuff == null || (w.stuff != ThingDefOf.Gold && w.stuff != ThingDefOf.Silver && w.stuff != ThingDefOf.Uranium));
                     //filter out weapons the pawn cant carry
                 validSidearms = validSidearms.Where(w => StatCalculator.CanPickupSidearmType(w, pawn, out _));
+                    //filter out weapons with less than 100% generateAllowChance
+                validSidearms = validSidearms.Where(w => w.thing.generateAllowChance >= 1 || Rand.Chance(w.thing.generateAllowChance));
 
                 bool onlyMelee = (pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler));
                 bool onlyRanged = (pawn.story != null && pawn.story.traits.HasTrait(TraitDef.Named("Wimp"))); //wimp has no defOf
@@ -109,7 +111,7 @@ namespace SimpleSidearms.rimworld
 
                 ThingDefStuffDefPair rolledWeaponThingDefStuffDefPair;
 
-                validSidearms.TryRandomElementByWeight(t => {return t.Commonality * t.Price;}, out rolledWeaponThingDefStuffDefPair);
+                validSidearms.TryRandomElementByWeight(t => t.Commonality * t.Price, out rolledWeaponThingDefStuffDefPair);
 
                 ThingWithComps rolledWeaponFinal = (ThingWithComps)ThingMaker.MakeThing(rolledWeaponThingDefStuffDefPair.thing, rolledWeaponThingDefStuffDefPair.stuff);
                 PawnGenerator.PostProcessGeneratedGear(rolledWeaponFinal, pawn);
