@@ -84,14 +84,16 @@ namespace SimpleSidearms.rimworld
                 });
 
                     //filter out nonsensical material weapons
-                validSidearms = validSidearms.Where(w => w.stuff == null || (w.stuff != ThingDefOf.Gold && w.stuff != ThingDefOf.Silver && w.stuff != ThingDefOf.Uranium));
+                validSidearms = validSidearms.Where(w => w.stuff == null || (w.stuff != ThingDefOf.Gold && w.stuff != ThingDefOf.Silver));
                     //filter out weapons the pawn cant carry
                 validSidearms = validSidearms.Where(w => StatCalculator.CanPickupSidearmType(w, pawn, out _));
+                    //filter out zero commonality weapons
+                validSidearms = validSidearms.Where(w => w.Commonality > 0);
                     //filter out weapons with less than 100% generateAllowChance
                 validSidearms = validSidearms.Where(w => w.thing.generateAllowChance >= 1 || Rand.Chance(w.thing.generateAllowChance));
 
                 bool onlyMelee = (pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Brawler));
-                bool onlyRanged = (pawn.story != null && pawn.story.traits.HasTrait(TraitDef.Named("Wimp"))); //wimp has no defOf
+                bool onlyRanged = (pawn.story != null && pawn.story.traits.HasTrait(TraitDefOf.Wimp));
 
                 if (onlyMelee)
                     validSidearms = validSidearms.Where(w => w.thing.IsMeleeWeapon);
@@ -111,7 +113,7 @@ namespace SimpleSidearms.rimworld
 
                 ThingDefStuffDefPair rolledWeaponThingDefStuffDefPair;
 
-                validSidearms.TryRandomElementByWeight(t => t.Commonality * t.Price, out rolledWeaponThingDefStuffDefPair);
+                validSidearms.TryRandomElementByWeight(t => t.Commonality * (t.Price > 1f ? t.Price : 1f), out rolledWeaponThingDefStuffDefPair);
 
                 ThingWithComps rolledWeaponFinal = (ThingWithComps)ThingMaker.MakeThing(rolledWeaponThingDefStuffDefPair.thing, rolledWeaponThingDefStuffDefPair.stuff);
                 PawnGenerator.PostProcessGeneratedGear(rolledWeaponFinal, pawn);
